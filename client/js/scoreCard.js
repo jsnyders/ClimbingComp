@@ -1,0 +1,472 @@
+/*global jQuery, logger, app, appModel, util*/
+/*
+ * Score Card page
+ * Copyright (c) 2014, John Snyders
+ *
+ * xxx todo
+ * On a small screen when the text input doesn't fit next to keypad put it above the keypad
+ * When number of falls is > 10 and extra radio buttons are hidden give some kind of indication there there are falls
+ * *Make score card heading fit on small screens
+ * better keyboard support on score card
+ */
+
+(function(app, model, $, logger, util, undefined) {
+    "use strict";
+
+    var module = "ScoreCard",
+        duringInitCard = false;
+
+    // options:
+    //  includeFalls
+    //  includeLocation
+    //  includeColor
+    function renderScoreCard($sc, options) {
+        var i, row, topId, fallsId,
+            curCol = 0,
+            table = "",
+            header = "",
+            routes = model.currentEvent.routes; // Expect routes in the correct order
+
+        function setColumnTableHeader(col, header) {
+            $sc.find(".scoreCardC" + col).children("thead").html(header);
+        }
+
+        function setColumnTableRows(col, rows) {
+            $sc.find(".scoreCardC" + col).children("tbody").html(rows);
+        }
+
+        header += "<tr class='ui-bar-d'><th>Route #</th>";
+        if (options.includeLocation) {
+            header += "<th data-priority='2'>Location</th>";
+        }
+        if (options.includeColor) {
+            header += "<th data-priority='2'>Color</th>";
+        }
+        header += "<th data-priority='1'>Points</th>";
+        if (options.includeFalls) {
+            header += "<th>Falls</th>";
+        }
+        header += "<th>Topped</th></tr>";
+
+        setColumnTableHeader(0, header);
+        setColumnTableHeader(1, header);
+
+        if (!routes) {
+            setColumnTableRows(0, "");
+            setColumnTableRows(1, "");
+            return;
+        }
+
+        for (i = 0; i < routes.length; i++) {
+            row = routes[i];
+            if (row.sheetColumn != curCol) {
+                setColumnTableRows(curCol, table);
+                curCol = row.sheetColumn;
+                table = "";
+            }
+            topId = "scTop_" + row.sheetRow + "_" + row.sheetColumn;
+            fallsId= "scFalls_" + row.sheetRow + "_" + row.sheetColumn;
+            table += "<tr><td class='num'>" + row.number + "</td>";
+            if (options.includeLocation) {
+                table += "<td>" + row.location + "</td>";
+            }
+            if (options.includeColor) {
+                table += "<td>" + row.color + "</td>";
+            }
+            table += "<td class='num'>" + row.points + "</td>";
+            if (options.includeFalls) {
+                table += "<td><select id='" + fallsId + "'data-mini='true'><option value='0' selected>&nbsp;</option><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option>" +
+                "<option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option></select></td>";
+            }
+            table += "<td class='num'><input data-role='flipswitch' data-mini='true' id='" + topId + "' data-on-text='Yes' data-off-text='No' data-wrapper-class='sc-flipswitch' type='checkbox'></td>";
+        }
+        setColumnTableRows(curCol, table);
+    }
+
+    function findClimbForRoute(climber, routeNumber) {
+        var i, curClimb,
+            climb = null;
+
+        if (climber.scoreCard && climber.scoreCard.climbs) {
+            for (i = 0; i < climber.scoreCard.climbs.length; i++) {
+                curClimb = climber.scoreCard.climbs[i];
+                if (curClimb.number === routeNumber) {
+                    climb = curClimb;
+                    break;
+                }
+            }
+        }
+        return climb;
+    }
+
+    function initCurrentClimber($sc, fallsPerClimb) {
+        var i, route, topId, fallsId, climb, falls,
+            routes = model.currentEvent.routes,
+            climber = model.currentClimber;
+
+        $("#scClimberSelector").find(".ui-collapsible-heading-toggle").html(
+            "<span id='scNumber' title='Event Climber ID'>#" + util.escapeHTML(climber.climberId) + "</span><span id='scName' title='Name'>" +
+                util.escapeHTML(climber.firstName) + " " + util.escapeHTML(climber.lastName) + "</span><span id='scUsaClimbingNumber' title='USA Climbing Number'>" +
+                util.escapeHTML(climber.usacMemberId || "") + "</span><span id='scGenderAndCategory'>" +
+                util.escapeHTML(climber.gender + " " + climber.category) + "</span><span id='scScore'></span><span id='scAction'>Next</span>"
+        );
+
+        duringInitCard = true;
+        // show scorecard and clear out card and include climber climb info
+        $sc.show().find(".top5").removeClass("top5");
+        if (!fallsPerClimb) {
+            falls = 0;
+            if (climber.scoreCard) {
+                falls = climber.scoreCard.totalFalls || 0;
+            }
+            $("#scTF-" + falls).prop("checked", true);
+            $("[name=scTF]").checkboxradio( "refresh" );
+        }
+        for (i = 0; i < routes.length; i++) {
+            route = routes[i];
+
+            climb = findClimbForRoute(climber, route.number);
+            topId = "#scTop_" + route.sheetRow + "_" + route.sheetColumn;
+            $(topId).prop("checked", climb ? climb.topped : false).flipswitch("refresh");
+            if (fallsPerClimb) {
+                fallsId= "#scFalls_" + route.sheetRow + "_" + route.sheetColumn;
+                falls = 0;
+                if (climb && climb.falls) {
+                    falls = climb.falls;
+                }
+                $(fallsId).val(falls).selectmenu("refresh");
+            }
+        }
+        duringInitCard = false;
+        updateCard($sc, fallsPerClimb, true);
+
+    }
+
+    function updateCard($sc, fallsPerClimb, noUpdate) {
+        var i, route, topId, fallsId, topped, falls, climb, totalPoints, totalFalls, score, count,
+            topPoints = [],
+            climbs = [],
+            routes = model.currentEvent.routes;
+
+        for (i = 0; i < routes.length; i++) {
+            route = routes[i];
+
+            topId = "#scTop_" + route.sheetRow + "_" + route.sheetColumn;
+            fallsId= "#scFalls_" + route.sheetRow + "_" + route.sheetColumn;
+            topped = $(topId)[0].checked;
+            falls = "";
+            if (fallsPerClimb) {
+                falls = $(fallsId).val();
+                falls = parseInt(falls, 10);
+            }
+            if ( falls > 0 || topped ) {
+                climbs.push({
+                    number: route.number,
+                    topId: topId,
+                    topped: topped,
+                    falls: falls,
+                    points: topped ? route.points : 0
+                });
+            }
+        }
+        climbs.sort(function(a,b) {
+            return b.points - a.points; // order highest to lowest
+        });
+
+        totalPoints = 0;
+        totalFalls = 0;
+        count = 0;
+        $sc.find(".top5").removeClass("top5");
+        $("#scScore").removeClass("u-ok");
+        for (i = 0; i < climbs.length && i < 5; i++) {
+            climb = climbs[i];
+            if (climb.points > 0) {
+                topPoints[count] = climb.points;
+                count += 1;
+                totalPoints += climb.points;
+                $(climb.topId).closest("tr").addClass("top5");
+                if (fallsPerClimb) {
+                    totalFalls += climb.falls;
+                }
+            }
+        }
+        if (!fallsPerClimb) {
+            totalFalls = $("[name=scTF]:checked").val();
+            totalFalls = parseInt(totalFalls, 10);
+        }
+        score = totalPoints - totalFalls;
+        if (score < 0) {
+            score = 0;
+        }
+
+        if (!noUpdate) {
+            logger.debug(module, "Update score for " + model.currentClimber.climberId);
+            model.updateCurrentClimberScoreCard({
+                totalPoints: totalPoints,
+                totalFalls: totalFalls,
+                score: score,
+                top1: topPoints[0],
+                top2: topPoints[1],
+                top3: topPoints[2],
+                top4: topPoints[3],
+                top5: topPoints[4],
+                climbs: climbs
+            });
+        }
+
+        $("#scScore").text("Score: " + score);
+        if ( count >= 5 ) {
+            $("#scScore").addClass("u-ok");
+        }
+
+    }
+
+    function saveScoreCard(callback) {
+        model.saveCurrentClimberScoreCard()
+            .done(function() {
+                app.updateFooter();
+                callback(true);
+            })
+            .fail(function() {
+                alert("Failed to save score card"); // xxx reason, message area
+                callback(false);
+            });
+    }
+
+    function openClimberSelector() {
+        if (!$("#scClimberSelector").find(".ui-collapsible-content").is(":visible")) {
+            $("#scClimberSelector").find(".ui-collapsible-heading-toggle").trigger("click");
+        }
+    }
+
+    function closeClimberSelector() {
+        if ($("#scClimberSelector").find(".ui-collapsible-content").is(":visible")) {
+            $("#scClimberSelector").find(".ui-collapsible-heading-toggle").trigger("click");
+        }
+    }
+
+    app.addPage({
+        name: "scorecard",
+        init: function() {
+            var $sc = $("#scorecard .ScoreCardCtrl"),
+                $scKeypadDisplay = $("#scKeypadDisplay");
+
+            logger.debug(module, "Init page");
+
+            // init score card behavior
+            $sc.on("change", function(event) {
+                if (!duringInitCard) {
+                    updateCard($sc, model.currentEvent.recordFallsPerClimb);
+                }
+            });
+
+            // there are two save points on this page: Home button and Climber Selector collapsible
+            // wait until collapsible widget is created
+            $("#scClimberSelector").on("collapsiblecreate", function() {
+                // then add handler for saving
+                $(this).find(".ui-collapsible-heading-toggle").click(function(event){
+                    // if the card is dirty and it is being expanded (Next)
+                    if ($(this).parent().parent().hasClass("ui-collapsible-collapsed") && model.scoreCardDirty) {
+                        // stop the normal click handling and save first
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        $("#scClimberSelector").collapsible("disable");
+                        saveScoreCard(function(success) {
+                            $("#scClimberSelector").collapsible("enable");
+                            if (success) {
+                                openClimberSelector();
+                            }
+                        });
+                    }
+                });
+            });
+
+            $("#scHomeBtn").click(function(event){
+                // if the card is dirty and it is being expanded (Next)
+                if (model.scoreCardDirty) {
+                    // stop the normal click handling and save first
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    saveScoreCard(function(success) {
+                        if (success) {
+                            $("#scHomeBtn").click();
+                        }
+                    });
+                }
+            });
+
+            //
+            // Select a climber
+            //
+            $("#scClimberSelector").on("collapsibleexpand", function() {
+                $("#scAction").text("Lookup Climber");
+                keypadClear();
+                $("#scClimberName").val("").change();
+                // exactly one will be visible
+                $("#scKeypadDisplay, #scClimberName").filter(":visible")[0].focus();
+            });
+            $("#scClimberSelector").on("collapsiblecollapse", function() {
+                if (model.currentClimber) {
+                    $("#scAction").text("Next");
+                }
+            });
+
+            //
+            // find a climber by number
+            //
+            var messageShowing = false;
+
+            function clearMessage() {
+                if (messageShowing) {
+                    messageShowing = false;
+                    $("#scNoClimberMsg").hide();
+                }
+            }
+            function keypadAppend(digit) {
+                $scKeypadDisplay.append("<span class='key'>" + digit + "</span>");
+                clearMessage();
+            }
+            function keypadClear() {
+                $scKeypadDisplay.empty();
+                clearMessage();
+            }
+            function keypadDelete() {
+                $scKeypadDisplay.children().last().remove();
+                clearMessage();
+            }
+
+            function keypadCheckClimberId(text) {
+                var climberId;
+                if (text.length === 4) {
+                    climberId = parseInt(text, 10);
+                    if ( isNaN(climberId) || !model.setCurrentClimber(climberId)) {
+                        keypadClear();
+                        messageShowing = true;
+                        $("#scBadNum").text(text);
+                        $("#scNoClimberMsg").show();
+                    } else {
+                        setTimeout(function() {
+                            initCurrentClimber($sc, model.currentEvent.recordFallsPerClimb);
+                            closeClimberSelector();
+                        }, 400);
+                    }
+                }
+            }
+
+            $("#scKeypad").on("mousedown", "button", function() {
+                var value = $(this).attr("data-value");
+
+                if ( value === "b" ) {
+                    keypadDelete();
+                } else if ( value === "c" ) {
+                    keypadClear();
+                } else {
+                    keypadAppend(value);
+                    keypadCheckClimberId($("#scKeypadDisplay").text());
+                }
+            });
+            $scKeypadDisplay.on("keypress", function(event) {
+                var digit;
+
+                if (event.which === 0 || event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
+                    return;
+                }
+                digit = String.fromCharCode(event.which);
+                if ( digit >= "0" && digit <= "9" ) {
+                    keypadAppend(digit);
+                    keypadCheckClimberId($("#scKeypadDisplay").text());
+                }
+            }).on("keydown", function(event) {
+                    if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
+                        return;
+                    }
+                    if (event.which === $.ui.keyCode.BACKSPACE) {
+                        keypadDelete();
+                    } else if (event.which === $.ui.keyCode.DELETE) {
+                        keypadClear();
+                    }
+                });
+
+            //
+            // find a climber by name
+            //
+            $("#scClimbersList").on("filterablebeforefilter", function(e, data) {
+                var i, climbers, climber, display, filter,
+                    $ul = $(this),
+                    $input = $(data.input),
+                    value = $input.val(),
+                    html = "";
+
+                $ul.html("");
+                if (value) {
+                    climbers = model.findClimbers(value);
+                    for (i = 0; i < climbers.length; i++) {
+                        climber = climbers[i];
+                        display = climber.firstName + " " + climber.lastName;
+                        filter = climber.usacMemberId + " " +climber.team + " " + display;
+                        html += "<li data-filtertext='" + filter + "'><a data-value='" + climber.climberId + "' href='#'>" + display + "</a></li>";
+                    }
+                    $ul.html(html);
+                    $ul.listview("refresh");
+                    $ul.trigger("updatelayout");
+                }
+            }).on("click", "a", function() {
+                var climberId = $(this).attr("data-value");
+                if (climberId) {
+                    model.setCurrentClimber(climberId);
+                    initCurrentClimber($sc, model.currentEvent.recordFallsPerClimb);
+                    closeClimberSelector();
+                }
+            });
+
+            $("#scMoreFalls").click(function(event) {
+                var visible = $("#scFallsExtra").is(":visible");
+                if (visible) {
+                    $("#scFallsExtra").hide();
+                    $("#scMoreFalls").text("More");
+                } else {
+                    $("#scFallsExtra").show();
+                    $("#scMoreFalls").text("Less");
+                }
+            });
+        },
+        open: function() {
+            var $sc = $("#scorecard .ScoreCardCtrl");
+
+            if (!model.currentEvent) {
+                $("body").pagecontainer("change", $("#home"));
+                return;
+            }
+            logger.debug(module, "Page is now active");
+
+            if (!model.currentClimber) {
+                openClimberSelector();
+                $("#scClimberSelector").find(".ui-collapsible-heading-toggle").html("<span id='scAction'>Lookup Climber</span>");
+            }
+        }
+    });
+
+    //xxx when is this used???
+    app.initScoreCard = function() {
+        var event = model.currentEvent,
+            $sc = $("#scorecard .ScoreCardCtrl");
+
+        logger.debug(module, "Init score card");
+
+        renderScoreCard($sc, {
+            includeFalls: event.recordFallsPerClimb,
+            includeColor: event.routesHaveColor,
+            includeLocation: event.routesHaveLocation
+        });
+        $sc.find(".scTable").each(function() {
+            var $t = $(this);
+            $t.find(":checkbox").flipswitch();
+            $t.find("select").selectmenu();
+            $t.table();
+        });
+
+        $sc.hide();
+        $("#scTotalFalls").toggle(!event.recordFallsPerClimb);
+    };
+
+})(app, appModel, jQuery, logger, util);

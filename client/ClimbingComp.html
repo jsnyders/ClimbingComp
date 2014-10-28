@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    <!--
+    Copyright (c) 2014 John Snyders
+     -->
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Climbing Competition</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/lib/jquery.mobile-1.4.4.css">
+    <link rel="stylesheet" href="css/lib/jquery.mobile.datepicker-0.1.9.css">
+    <link rel="stylesheet" href="css/lib/jquery.mobile.datepicker-0.1.9.theme.css">
+    <script src="js/lib/modernizr-2.6.2.min.js"></script>
+</head>
+<body>
+    <!--[if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div id="home" data-role="page">
+        <div data-role="header" data-position="fixed">
+            <h1>Home</h1>
+            <a id="hLogInLink" href="#login" class="ui-btn ui-btn-right ui-btn-inline ui-corner-all">Sign In</a>
+            <button id="hLogOutBtn" type="button" class="ui-btn ui-btn-right ui-btn-inline ui-corner-all">Sign Out</button>
+        </div>
+        <div role="main" class="ui-content">
+            <div id="hIntro" class="ui-body">
+                <p>This is a prototype web app for scoring Rock Climbing events.</p>
+                <ul>
+                    <li>Choose the event</li>
+                    <li>Select Score Cards and enter all the score cards</li>
+                    <li>Select Results</li>
+                </ul>
+            </div>
+
+            <div id="hCurrentEventSection" class="ui-body">
+                <h2 class="ui-bar ui-bar-a">Current Climbing Event</h2>
+                <label for="hEvent">Climbing Event:</label>
+                <select data-mini="true" id="hEvent"></select>
+                <ul data-role="listview" data-inset="true">
+                    <li><a id="hScoreCardLink" href="#scorecard" class="ui-state-disabled" data-transition="slide">Score Cards</a></li>
+                    <li><a id="hResultsLink" href="#results" class="ui-state-disabled" data-transition="slide">Results</a></li>
+                </ul>
+            </div>
+
+            <div id="hAdminSection" class="ui-body">
+                <h2 class="ui-bar ui-bar-a">Administration</h2>
+                <ul data-role="listview" data-inset="true">
+                    <li><a id="hEvents" href="#adminEvents?test:arg2" data-transition="slide">Manage Climbing Events</a></li>
+                    <li><a id="hClimbers" href="#adminClimbers" data-transition="slide">Manage Climbers</a></li>
+                    <li><a id="hUsers" href="#adminUsers" data-transition="slide">Manage Users</a></li>
+                </ul>
+            </div>
+
+        </div>
+        <!-- this gets replicated to the other pages -->
+        <div class="footer" data-role="footer" data-position="fixed">
+            <span class='fApp'>ClimbingComp <a href="#about" >About</a></span>
+            <!--xxx user? role?-->
+            <span class='fCurEvent'></span>
+        </div>
+    </div>
+
+    <div id="login" data-role="page" data-dialog="true">
+        <div data-role="header">
+            <h1>Sign In</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <div class="ui-body">
+                <h3 id="lMessage" class="message error"></h3>
+                <div class="ui-field-contain">
+                    <label for="lUsername">Username:</label>
+                    <input id="lUsername" type="text" name="username" value="">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="lPassword">Password:</label>
+                    <input id="lPassword" type="password" name="password" value="">
+                </div>
+                <button id="lCancel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</button>
+                <button id="lLogIn" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="about" data-role="page" data-dialog="true">
+        <div data-role="header">
+            <h1>About</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <div class="ui-body">
+                <p>ClimbingComp</p>
+                <p>Copyright (c) 2014, John Snyders</p>
+                <p>Details TBD</p>
+                <a id="lDone" href="#" data-rel="back" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">OK</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- xxx test upload -->
+    <div id="upload" data-role="page" data-dialog="true">
+        <div role="main" class="ui-content">
+            <div class="ui-body">
+                <p>Just a test xxx</p>
+                <div class="ui-field-contain">
+                    <label for="uFile">File to upload:</label>
+                    <input id="uFile" type="file" name="filename" value="">
+                </div>
+                <button id="uUpload" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="scorecard" data-role="page">
+        <div data-role="header">
+            <a id="scHomeBtn" href="#home" data-transition="slide" data-mini="true" data-direction="reverse" class="ui-btn ui-icon-home ui-btn-icon-left ui-shadow ui-corner-all">Home</a>
+            <h1>Score Card</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <div class="ui-body">
+                <div id="scClimberSelector" data-role="collapsible" data-iconpos="right">
+                    <h2></h2>
+                    <div data-role="tabs" id="scLookupClimberTab">
+                        <div data-role="navbar">
+                            <ul>
+                                <li><a href="#scByNumber" class="ui-btn-active ui-state-persist">By Number</a></li>
+                                <li><a href="#scByName">By Name</a></li>
+                            </ul>
+                        </div>
+                        <div id="scByNumber" class="ui-body-d ui-content">
+                            <table id="scKeypad">
+                                <tr>
+                                    <td><button data-value="1" type="button" tabindex="-1">1</button></td>
+                                    <td><button data-value="2" type="button" tabindex="-1">2</button></td>
+                                    <td><button data-value="3" type="button" tabindex="-1">3</button></td>
+                                </tr>
+                                <tr>
+                                    <td><button data-value="4" type="button" tabindex="-1">4</button></td>
+                                    <td><button data-value="5" type="button" tabindex="-1">5</button></td>
+                                    <td><button data-value="6" type="button" tabindex="-1">6</button></td>
+                                </tr>
+                                <tr>
+                                    <td><button data-value="7" type="button" tabindex="-1">7</button></td>
+                                    <td><button data-value="8" type="button" tabindex="-1">8</button></td>
+                                    <td><button data-value="9" type="button" tabindex="-1">9</button></td>
+                                </tr>
+                                <tr>
+                                    <td><button data-value="b" type="button" tabindex="-1" class="ui-btn ui-icon-carat-l ui-btn-icon-notext ui-corner-all"></button></td>
+                                    <td><button data-value="0" type="button" tabindex="-1">0</button></td>
+                                    <td><button data-value="c" type="button" tabindex="-1" class="ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all"></button></td>
+                                </tr>
+                            </table>
+                            <div id="scKeypadDisplay" tabindex="0" class="ui-body-a ui-corner-all"></div>
+                            <p id="scNoClimberMsg" style="display:none;">No such climber <span id="scBadNum"></span>. try again</p>
+                        </div>
+                        <div id="scByName">
+                            <label for="scClimberName">Search:</label>
+                            <input type="search" placeholder="Climber name..." id="scClimberName" value="" />
+                            <ul id="scClimbersList" data-role="listview" data-filter="true" data-input="#scClimberName" data-filter-reveal="false" data-inset="true"></ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="ScoreCardCtrl ui-grid-a scoreCardBreakpoint">
+                <div id="scTotalFalls">
+                    <fieldset data-role="controlgroup" data-type="horizontal">
+                        <legend>Total falls:</legend>
+                        <input name="scTF" id="scTF-0" value="0" type="radio">
+                        <label for="scTF-0">None</label>
+                        <input name="scTF" id="scTF-1" value="1" type="radio">
+                        <label for="scTF-1">1</label>
+                        <input name="scTF" id="scTF-2" value="2" type="radio">
+                        <label for="scTF-2">2</label>
+                        <input name="scTF" id="scTF-3" value="3" type="radio">
+                        <label for="scTF-3">3</label>
+                        <input name="scTF" id="scTF-4" value="4" type="radio">
+                        <label for="scTF-4">4</label>
+                        <input name="scTF" id="scTF-5" value="5" type="radio">
+                        <label for="scTF-5">5</label>
+                        <input name="scTF" id="scTF-6" value="6" type="radio">
+                        <label for="scTF-6">6</label>
+                        <input name="scTF" id="scTF-7" value="7" type="radio">
+                        <label for="scTF-7">7</label>
+                        <input name="scTF" id="scTF-8" value="8" type="radio">
+                        <label for="scTF-8">8</label>
+                        <input name="scTF" id="scTF-9" value="9" type="radio">
+                        <label for="scTF-9">9</label>
+                        <button id="scMoreFalls" class="ui-btn ui-btn-inline">More</button>
+                        <div id="scFallsExtra">
+                            <input name="scTF" id="scTF-10" value="10" type="radio">
+                            <label for="scTF-10">10</label>
+                            <input name="scTF" id="scTF-11"  value="11" type="radio">
+                            <label for="scTF-11">11</label>
+                            <input name="scTF" id="scTF-12"  value="12" type="radio">
+                            <label for="scTF-12">12</label>
+                            <input name="scTF" id="scTF-13"  value="13" type="radio">
+                            <label for="scTF-13">13</label>
+                            <input name="scTF" id="scTF-14"  value="14" type="radio">
+                            <label for="scTF-14">14</label>
+                            <input name="scTF" id="scTF-15"  value="15" type="radio">
+                            <label for="scTF-15">15</label>
+                            <input name="scTF" id="scTF-16"  value="16" type="radio">
+                            <label for="scTF-16">16</label>
+                            <input name="scTF" id="scTF-17"  value="17" type="radio">
+                            <label for="scTF-17">17</label>
+                            <input name="scTF" id="scTF-18"  value="18" type="radio">
+                            <label for="scTF-18">18</label>
+                            <input name="scTF" id="scTF-19"  value="19" type="radio">
+                            <label for="scTF-19">19</label>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="ui-block-a">
+                    <table id="scTableLeft" data-role="table" data-mode="columntoggle" class="scTable scoreCardC0 ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
+                        <caption class="visuallyhidden">Score card left column table of routes.</caption>
+                        <thead>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="ui-block-b">
+                    <table id="scTableRight" data-role="table" data-mode="columntoggle" class="scTable scoreCardC1 ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
+                        <caption class="visuallyhidden">Score card right column table of routes.</caption>
+                        <thead>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="results" data-role="page">
+        <div data-role="header">
+            <a href="#home" data-transition="slide" data-direction="reverse" class="ui-btn ui-mini ui-icon-home ui-btn-icon-left ui-shadow ui-corner-all">Home</a>
+            <h1>Results</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <div class="ui-body">
+                <div id="resHdr" data-role="collapsible">
+                    <h2 id="resHeading"></h2>
+                    <div id="resDetails">
+                        details tbd
+                    </div>
+                </div>
+                <button class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini">Category...</button>
+                <a id="resExport" data-ajax="false" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini" href="data/events/<id>/results">Export</a>
+                <table id="resTable" data-role="table" data-mode="columntoggle" class="ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
+                    <caption class="visuallyhidden">Event Results</caption>
+                    <thead>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminEvents" data-role="page">
+        <div data-role="header">
+            <a href="#home" data-transition="slide" data-direction="reverse" class="ui-btn ui-mini ui-icon-home ui-btn-icon-left ui-shadow ui-corner-all">Home</a>
+            <h1>Manage Climbing Events</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <a id="eCreate" href="#adminEvent?new" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini">Create Event</a>
+            <table id="eEventsTable" data-role="table" data-mode="columntoggle" class="ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
+                <caption class="visuallyhidden">Events</caption>
+                <thead>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <div id="adminEvent" data-role="page" class="wide" data-dialog="true">
+        <div data-role="header">
+            <h1 id="aeTitle">Event</h1>
+        </div>
+        <div data-role="tabs" id="aeTabs">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#aeEventTab" data-ajax="false" class="ui-btn-active">Event</a></li>
+                    <li><a href="#aeRoutesTab" data-ajax="false">Routes</a></li>
+                    <li><a href="#aeClimbersTab" data-ajax="false">Climbers</a></li>
+                </ul>
+            </div>
+            <div id="aeEventTab" class="ui-content">
+                <div class="ui-field-contain">
+                    <label for="aeLocation">Location:</label>
+                    <input id="aeLocation" type="text" name="location" value="">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeRegion">Region:</label>
+                    <select id="aeRegion" name="series">
+                    </select>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeDate">Date:</label>
+                    <input id="aeDate" data-role="date" type="text" name="date" value="">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeSeries">Series:</label>
+                    <select id="aeSeries" name="series">
+                        <option selected value="ABS">ABS</option>
+                        <option value="SCS">SCS</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeSanctioning">Sanctioning:</label>
+                    <select id="aeSanctioning" name="sanctioning">
+                        <option selected value="Local">Local</option>
+                    </select>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeType">Type:</label>
+                    <select id="aeType" name="type">
+                        <option selected value="Red Point">Red Point</option>
+                    </select>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeFallsPerClimb">Record Falls Per Climb:</label>
+                    <input  id="aeFallsPerClimb" data-role="flipswitch" name="routesHaveLocation" data-on-text="Yes" data-off-text="No" type="checkbox">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeNotes">Notes:</label>
+                    <textarea id="aeNotes" rows="4" name="notes"></textarea>
+                </div>
+
+                <h2 class="ui-bar ui-bar-a">Score Card</h2>
+
+                <div class="ui-field-contain">
+                    <label for="aeColumns">Columns:</label>
+                    <select id="aeColumns" name="columns">
+                        <option selected value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeRoutesHaveLocation">Include Route Location:</label>
+                    <input  id="aeRoutesHaveLocation" data-role="flipswitch" name="routesHaveLocation" data-on-text="Yes" data-off-text="No" data-wrapper-class='sc-flipswitch' type="checkbox">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeRoutesHaveColor">Include Route Color:</label>
+                    <input  id="aeRoutesHaveColor" data-role="flipswitch" name="routesHaveColor" data-on-text="Yes" data-off-text="No" type="checkbox">
+                </div>
+            </div>
+            <div id="aeRoutesTab" class="ui-content">
+                <div id="aeImport" data-role="collapsible" data-iconpos="right">
+                    <h2>Import Routes</h2>
+                    <p>The import file must be in CSV format with these columns:</p>
+                    <code id="aeImportColumns"></code>
+                    <p>The first line is assumed to contain column headings and is ignored. Number starts at 1.
+                       Row and Column are optional. If included they start at 0. The number of columns must match Score Card Columns.
+                       Extra columns are ignored. All existing routes are overwritten.</p>
+                    <div class="ui-field-contain">
+                        <label for="aeFile">File to upload:</label>
+                        <input id="aeFile" type="file" name="filename" value="">
+                    </div>
+                    <button id="aeUpload" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Upload</button>
+                </div>
+                <div id="aeNew" data-role="collapsible" data-iconpos="right">
+                    <h2>Create New Routes</h2>
+                    <p>Enter the number of desired routes. All existing routes are overwritten.</p>
+                    <div class="ui-field-contain">
+                        <label for="aeRouteCount">Number of Routes:</label>
+                        <input id="aeRouteCount" type="number" name="routeCount" value="50">
+                    </div>
+                    <button id="aeNewRoutes" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Create</button>
+                </div>
+                <button id="aeExport" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Export</button>
+                <div id="aeScoreCard">
+                </div>
+            </div>
+            <div id="aeClimbersTab" class="ui-content">
+                todo
+            </div>
+            <a id="aeCancel" href="#adminEvents" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</a>
+            <button id="aeApply" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Apply</button>
+            <button id="aeOK" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">OK</button>
+        </div>
+    </div>
+
+    <div id="adminClimbers" data-role="page">
+        <div data-role="header">
+            <a href="#home" data-transition="slide" data-direction="reverse" class="ui-btn ui-mini ui-icon-home ui-btn-icon-left ui-shadow ui-corner-all">Home</a>
+            <h1>Manage Climbers</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <p>Admin Climbers TBD</p>
+
+        </div>
+    </div>
+
+    <div id="adminUsers" data-role="page">
+        <div data-role="header">
+            <a href="#home" data-transition="slide" data-direction="reverse" class="ui-btn ui-mini ui-icon-home ui-btn-icon-left ui-shadow ui-corner-all">Home</a>
+            <h1>Manage Users</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <div role="main" class="ui-content">
+                <a id="uCreate" href="#adminUser?" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini">Create User</a>
+                <table id="uUsersTable" data-role="table" data-mode="columntoggle" class="ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
+                    <caption class="visuallyhidden">Users</caption>
+                    <thead>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminUser" data-role="page" data-dialog="true">
+        <div data-role="header">
+            <h1 id="auTitle">User</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <div class="ui-field-contain">
+                <label for="auUsername">Username:</label>
+                <input id="auUsername" type="text" name="username" readonly value="">
+            </div>
+            <div class="ui-field-contain">
+                <label for="auFirstName">First Name:</label>
+                <input id="auFirstName" type="text" name="firstName" value="">
+            </div>
+            <div class="ui-field-contain">
+                <label for="auLastName">Last Name:</label>
+                <input id="auLastName" type="text" name="lastName" value="">
+            </div>
+            <div class="ui-field-contain">
+                <label for="auRole">Role:</label>
+                <select id="auRole" name="role">
+                    <option selected value="Reader">Read Only Access</option>
+                    <option value="Contributor">Score Card Entry</option>
+                    <option value="Admin">Administrator</option>
+                </select>
+            </div>
+            <div class="ui-field-contain pw">
+                <label for="auPassword">Password:</label>
+                <input id="auPassword" type="password" name="password" value="">
+            </div>
+            <div class="ui-field-contain pw">
+                <label for="auPasswordConfirm">Confirm Password:</label>
+                <input id="auPasswordConfirm" type="password" name="password2" value="">
+            </div>
+
+            <a id="auCancel" href="#adminUsers" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</a>
+            <button id="auOK" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">OK</button>
+        </div>
+    </div>
+
+
+    <script src="js/lib/jquery-2.1.1.js"></script>
+    <script src="js/lib/jquery.mobile-1.4.4.js"></script>
+    <script src="js/lib/jquery.ui.datepicker-1.10.4.js"></script>
+    <script id="mobile-datepicker" src="js/lib/jquery.mobile.datepicker-0.1.9.js"></script>
+    <script src="js/logger.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/appModel.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/scoreCard.js"></script>
+    <script src="js/results.js"></script>
+    <script src="js/adminEvents.js"></script>
+    <script src="js/adminEvent.js"></script>
+    <script src="js/adminUsers.js"></script>
+    <script src="js/adminUser.js"></script>
+
+</body>
+</html>
