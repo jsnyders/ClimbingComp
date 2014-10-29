@@ -55,16 +55,67 @@ node
 > process.exit();
 ```
 
+The node package manager (npm) should come bundled with node.js. Two other node tools are needed.
+Install grunt and bower globally:
+
+```
+npm install -g grunt-cli
+npm install -g bower
+```
+
+
 ### Install ClimbingComp Software
-TBD
+Clone the ClimbingComp project from github or download and extract the zip file.
+
+
+```
+cd <project-folder-root>
+npm install
+grunt setup
+```
+
+Create the database TODO the following is out of date
+
+```
+mysql -u root -p -h localhost
+> create user john identified by john;
+> create database climbing_comp character set = utf8;
+> grant all on climbing_comp.* to john;
+-- xxx so triggers can be created is this wise?
+> grant super on *.* to john;
+> exit
+mysql -u john -p -h localhost climbing_comp
+> source createdb.sql
+>exit
+```
+
+Start the server TODO the following is out of date
+
+
+```
+```
+
+If you want to use SSL TODO config details needed
+
+```
+### Generated private key
+$ cd ssl
+$ openssl genrsa 1024 > key.pem
+### Generate self signed cert
+$ openssl req -x509 -new -key key.pem > key-cert.pem
+```
+
 
 ## Using ClimbingComp to score a competition
 TBD
 
 ### Preparation
 
+TBD
+
 ### Network considerations
 
+TBD
 
 ## Contributors
 * John Snyders

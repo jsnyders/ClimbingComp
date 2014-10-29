@@ -2,7 +2,11 @@
 # Read about how to use .gitignore: https://help.github.com/articles/ignoring-files
 /.idea
 /data
-/node_modules/**
+/node_modules
+/bower_components
 *.log
 /config.json
+/client/js/lib
+/client/css/lib
+
 
