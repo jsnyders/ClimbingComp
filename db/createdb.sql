@@ -56,7 +56,7 @@ CREATE TABLE climber (
   last_name VARCHAR(100) NOT NULL,
   location VARCHAR(200),
   gender ENUM('Male', 'Female'),
-  category ENUM('Youth-D', 'Youth-C', 'Youth-B', 'Youth-A', 'Junior', 'Adult', 'Open', 'Master'), -- todo consider if/how to extend category
+  category ENUM('Youth-D', 'Youth-C', 'Youth-B', 'Youth-A', 'Junior', 'Adult', 'Open', 'Masters'), -- todo consider if/how to extend category
   birth_year INTEGER,
   region VARCHAR(100),  -- Example "503 (New England East)" todo consider region/division id
   team VARCHAR(100),
@@ -66,6 +66,11 @@ CREATE TABLE climber (
   INDEX name_ndx (first_name, last_name)
 ) ENGINE=Aria DEFAULT CHARSET=utf8;
 
+CREATE TRIGGER climber_update
+  BEFORE UPDATE ON climber
+    FOR EACH ROW
+      set NEW.version = NEW.version + 1;
+
 DROP TABLE IF EXISTS event_route;
 CREATE TABLE event_route (
   number INTEGER(3) NOT NULL,
@@ -73,6 +78,7 @@ CREATE TABLE event_route (
   color VARCHAR(20),
   location VARCHAR(20),
   points INTEGER NOT NULL,
+  -- based on the points the route is associated with a category for the purpose of adult sub category assignment
   sheet_row INTEGER,
   sheet_column INTEGER,
 
@@ -84,6 +90,9 @@ CREATE TABLE event_climber (
   climber_id INTEGER NOT NULL,
   event_id INTEGER NOT NULL,
   number INTEGER(4) NOT NULL,
+  -- for adults they can enter a different category for the event subject to some age requirements
+  -- the adult category has flexible sub divisions: Recreational, Intermediate or Advanced
+  -- also other kinds of comps may define categories differently but there could still be value in using the master climber list
   version INTEGER,
   total INTEGER, -- xxx is this before or after total_falls is subtracted??? either way it too could be calculated
   place INTEGER, -- xxx this will be generated
@@ -103,6 +112,10 @@ CREATE TABLE event_climber (
   UNIQUE INDEX event_number (number, event_id)
 ) ENGINE=Aria DEFAULT CHARSET=utf8;
 
+CREATE TRIGGER event_climber_update
+  BEFORE UPDATE ON event_climber
+    FOR EACH ROW
+      set NEW.version = NEW.version + 1;
 
 -- users and sessions
 DROP TABLE IF EXISTS app_user;
