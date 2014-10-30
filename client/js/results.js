@@ -1,4 +1,4 @@
-/*global jQuery, logger, app, appModel*/
+/*global jQuery, logger, util, app, appModel, alert*/
 /*
  * Copyright (c) 2014, John Snyders
  *
@@ -9,7 +9,7 @@
  * somewhere list all the climbers with incomplete cards
  */
 
-(function(app, model, $, logger, undefined) {
+(function(app, model, $, logger, util, undefined) {
     "use strict";
 
     var module = "Results",
@@ -71,38 +71,40 @@
         $table.children("tbody").html(table);
     }
 
-    app.initResultsPage = function() {
-        logger.debug(module, "Init page");
-    };
+    app.addPage({
+        name: "results",
+        init: function() {
+            logger.debug(module, "Init page");
+        },
+        open: function(ui) {
+            var event = model.currentEvent;
 
-    app.openResultsPage = function() {
-        var event = model.currentEvent;
+            logger.debug(module, "Page is now active");
 
-        logger.debug(module, "Page is now active");
+            if (!model.currentEvent) {
+                $("body").pagecontainer("change", $("#home"));
+                return;
+            }
 
-        if (!model.currentEvent) {
-            $("body").pagecontainer("change", $("#home"));
-            return;
+            $("#resExport").attr("href", "data/events/" + model.currentEvent.eventId + "/results?fmt=export");
+
+            $("#resHeading").find(".ui-collapsible-heading-toggle")
+                .text(event.sanctioning + " " + event.type + " " + event.series + " Climbing Event, " + event.location);
+
+            $("#resDetails").html("<ul><li>Region: " + util.escapeHTML(event.region) + "</li><li>More details tbd</li></ul>");
+
+            // clean out old results first
+            $("#resTable").children("thead,tbody").empty();
+
+            model.fetchEventResults()
+                .done(function(results) {
+                    renderResults(results);
+                    $("#resTable").table("rebuild");
+                })
+                .fail(function() {
+                    alert("Failed to get event results data"); // xxx reason, message area
+                });
         }
+    });
 
-        $("#resExport").attr("href", "data/events/" + model.currentEvent.eventId + "/results?fmt=export");
-
-        $("#resHeading").find(".ui-collapsible-heading-toggle")
-            .text(event.sanctioning + " " + event.type + " " + event.series + " Climbing Event, " + event.location);
-
-        $("#resDetails").html("<ul><li>Region: " + util.escapeHTML(event.region) + "</li><li>More details tbd</li></ul>");
-
-        // clean out old results first
-        $("#resTable").children("thead,tbody").empty();
-
-        model.fetchEventResults()
-            .done(function(results) {
-                renderResults(results);
-                $("#resTable").table("rebuild");
-            })
-            .fail(function() {
-                alert("Failed to get event results data"); // xxx reason, message area
-            });
-    };
-
-})(app, appModel, jQuery, logger);
+})(app, appModel, jQuery, logger, util);

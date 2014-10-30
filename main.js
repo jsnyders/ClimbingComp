@@ -17,7 +17,7 @@
  You should have received a copy of the GNU Affero General Public License
  along with ClimbingComp.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* jshint node: true, strict: false */
+/*jshint node: true, strict: false */
 
 /*
  * The main entry point for the ClimbingComp web app server.
@@ -25,6 +25,7 @@
  * gets configuration from the database, sets up restify server and adds all the needed resources.
  */
 
+var os = require('os');
 var fs = require('fs');
 var bunyan = require('bunyan');
 var restify = require("restify");
@@ -181,7 +182,7 @@ log.debug("Server Acceptable: " + server.acceptable);
 
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
-server.use(restify.bodyParser({ mapParams: false, uploadDir: "./uploads" }));
+server.use(restify.bodyParser({ mapParams: false, uploadDir: os.tmpdir() }));
 server.use(restify.gzipResponse());
 server.use(restify.conditionalRequest());
 server.use(restify.requestLogger());
@@ -200,7 +201,7 @@ server.on('after', restify.auditLogger({
     })
 }));
 
-server.on("request", function(req, res) {
+server.on("request", function(req /*, res*/) {
     log.info({
         req_id: req.id(),
         method: req.method,

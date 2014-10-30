@@ -582,7 +582,7 @@ var appModel = (function($, logger, util, undefined) {
             fd.append("file", file);
             fd.append("routesHaveLocation", routesHaveLocation);
             fd.append("routesHaveColor", routesHaveColor);
-            fd.append("scoreCardColumns, scoreCardColumns");
+            fd.append("scoreCardColumns", scoreCardColumns);
             fd.append("version", version);
             $.ajax({
                 type: "POST",

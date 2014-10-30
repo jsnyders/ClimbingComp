@@ -58,7 +58,7 @@ module.exports = function(grunt) {
                 curly: true,
                 eqeqeq: true,
                 indent: 4,
-                plusplus: true,
+                plusplus: false,
                 undef: true,
                 unused: true
             },
@@ -74,6 +74,7 @@ module.exports = function(grunt) {
             },
             server: {
                 options: {
+                    node: true
                 },
                 src: ['lib/*.js', 'main.js']
             }
