@@ -144,6 +144,11 @@ var util = {};
             options = "";
 
         cfg = cfg || {};
+
+        if (cfg.nullValue !== undefined && cfg.nullLabel) {
+            options += "<option value='" + util.escapeHTML(cfg.nullValue) +
+                "'>" + util.escapeHTML(cfg.nullLabel) + "</option>";
+        }
         if (cfg.valuesOnly) {
             labelProp = cfg.label;
             for (i = 0; i < list.length; i++) {
@@ -175,10 +180,11 @@ var util = {};
             }
         }
         $select.html(options);
-        if (cfg.selectedValue) {
-            $select.val(cfg.selectedValue);
+        if (cfg.selectedValue !== undefined) {
+            $select.val(cfg.selectedValue).selectmenu("refresh");
+        } else {
+            $select.html(options).change();
         }
-        $select.html(options).change();
     };
 
     util.setSessionProperty = function(prop, value) {

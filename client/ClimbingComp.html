@@ -4,9 +4,22 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 <head>
-    <!--
-    Copyright (c) 2014 John Snyders
-     -->
+<!--
+ Copyright (c) 2014, John Snyders
+
+ ClimbingComp is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ClimbingComp is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with ClimbingComp.  If not, see <http://www.gnu.org/licenses/>.
+-->
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,7 +34,7 @@
     <link rel="stylesheet" href="css/lib/jquery.mobile-1.4.4.css">
     <link rel="stylesheet" href="css/lib/jquery.mobile.datepicker.css">
     <link rel="stylesheet" href="css/lib/jquery.mobile.datepicker.theme.css">
-<!--    <script src="js/lib/modernizr-2.6.2.min.js"></script> -->
+<!-- xxx   <script src="js/lib/modernizr-2.6.2.min.js"></script> -->
 </head>
 <body>
     <!--[if lt IE 7]>
@@ -30,25 +43,31 @@
 
     <div id="home" data-role="page">
         <div data-role="header" data-position="fixed">
-            <h1>Home</h1>
+            <h1>ClimbingComp Home</h1>
             <a id="hLogInLink" href="#login" class="ui-btn ui-btn-right ui-btn-inline ui-corner-all">Sign In</a>
             <button id="hLogOutBtn" type="button" class="ui-btn ui-btn-right ui-btn-inline ui-corner-all">Sign Out</button>
         </div>
         <div role="main" class="ui-content">
             <div id="hIntro" class="ui-body">
-                <p>This is a prototype web app for scoring Rock Climbing events.</p>
-                <ul>
-                    <li>Choose the event</li>
-                    <li>Select Score Cards and enter all the score cards</li>
-                    <li>Select Results</li>
-                </ul>
+                <p class="introName">ClimbingComp</p>
+                <p class="introLine2">Score rock climbing competitions fast!</p>
             </div>
 
             <div id="hCurrentEventSection" class="ui-body">
                 <h2 class="ui-bar ui-bar-a">Current Climbing Event</h2>
-                <label for="hEvent">Climbing Event:</label>
-                <select data-mini="true" id="hEvent"></select>
-                <ul data-role="listview" data-inset="true">
+                <div id="hNoEvents" class="ui-field-contain">
+                    <p>There are no active climbing events. An administrator must create create an event first.</p>
+                </div>
+                <div id="hOneEvent" class="ui-field-contain">
+                    <ul class="insideList" data-role="listview">
+                        <li id="hEvent1"></li>
+                    </ul>
+                </div>
+                <div  id="hManyEvents" class="ui-field-contain">
+                    <label for="hEvent">Climbing Event:</label>
+                    <select data-mini="true" id="hEvent"></select>
+                </div>
+                <ul id="hEventActions" data-role="listview" data-inset="true">
                     <li><a id="hScoreCardLink" href="#scorecard" class="ui-state-disabled" data-transition="slide">Score Cards</a></li>
                     <li><a id="hResultsLink" href="#results" class="ui-state-disabled" data-transition="slide">Results</a></li>
                 </ul>
@@ -67,7 +86,7 @@
         <!-- this gets replicated to the other pages -->
         <div class="footer" data-role="footer" data-position="fixed">
             <span class='fApp'>ClimbingComp <a href="#about" >About</a></span>
-            <!--xxx user? role?-->
+            <span class='fUser'></span>
             <span class='fCurEvent'></span>
         </div>
     </div>
@@ -100,8 +119,11 @@
         <div role="main" class="ui-content">
             <div class="ui-body">
                 <p>ClimbingComp</p>
+                <p>A Mobile Web Application for scoring Rock Climbing Competitions.</p>
+                <p>Version 0.1.0</p>
                 <p>Copyright (c) 2014, John Snyders</p>
-                <p>Details TBD</p>
+                <p>ClimbingComp is free software. For more information and download visit the
+                    <a href="https://github.com/jsnyders/ClimbingComp">project page</a> on GitHub.</p>
                 <a id="lDone" href="#" data-rel="back" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">OK</a>
             </div>
         </div>

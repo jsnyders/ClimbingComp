@@ -121,6 +121,32 @@ textarea {
     padding-left: 2em;
     color: #00AA00;
 }
+.fCurEvent {
+    padding-right: 2em;
+}
+.fUser {
+    padding-right: 8px;
+    border-right: 1px solid #333;
+    margin-right: 8px;
+}
+
+.introName {
+    margin: 1em;
+    text-align: center;
+    font-size: 1.5em;
+    color: #0072BB;
+}
+
+.introLine2 {
+    margin: 1em;
+    text-align: center;
+    color: #DC3E55;
+}
+
+.insideList {
+    width: 90%;
+    margin: auto !important;
+}
 
 #scorecard .ui-table-columntoggle-btn {
     display: none;

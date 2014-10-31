@@ -1,13 +1,30 @@
 /*
- * Copyright (c) 2014, John Snyders
- *
- * xxx todo
- * Events should have a state: open (add/edit routes, climbers), active (fill out score cards), closed (results final) Set on admin page
- * Fill in footer or remove
- * progress spinner see: "loader"
+ main.js
+ web app main page
+
+ Copyright (c) 2014, John Snyders
+
+ ClimbingComp is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ClimbingComp is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with ClimbingComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*global alert, jQuery, logger, appModel, util*/
 /*jshint browser: true, strict: true */
+
+/*
+ * xxx todo
+ * Events should have a state: open (add/edit routes, climbers), active (fill out score cards), closed (results final) Set on admin page
+ * progress spinner see: "loader"
+ */
 
 var app = {};
 
@@ -18,7 +35,7 @@ var app = {};
     logger.setLevel(logger.LEVEL_DEBUG);
     logger.setFacility("*", true);
 
-    var curEventId = null,
+    var curEventId = "",
         pagesMap = {};
 
     app.addPage = function(p) {
@@ -28,14 +45,60 @@ var app = {};
     //
     // Home page
     //
+    function fetchCurrentEvent(eventId) {
+        $("#hScoreCardLink, #hResultsLink").toggleClass("ui-state-disabled", true);
+
+        if (!eventId) {
+            curEventId = "";
+            model.clearCurrentEvent();
+            app.updateFooter();
+            return;
+        } // else
+
+        model.fetchCurrentEventData(eventId)
+            .done(function() {
+                curEventId = model.currentEvent.eventId;
+                app.updateFooter();
+                app.initScoreCard(); //xxx
+                $("#hScoreCardLink").toggleClass("ui-state-disabled", eventId === "" || !model.accessCheck(model.auth.ROLE_CONTRIBUTOR));
+                $("#hResultsLink").toggleClass("ui-state-disabled", eventId === "");
+            })
+            .fail(function() {
+                curEventId = "";
+                alert("Failed to get event data"); // xxx reason, message area
+                app.updateFooter();
+                $("#hScoreCardLink, #hResultsLink").toggleClass("ui-state-disabled", eventId === "");
+            });
+    }
+
     function renderEventsOptions() {
-        // xxx should there be a make a choice option? Should the event matching the current date be selected by default
-        // is the default set some other way
-        util.renderOptions($("#hEvent"), model.events, {
-            value:"eventId",
-            label: function(event) {
-                return event.location + " " + util.formatDate(event.date);
-            }});
+        var count = model.events.length;
+
+        function eventLabel(event) {
+            return util.escapeHTML(event.location) + " " + util.formatDate(event.date);
+        }
+
+        $("#hEventActions,#hNoEvents,#hOneEvent,#hManyEvents").hide();
+
+        if (count === 0) {
+            $("#hNoEvents").show();
+        } else if (count === 1) {
+            $("#hOneEvent,#hEventActions").show();
+            $("#hEvent1").text(eventLabel(model.events[0]));
+            fetchCurrentEvent(model.events[0].eventId);
+        } else { // more than one
+            $("#hManyEvents,#hEventActions").show();
+            // xxx want choose option
+            // xxx need to persist selection
+            util.renderOptions($("#hEvent"), model.events, {
+                value:"eventId",
+                label: eventLabel,
+                nullValue: "",
+                nullLabel: "Choose Climbing Event",
+                selectedValue: "" + curEventId
+            });
+        }
+        app.updateFooter();
     }
 
     app.addPage({
@@ -44,6 +107,8 @@ var app = {};
             logger.debug("Home", "Init page");
 
             $("#hLogOutBtn").on("click", function() {
+                model.clearCurrentEvent();
+                curEventId = "";
                 model.logOut()
                     .always(function() {
                         // going to the same page will run prepare which adjusts the page content based on new state
@@ -54,20 +119,8 @@ var app = {};
             $("#hEvent").on("change", function() {
                 var eventId = $(this).val();
 
-                app.updateFooter();
-                if (eventId !== curEventId) {
-                    model.fetchCurrentEventData(eventId)
-                        .done(function() {
-                            curEventId = model.currentEvent.eventId;
-                            app.updateFooter();
-                            app.initScoreCard(); //xxx
-                            $("#hScoreCardLink, #hResultsLink").toggleClass("ui-state-disabled", eventId === "");
-                        })
-                        .fail(function() {
-                            curEventId = null;
-                            alert("Failed to get event data"); // xxx reason, message area
-                            $("#hScoreCardLink, #hResultsLink").toggleClass("ui-state-disabled", eventId === "");
-                        });
+                if (eventId !== "" + curEventId) {
+                    fetchCurrentEvent(eventId);
                 }
             });
         },
@@ -77,12 +130,15 @@ var app = {};
 
             $("#hAdminSection,#hCurrentEventSection").hide();
 
+            app.updateFooter();
+
             if (model.isLoggedIn()) {
                 if (model.accessCheck(model.auth.ROLE_ADMIN)) {
                     $("#hAdminSection").show();
                 }
                 $("#hCurrentEventSection").show();
 
+                // xxx need to get only active events
                 model.fetchEvents().done(function() {
                     renderEventsOptions();
                 });
@@ -96,8 +152,14 @@ var app = {};
 
     app.updateFooter = function() {
         var status;
+        if (model.isLoggedIn()) {
+            $(".fUser").html("<span class='ui-icon ui-icon-user'></span>" + util.escapeHTML(model.getUsername()));
+        } else {
+            $(".fUser").html("");
+        }
         if (model.currentEvent) {
-            status = model.getPercentComplete() + "%";
+            status = model.getPercentComplete();
+            status = isNaN(status) ? "" : status + "%";
             $(".fCurEvent").html(
                 util.escapeHTML(model.currentEvent.location) + " " + util.formatDate(model.currentEvent.date) +
                 "<span class='fStatus'>" + util.escapeHTML(status) + "</span>");

@@ -238,9 +238,32 @@ require("./lib/resources/users").addResources(server, dbPool);
 var maxAge = 0; // xxx during development
 require("./lib/resources/static").addResources(server, clientRoot, maxAge);
 
+server.on("listening", function() {
+    var i, address, ifs, ifName, ifa, port;
+
+    address = server.address();
+    port = address.port;
+    if ( address.address === "0.0.0.0" ) {
+        ifs = os.networkInterfaces();
+        for (ifName in ifs) {
+            if (ifs.hasOwnProperty(ifName)) {
+                ifa = ifs[ifName];
+                for (i = 0; i < ifa.length; i++) {
+                    if (ifa[i].family === "IPv4") {
+                        console.log("Listening on address: " + ifa[i].address + " (" + ifName + ") port: " + port);
+                    }
+                }
+            }
+        }
+    } else {
+        console.log("Listening on address: " + address.address + " port: " + port);
+    }
+    console.log("Press Ctrl+C to exit");
+});
+
 function startServer(protocol, port) {
     auth.setTimeLimits(configuration.SessionMaxTime, configuration.SessionIdleTime);
 
-    console.log("ClimbingComp " + protocol + " Server listening on port " + port);
+    console.log("ClimbingComp " + protocol + " server starting.");
     server.listen(port);
 }

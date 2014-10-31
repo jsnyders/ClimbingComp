@@ -206,18 +206,14 @@ var appModel = (function($, logger, util, undefined) {
         // GET /data/events/<event-id>
         //
         fetchEvent: function(eventId) {
-            var currentEvent, result,
-                self = this;
+            var result = $.Deferred();
 
             logger.debug(module, "Fetch Event");
 
-            result = $.Deferred();
             $.ajax({
                 url: "data/events/" + eventId,
                 dataType: "json"
             }).done(function(data) {
-                var i, climber;
-
                 data.date = new Date(data.date);
                 result.resolve(data);
             }).fail(function(jqXHR, textStatus, errorThrown) {
@@ -225,6 +221,11 @@ var appModel = (function($, logger, util, undefined) {
                 result.reject(); // xxx include error info
             });
             return result.promise();
+        },
+
+        clearCurrentEvent: function() {
+            this.currentClimber = null;
+            this.currentEvent = null;
         },
 
         //
@@ -440,7 +441,7 @@ var appModel = (function($, logger, util, undefined) {
                 withCard = 0,
                 currentEvent = this.currentEvent;
 
-            if (!this.currentEvent) {
+            if (!currentEvent || !this.currentEvent.climbers) {
                 throw "No current event";
             }
             for (i = 0; i < currentEvent.climbers.length; i++) {
@@ -600,8 +601,6 @@ var appModel = (function($, logger, util, undefined) {
             });
             return result.promise();
         },
-
-
 
         //
         // GET /data/users
