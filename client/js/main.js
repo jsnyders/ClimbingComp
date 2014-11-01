@@ -38,6 +38,31 @@ var app = {};
     var curEventId = "",
         pagesMap = {};
 
+    app.showMessage = function(title, message) {
+        $.mobile.activePage.find(".messageArea").find(".messageContent").html(message)
+            .end().find(".messageHeader").text(title)
+            .end().show();
+    };
+
+    app.clearMessage = function(page) {
+        var $page = (typeof page === "string" ? $("#" + page) : page) || $.mobile.activePage;
+        if ($page) {
+            $page.find(".messageArea").find(".messageContent").empty()
+                .end().find(".messageHeader").text("")
+                .end().hide();
+        }
+    };
+
+    app.showErrorMessage = function(status, summary, message) {
+        // xxx improve this
+        app.showMessage("Error", summary + "<br>" + message + "<br>" + status);
+    };
+
+    $(document.body).on("click", ".messageCloseButton", function() {
+        $(this).closest(".messageArea").hide();
+    });
+
+
     app.addPage = function(p) {
         pagesMap[p.name] = p;
     };
@@ -82,14 +107,15 @@ var app = {};
 
         if (count === 0) {
             $("#hNoEvents").show();
+            curEventId = "";
+            model.clearCurrentEvent();
+            app.updateFooter();
         } else if (count === 1) {
             $("#hOneEvent,#hEventActions").show();
             $("#hEvent1").text(eventLabel(model.events[0]));
             fetchCurrentEvent(model.events[0].eventId);
         } else { // more than one
             $("#hManyEvents,#hEventActions").show();
-            // xxx want choose option
-            // xxx need to persist selection
             util.renderOptions($("#hEvent"), model.events, {
                 value:"eventId",
                 label: eventLabel,
@@ -98,7 +124,6 @@ var app = {};
                 selectedValue: "" + curEventId
             });
         }
-        app.updateFooter();
     }
 
     app.addPage({
@@ -127,6 +152,7 @@ var app = {};
         prepare: function() {
             $("#hLogInLink").toggle(!model.isLoggedIn());
             $("#hLogOutBtn").toggle(model.isLoggedIn());
+            app.clearMessage();
 
             $("#hAdminSection,#hCurrentEventSection").hide();
 
@@ -146,7 +172,6 @@ var app = {};
         },
         open: function(ui) {
             logger.debug("Home", "Page is now active");
-
         }
     });
 
@@ -193,8 +218,8 @@ var app = {};
                     .done(function() {
                         logger.debug("Login successful");
                         $.mobile.changePage("#home");
-                    }).fail(function(message) {
-                        $("#lMessage").show().text(message || "Invalid credentials.");
+                    }).fail(function(status, message) {
+                        $("#lMessage").show().text(message);
                     });
                 $("#lPassword").val(""); // clear password
             });

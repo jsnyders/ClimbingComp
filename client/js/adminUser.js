@@ -1,9 +1,24 @@
-/*global jQuery, logger, app, appModel, util, alert*/
+/*global jQuery, logger, app, appModel, util*/
 /*
- * Admin User page
- * Copyright (c) 2014, John Snyders
- *
- * Create or edit a user
+ Admin User page
+ Create or edit a user
+
+ Copyright (c) 2014, John Snyders
+
+ ClimbingComp is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ClimbingComp is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with ClimbingComp.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/*
  * xxx todo
  */
 
@@ -37,8 +52,8 @@
                         .done(function() {
                             $.mobile.changePage("#adminUsers");
                         })
-                        .fail(function() {
-                            alert("Failed to update user"); // xxx
+                        .fail(function(status, message) {
+                            app.showErrorMessage(status, "Failed to update user", message);
                         });
                 } else {
                     // create user
@@ -47,11 +62,11 @@
                     $("#auPassword").val("");
                     $("#auPasswordConfirm").val("");
                     if (pw1.length <= 0) {
-                        alert("password is required"); // xxx
+                        app.showMessage("Invalid Input", "Password is required");
                         return;
                     }
                     if (pw1 !== pw2) {
-                        alert("password confirmation did not match"); //xxx
+                        app.showMessage("Invalid Input", "password confirmation did not match");
                         return;
                     }
                     user.password = pw1;
@@ -59,13 +74,14 @@
                         .done(function() {
                             $.mobile.changePage("#adminUsers");
                         })
-                        .fail(function() {
-                            alert("Failed to create user"); // xxx
+                        .fail(function(status, message) {
+                            app.showErrorMessage(status, "Failed to update user", message);
                         });
                 }
             });
         },
         prepare: function(ui) {
+            app.clearMessage(this.name);
             username = "";
             if (ui.args) {
                 username = ui.args[0];
@@ -115,9 +131,9 @@
                         user = data;
                         util.writeForm(user, formMap);
                     })
-                    .fail(function() {
-                        alert("Failed to get user"); // xxx reason, message area
+                    .fail(function(status, message) {
                         $.mobile.changePage("#adminUsers");
+                        app.showErrorMessage(status, "Failed to get user", message);
                     });
             }
         }

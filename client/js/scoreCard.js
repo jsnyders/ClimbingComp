@@ -13,6 +13,8 @@
 (function(app, model, $, logger, util, undefined) {
     "use strict";
 
+    var CLIMBER_ID_LENGTH = 3;
+
     var module = "ScoreCard",
         duringInitCard = false;
 
@@ -227,8 +229,8 @@
                 app.updateFooter();
                 callback(true);
             })
-            .fail(function() {
-                alert("Failed to save score card"); // xxx reason, message area
+            .fail(function(status, message) {
+                app.showErrorMessage(status, "Failed to save score card", message);
                 callback(false);
             });
     }
@@ -288,9 +290,7 @@
                     event.preventDefault();
                     event.stopImmediatePropagation();
                     saveScoreCard(function(success) {
-                        if (success) {
-                            $("#scHomeBtn").click();
-                        }
+                        $.mobile.changePage("#home");
                     });
                 }
             });
@@ -337,7 +337,7 @@
 
             function keypadCheckClimberId(text) {
                 var climberId;
-                if (text.length === 4) {
+                if (text.length === CLIMBER_ID_LENGTH) {
                     climberId = parseInt(text, 10);
                     if ( isNaN(climberId) || !model.setCurrentClimber(climberId)) {
                         keypadClear();
@@ -432,6 +432,7 @@
         },
         open: function() {
             var $sc = $("#scorecard .ScoreCardCtrl");
+            app.clearMessage();
 
             if (!model.currentEvent) {
                 $("body").pagecontainer("change", $("#home"));

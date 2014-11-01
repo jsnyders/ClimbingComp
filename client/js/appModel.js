@@ -67,6 +67,17 @@ var appModel = (function($, logger, util, undefined) {
         }
     });
 
+    function getStatus(jqXHR) {
+        return jqXHR.status + " " + jqXHR.statusText;
+    }
+
+    function getMessage(jqXHR) {
+        if (jqXHR.responseJSON) {
+            return jqXHR.responseJSON.message || jqXHR.responseJSON.code || "Unknown Error";
+        } // else
+        return jqXHR.responseText || "";
+    }
+
     return {
         events: [ ],
         currentEvent: null,
@@ -97,8 +108,9 @@ var appModel = (function($, logger, util, undefined) {
             }).done(function(data) {
                 setAuthInfo(data.access_token, data.username, data.role);
                 result.resolve();
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                result.reject(jqXHR.responseJSON.message);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Login failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR),jqXHR.responseJSON.message || "Invalid credentials.");
             });
             return result.promise();
         },
@@ -137,12 +149,12 @@ var appModel = (function($, logger, util, undefined) {
             $.ajax({
                 type: "DELETE",
                 url: "data/sessions/current",
-                contentType: "application/json", //xxx
-                dataType: "json"
+                dataType: null
             }).done(function() {
                 result.resolve();
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                result.reject();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Logout failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             clearAuthInfo();
             return result.promise();
@@ -150,6 +162,7 @@ var appModel = (function($, logger, util, undefined) {
 
         //
         // GET /data/events
+        // xxx todo filter by state
         //
         fetchEvents: function() {
             var result = $.Deferred(),
@@ -168,9 +181,9 @@ var appModel = (function($, logger, util, undefined) {
                 }
                 self.events = data;
                 result.resolve();
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Fetch events failed: " + textStatus + ", error: " + errorThrown);
-                result.reject();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch events failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
         },
@@ -216,9 +229,9 @@ var appModel = (function($, logger, util, undefined) {
             }).done(function(data) {
                 data.date = new Date(data.date);
                 result.resolve(data);
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Fetch event data failed: " + textStatus + ", error: " + errorThrown);
-                result.reject(); // xxx include error info
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch event failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
         },
@@ -263,14 +276,14 @@ var appModel = (function($, logger, util, undefined) {
                 for (i = 0; i < currentEvent.climbers.length; i++) {
                     climber = currentEvent.climbers[i];
                     if (climber.scoreCard && climber.scoreCard.climbs) {
-                        climber.scoreCard.climbs = JSON.parse(climber.scoreCard.climbs);
+                        climber.scoreCard.climbs = climber.scoreCard.climbs;
                     }
                     currentEvent.climberIndex[climber.climberId] = climber;
                 }
                 result.resolve();
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Fetch event data failed: " + textStatus + ", error: " + errorThrown);
-                result.reject();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch event data failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
         },
@@ -292,11 +305,11 @@ var appModel = (function($, logger, util, undefined) {
                 data: JSON.stringify(event),
                 dataType: "json"
             }).done(function(data) {
-                    result.resolve(data);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    logger.error(module, "Create event failed: " + textStatus + ", error: " + errorThrown);
-                    result.reject(); // xxx include error info
-                });
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Create event failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR)); // xxx item errors
+            });
             return result.promise();
         },
 
@@ -318,11 +331,11 @@ var appModel = (function($, logger, util, undefined) {
                 data: JSON.stringify(event),
                 dataType: "json"
             }).done(function(data) {
-                    result.resolve(data);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    logger.error(module, "Update event failed: " + textStatus + ", error: " + errorThrown);
-                    result.reject(); // xxx include error info
-                });
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Update event failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR)); // xxx item errors
+            });
             return result.promise();
         },
 
@@ -340,11 +353,11 @@ var appModel = (function($, logger, util, undefined) {
                 url: "data/events/" + eventId + "?version=" + version,
                 dataType: null
             }).done(function(data) {
-                    result.resolve();
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    logger.error(module, "Delete event failed: " + textStatus + ", error: " + errorThrown);
-                    result.reject(); // xxx include error info
-                });
+                result.resolve();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Delete event failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
             return result.promise();
         },
 
@@ -360,16 +373,16 @@ var appModel = (function($, logger, util, undefined) {
             var result = $.Deferred(),
                 self = this;
 
-            logger.debug(module, "Fetch Events");
+            logger.debug(module, "Fetch event routes");
             $.ajax({
                 url: "/data/events/" + eventId + "/routes",
                 dataType: "json"
             }).done(function(data) {
-                    result.resolve(data);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    logger.error(module, "Fetch event routes failed: " + textStatus + ", error: " + errorThrown);
-                    result.reject();
-                });
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch event routes failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
             return result.promise();
         },
 
@@ -473,19 +486,26 @@ var appModel = (function($, logger, util, undefined) {
 
 
             data = $.extend({}, this.currentClimber.scoreCard); // xxx how much to send? may not need to persist the score because it can be calculated. The element ids may not make sense
-            data.climbs = JSON.stringify(this.currentClimber.scoreCard.climbs);
+            data.climbs = this.currentClimber.scoreCard.climbs;
+            data.version = this.currentClimber.version;
             $.ajax({
                 type: "PUT",
                 url: "data/events/" + eventId + "/results/" + climberId,
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json"
-            }).done(function(/*data*/) {
+            }).done(function(data) {
                 self.scoreCardDirty = false;
+                if (data.climberId === self.currentClimber.climberId) {
+                    console.log("xxx update current climber after update response");
+                    self.currentClimber.version = data.version;
+                    self.currentClimber.scoredBy = data.scoredBy;
+                    self.currentClimber.scoredOn = data.scoredOn;
+                }
                 result.resolve();
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Update current climber score card failed: " + textStatus + ", error: " + errorThrown);
-                result.reject();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Update current climber score card failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
         },
@@ -500,58 +520,6 @@ var appModel = (function($, logger, util, undefined) {
 
             eventId = event.eventId;
 
-/*xxx old stuff for local testing
-
-            var categoryRank = {
-                "Junior": 2,
-                "Youth-A": 4,
-                "Youth-B": 6,
-                "Youth-C": 8,
-                "Youth-D": 10
-            };
-
-            function rankCategoryAndGender(row) {
-                var rank; // undefined
-                if (row.gender === "Female" ) {
-                    rank = 1;
-                } else if (row.gender === "Male") {
-                    rank = 0;
-                }
-                rank += categoryRank[row.category];
-                if (isNaN(rank)) {
-                    throw "Invalid gender or category: " + row.gender + ", " + row.category;
-                }
-                return rank;
-            }
-
-            function postProcessResults() {
-                var i, row, br, place,
-                    lastBreak = null;
-
-                resultsTable.sort(function (a,b) {
-                    var s = rankCategoryAndGender(b) - rankCategoryAndGender(a);
-                    if (s === 0) {
-                        return b.total - a.total;
-                    }
-                    return s;
-                });
-
-                for (i = 0; i < resultsTable.length; i++) {
-                    row = resultsTable[i];
-
-                    br = row.gender + row.category;
-                    if (br !== lastBreak) {
-                        place = 1;
-                        lastBreak = br;
-                    }
-                    if (row.total > 0) {
-                        row.place = place;
-                        place += 1;
-                    }
-                }
-
-            }
-*/
             logger.debug(module, "Fetch Event Results");
 
             $.ajax({
@@ -559,12 +527,11 @@ var appModel = (function($, logger, util, undefined) {
                 dataType: "json"
             }).done(function(data) {
                 logger.info(module, "Fetch event results loaded " + data.length + " results");
-//xxx                        postProcessResults();
                 // xxx todo want more stats: average per gender/category, total climbers finished, finishes in each category, total per team
                 result.resolve(data);
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Fetch event results failed: " + textStatus + ", error: " + errorThrown);
-                result.reject();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch event results failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
 
             return result.promise();
@@ -597,7 +564,7 @@ var appModel = (function($, logger, util, undefined) {
                 result.resolve();
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 logger.error(module, "Upload file failed: " + textStatus + ", error: " + errorThrown);
-                result.reject();
+                result.reject(); // xxx
             });
             return result.promise();
         },
@@ -615,9 +582,9 @@ var appModel = (function($, logger, util, undefined) {
                 dataType: "json"
             }).done(function(data) {
                 result.resolve(data.items);
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Fetch users failed: " + textStatus + ", error: " + errorThrown);
-                result.reject();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch users failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
         },
@@ -641,9 +608,9 @@ var appModel = (function($, logger, util, undefined) {
                 dataType: "json"
             }).done(function(data) {
                 result.resolve(data);
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Fetch user failed: " + textStatus + ", error: " + errorThrown);
-                result.reject(); // xxx include error info
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch user failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
         },
@@ -666,9 +633,9 @@ var appModel = (function($, logger, util, undefined) {
                 dataType: "json"
             }).done(function(data) {
                 result.resolve(data);
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Create user failed: " + textStatus + ", error: " + errorThrown);
-                result.reject(); // xxx include error info
+            }).fail(function(jqXHR) {
+                logger.error(module, "Create user failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR)); // xxx item errors
             });
             return result.promise();
         },
@@ -692,9 +659,9 @@ var appModel = (function($, logger, util, undefined) {
                 dataType: "json"
             }).done(function(data) {
                 result.resolve(data);
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Update user failed: " + textStatus + ", error: " + errorThrown);
-                result.reject(); // xxx include error info
+            }).fail(function(jqXHR) {
+                logger.error(module, "Update user failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR)); // xxx item errors
             });
             return result.promise();
         },
@@ -715,14 +682,12 @@ var appModel = (function($, logger, util, undefined) {
                 dataType: null
             }).done(function(data) {
                 result.resolve();
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Delete user failed: " + textStatus + ", error: " + errorThrown);
-                result.reject(); // xxx include error info
+            }).fail(function(jqXHR) {
+                logger.error(module, "Delete user failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
         }
-
-
 
     };
 
