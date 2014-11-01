@@ -1,8 +1,23 @@
-/*global jQuery, logger, app, appModel,util, alert*/
+/*global jQuery, logger, app, appModel,util*/
 /*
- * Admin Event page
- * Copyright (c) 2014, John Snyders
- *
+ Admin Event page
+
+ Copyright (c) 2014, John Snyders
+
+ ClimbingComp is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ClimbingComp is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with ClimbingComp.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/*
  * xxx todo
  * date format
  * bug: when first opened doesn't always show active tab
@@ -52,10 +67,12 @@
                 event = data;
                 util.writeForm(event, formMap);
             })
-            .fail(function() {
-                alert("Failed to get event"); // xxx reason, message area
+            .fail(function(status, message) {
                 if (returnOnError) {
                     $.mobile.changePage("#adminEvents");
+                    app.showErrorMessage(status, "Failed to get event", message);
+                } else {
+                    app.showErrorMessage(status, "Failed to get event", message);
                 }
             });
     }
@@ -105,8 +122,8 @@
                 routes = data.routes;
                 renderRoutes();
             })
-            .fail(function() {
-                alert("Failed to get event routes"); // xxx reason, message area
+            .fail(function(status, message) {
+                app.showErrorMessage(status, "Failed to get routes", message);
             });
     }
 
@@ -185,8 +202,8 @@
                                 util.writeForm(event, formMap);
                             }
                         })
-                        .fail(function() {
-                            alert("Failed to update event"); // xxx
+                        .fail(function(status, message) {
+                            app.showErrorMessage(status, "Failed to update event", message);
                         });
                 } else {
                     // create event
@@ -195,8 +212,8 @@
                         .done(function() {
                             $.mobile.changePage("#adminEvents");
                         })
-                        .fail(function() {
-                            alert("Failed to create event"); // xxx
+                        .fail(function(status, message) {
+                            app.showErrorMessage(status, "Failed to create event", message);
                         });
                 }
                 // xxx save routes somehow. track what has changed? keep version in sync
@@ -215,8 +232,8 @@
                     .done(function() {
                         fetchRoutes();
                     })
-                    .fail(function() {
-                        alert("Failed to upload routes"); // xxx
+                    .fail(function(status, message) {
+                        app.showErrorMessage(status, "Failed to upload routes", message);
                     });
             });
             $("#aeNewRoutes").click(function() {
@@ -228,6 +245,7 @@
 
         },
         prepare: function(ui) {
+            app.clearMessage(this.name);
             eventId = "";
             if (ui.args) {
                 eventId = ui.args[0];

@@ -58,6 +58,7 @@ CREATE TABLE climber (
   gender ENUM('Male', 'Female'),
   category ENUM('Youth-D', 'Youth-C', 'Youth-B', 'Youth-A', 'Junior', 'Adult', 'Open', 'Masters'), -- todo consider if/how to extend category
   birth_year INTEGER,
+  birth_date DATE,
   region VARCHAR(100),  -- Example "503 (New England East)" todo consider region/division id
   team VARCHAR(100),
   coach VARCHAR(100),

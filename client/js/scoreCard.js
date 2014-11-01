@@ -1,8 +1,24 @@
 /*global jQuery, logger, app, appModel, util*/
 /*
- * Score Card page
- * Copyright (c) 2014, John Snyders
- *
+ scoreCard.js
+ Score Card page
+
+ Copyright (c) 2014, John Snyders
+
+ ClimbingComp is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ ClimbingComp is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with ClimbingComp.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/*
  * xxx todo
  * On a small screen when the text input doesn't fit next to keypad put it above the keypad
  * When number of falls is > 10 and extra radio buttons are hidden give some kind of indication there there are falls
@@ -37,7 +53,7 @@
             $sc.find(".scoreCardC" + col).children("tbody").html(rows);
         }
 
-        header += "<tr class='ui-bar-d'><th>Route #</th>";
+        header += "<tr class='ui-bar-d'><th>Rt #</th>"; // xxx want Route # or Rt # depending on screen size
         if (options.includeLocation) {
             header += "<th data-priority='2'>Location</th>";
         }
@@ -464,6 +480,7 @@
             $t.find(":checkbox").flipswitch();
             $t.find("select").selectmenu();
             $t.table();
+            $t.table("rebuild");
         });
 
         $sc.hide();

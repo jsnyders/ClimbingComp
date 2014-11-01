@@ -211,6 +211,13 @@ table.scTable td {
     line-height: 1.4em;
     padding: .4em .5em;
 }
+/* xxx think about this, tie to media query? */
+.scTable th.ui-table-priority-2,
+.scTable td.ui-table-priority-2 {
+    max-width: 56px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
 
 .ui-table td.num {
     text-align: right;

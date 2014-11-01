@@ -562,9 +562,9 @@ var appModel = (function($, logger, util, undefined) {
             }).done(function(/*data*/) {
                 console.log("xxx upload ok");
                 result.resolve();
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                logger.error(module, "Upload file failed: " + textStatus + ", error: " + errorThrown);
-                result.reject(); // xxx
+            }).fail(function(jqXHR) {
+                logger.error(module, "Upload file failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
         },
