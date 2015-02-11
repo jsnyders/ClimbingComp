@@ -1,15 +1,16 @@
 {
     "name": "ClimbingComp",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Mobile Web Application for scoring Rock Climbing Competitions",
-    "keywords": "webapp, climbing",
+    "keywords": ["webapp, climbing"],
     "main": "main",
     "repository": {
         "type": "git",
         "url": "https://github.com/jsnyders/ClimbingComp"
     },
     "scripts": {
-        "start": "node main.js client"
+        "start": "node main.js client",
+        "setup": "node setup.js"
     },
     "author": "John Snyders",
     "license": "AGPL-3.0",
@@ -19,7 +20,8 @@
         "mysql": "~2.1",
         "csv": "~0.3",
         "yargs": "~1.3",
-        "pdfkit": "~0.7"
+        "pdfkit": "~0.7",
+        "prompt": "~0.2"
     },
     "devDependencies": {
         "grunt": "~0.4.2",

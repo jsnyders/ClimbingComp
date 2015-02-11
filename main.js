@@ -2,7 +2,7 @@
  main.js
  REST server for climbing comp web app.
 
- Copyright (c) 2014, John Snyders
+ Copyright (c) 2014, 2015, John Snyders
 
  ClimbingComp is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,7 @@ var restify = require("restify");
 var db = require('mysql');
 var htmlFormatter = require("./lib/htmlFormatter");
 
-var version = "0.1.0";
+var version = "0.2.0";
 
 //
 // Command line parsing
@@ -107,6 +107,7 @@ var clientRoot = argv._[0],
 
 log.debug("Log level: " + logLevel );
 log.debug("Client Root: '" + clientRoot + "'");
+log.debug("Database host: '" + config.dbHost + "'");
 log.debug("Database: '" + config.dbDatabase + "'");
 log.debug("Database User: '" + config.dbUser + "'");
 log.debug("key: " + config.keyFileName);
@@ -116,7 +117,7 @@ log.debug("cert: " + config.certFileName);
 // Create database pool
 //
 var dbPool  = db.createPool({
-    host: 'localhost',
+    host: config.dbHost,
     user: config.dbUser,
     password: config.dbPassword,
     database: config.dbDatabase

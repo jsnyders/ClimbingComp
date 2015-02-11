@@ -1,6 +1,21 @@
 -- createdb.sql
 -- Create database for Climbing Comp web app
--- Copyright
+--
+-- Copyright (c) 2014, 2015, John Snyders
+--
+-- ClimbingComp is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU Affero General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- ClimbingComp is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU Affero General Public License for more details.
+--
+-- You should have received a copy of the GNU Affero General Public License
+-- along with ClimbingComp.  If not, see <http://www.gnu.org/licenses/>.
+--
 
 -- Use consistent text limits
 -- Small user supplied name, property name or small string: 100
@@ -8,12 +23,19 @@
 -- File path: 1000
 -- Description: 1000
 
+DROP DATABASE IF EXISTS {{database}};
+CREATE DATABASE {{database}} CHARACTER SET = utf8;
+DROP USER '{{user}}'@'{{host}}';
+CREATE USER '{{user}}'@'{{host}}' IDENTIFIED BY '{{password}}';
+GRANT ALL ON {{database}}.* TO {{user}};
+USE {{database}};
+
 DROP TABLE IF EXISTS config;
 CREATE TABLE config (
   name VARCHAR(100) PRIMARY KEY,
   nvalue INTEGER,
   tvalue VARCHAR(1000)
-) ENGINE=Aria DEFAULT CHARSET=utf8;
+) ENGINE={{engine}} DEFAULT CHARSET=utf8;
 
 -- the schema version
 INSERT INTO config VALUES('VersionMajor',0,NULL);
@@ -40,7 +62,7 @@ CREATE TABLE event (
   notes VARCHAR(1000),
   updated_by VARCHAR(100),
   updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=Aria DEFAULT CHARSET=utf8;
+) ENGINE={{engine}} DEFAULT CHARSET=utf8;
 
 CREATE TRIGGER event_update
   BEFORE UPDATE ON event
@@ -65,7 +87,7 @@ CREATE TABLE climber (
 
   UNIQUE INDEX usac_member_id_ndx (usac_member_id),
   INDEX name_ndx (first_name, last_name)
-) ENGINE=Aria DEFAULT CHARSET=utf8;
+) ENGINE={{engine}} DEFAULT CHARSET=utf8;
 
 CREATE TRIGGER climber_update
   BEFORE UPDATE ON climber
@@ -84,7 +106,7 @@ CREATE TABLE event_route (
   sheet_column INTEGER,
 
   PRIMARY KEY id (number, event_id)
-) ENGINE=Aria DEFAULT CHARSET=utf8;
+) ENGINE={{engine}} DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS event_climber;
 CREATE TABLE event_climber (
@@ -111,7 +133,7 @@ CREATE TABLE event_climber (
 
   PRIMARY KEY id (climber_id, event_id),
   UNIQUE INDEX event_number (number, event_id)
-) ENGINE=Aria DEFAULT CHARSET=utf8;
+) ENGINE={{engine}} DEFAULT CHARSET=utf8;
 
 CREATE TRIGGER event_climber_update
   BEFORE UPDATE ON event_climber
@@ -130,7 +152,7 @@ CREATE TABLE `app_user` (
   last_name VARCHAR(100),
 
   UNIQUE INDEX username_idx (username)
-) ENGINE=Aria DEFAULT CHARSET=utf8;
+) ENGINE={{engine}} DEFAULT CHARSET=utf8;
 
 CREATE TRIGGER app_user_update
   BEFORE UPDATE ON app_user
@@ -150,4 +172,4 @@ CREATE TABLE `app_session` (
   role ENUM('Reader', 'Contributor', 'Admin') NOT NULL,
 
   UNIQUE INDEX session_idx (session_id)
-) ENGINE=Aria DEFAULT CHARSET=utf8;
+) ENGINE={{engine}} DEFAULT CHARSET=utf8;
