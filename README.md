@@ -82,6 +82,7 @@ Create the database
 cd <project-folder-root>
 npm run setup
 ```
+Enter the database configuration information when prompted.
 
 Start the server
 
@@ -90,7 +91,10 @@ cd <project-folder-root>
 npm start
 ```
 
-The open a browser and go to URL
+TODO more information about other command line options.
+
+
+Then open a browser and go to URL
 
 ```
 http://localhost:8080/ClimbingComp.html
@@ -99,8 +103,6 @@ http://localhost:8080/ClimbingComp.html
 When the database was created a default administrator was created with username admin and password admin.
 Click Sign In and enter the username and password. Then click Manager users and change the password and/or
 create other users.
-
-TODO more information about other command line options.
 
 If you want to use SSL
 
