@@ -14,8 +14,8 @@ module.exports = function(grunt) {
                             "bower_components/jquery-mobile/jquery.mobile-1.4.4.js",
                             "bower_components/jquery-mobile/jquery.mobile-1.4.4.min.js",
                             "bower_components/jquery-mobile/jquery.mobile-1.4.4.min.map",
-                            "bower_components/jquery-ui/development-bundle/ui/jquery.ui.datepicker.js",
-                            "bower_components/jquery-ui/development-bundle/ui/minified/jquery.ui.datepicker.min.js",
+                            "bower_components/jquery-ui/ui/jquery.ui.datepicker.js",
+                            "bower_components/jquery-ui/ui/minified/jquery.ui.datepicker.min.js",
                             "bower_components/jquery-mobile-datepicker-wrapper/jquery.mobile.datepicker.js"
                         ],
                         dest:"client/js/lib/"

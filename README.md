@@ -3,8 +3,7 @@
 ClimbingComp is a rock climbing competition scoring app. It allows multiple people using tablets or laptops
 to quickly enter score card data so final results can be posted fast.
 
-It is in an early stage of development but has been used successfully at two climbing competitions in
-the spring of 2014.
+It is in an early stage of development but has been used successfully at a few climbing competitions in 2014.
 
 The traditional way of scoring a climbing competition relies on using spreadsheet software. This creates a data
 entry bottleneck where only one person at a time can enter data. Even when the data entry is divided between
@@ -31,16 +30,19 @@ Source: [https://github.com/jsnyders/ClimbingComp](https://github.com/jsnyders/C
 GNU Affero General Public License. See LICENSE.txt for details.
 
 ## Setup
+The following steps including installing development tools grunt-cli and bower. In the future the setup steps
+will be simplified so that these tools are not needed.
 
 ### Install MariaDB
 
 Get the 5.5 series MariaDB software from [https://downloads.mariadb.org](https://downloads.mariadb.org) and follow instructions.
 
-MySQL should also work with minor changes to the database creation script but this has not been tested.
+MySQL should also work but this has not been tested.
 
 Test that MariaDB is installed with:
 
 ```
+mysql --version
 mysql -u root -p -h localhost
 > exit
 ```
@@ -51,6 +53,7 @@ Add the node bin folder to the PATH and set NODE_PATH.
 Test that node is working with:
 
 ```
+node --version
 node
 > process.exit();
 ```
@@ -63,39 +66,45 @@ npm install -g grunt-cli
 npm install -g bower
 ```
 
-
 ### Install ClimbingComp Software
 Clone the ClimbingComp project from github or download and extract the zip file.
-
 
 ```
 cd <project-folder-root>
 npm install
+bower install
 grunt setup
 ```
 
-Create the database TODO the following is out of date
+Create the database
 
 ```
-mysql -u root -p -h localhost
-> create user john identified by john;
-> create database climbing_comp character set = utf8;
-> grant all on climbing_comp.* to john;
--- xxx so triggers can be created is this wise?
-> grant super on *.* to john;
-> exit
-mysql -u john -p -h localhost climbing_comp
-> source createdb.sql
->exit
+cd <project-folder-root>
+npm run setup
 ```
 
-Start the server TODO the following is out of date
-
+Start the server
 
 ```
+cd <project-folder-root>
+npm start
 ```
 
-If you want to use SSL TODO config details needed
+The open a browser and go to URL
+
+```
+http://localhost:8080/ClimbingComp.html
+```
+
+When the database was created a default administrator was created with username admin and password admin.
+Click Sign In and enter the username and password. Then click Manager users and change the password and/or
+create other users.
+
+TODO more information about other command line options.
+
+If you want to use SSL
+
+TODO config details needed
 
 ```
 ### Generated private key
