@@ -97,6 +97,20 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+.ui-field-contain.field-ro {
+    margin: .2em 0;
+}
+
+.ui-field-contain.field-ro .ui-input-text {
+    width: 6em;
+    border: none;
+    background-color: #d0d0d0;
+}
+
+.ui-field-contain.input-num input {
+    text-align: right;
+}
+
 .hasDatepicker {
     position: relative;
     z-index: 10;

@@ -1,7 +1,7 @@
 /*
  * appModel.js
  * Data model layer for Climbing Comp web app.
- * Copyright (c) 2014, John Snyders
+ * Copyright (c) 2014, 2015 John Snyders
  */
 /*global jQuery, logger, util, appModel:true */
 
@@ -159,6 +159,87 @@ var appModel = (function($, logger, util, undefined) {
             clearAuthInfo();
             return result.promise();
         },
+
+        //
+        // Climbers
+        //
+
+        fetchClimbers: function() {
+            var result = $.Deferred(),
+                self = this;
+
+            logger.debug(module, "Fetch Climbers");
+            $.ajax({
+                url: "/data/climbers",
+                dataType: "json"
+            }).done(function(data) {
+                var i;
+
+                data = data.items;
+                for (i = 0; i < data.length; i++) {
+                    if (data[i].birthDate) {
+                        data[i].birthDate = new Date(data[i].birthDate);
+                    }
+                }
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch climbers failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        //
+        // DELETE /data/climbers/<climber-id>
+        //
+        deleteClimber: function(climberId, version) {
+            var result;
+
+            logger.debug(module, "Delete climber " + climberId + " at version " + version);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "DELETE",
+                url: "data/climbers/" + climberId + "?version=" + version,
+                dataType: null
+            }).done(function(data) {
+                result.resolve();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Delete climber failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        uploadClimbers: function(hasHeader, action, fields, file) {
+            var fd,
+                self = this,
+                result = $.Deferred();
+
+            logger.debug(module, "Upload Climbers. File: " + file.name +", action: " + action);
+
+            fd = new FormData();
+            fd.append("file", file);
+            fd.append("hasHeader", hasHeader ? "yes" : "no");
+            fd.append("action", action);
+            fd.append("fields", fields.join(","));
+
+            $.ajax({
+                type: "POST",
+                url: "data/climbers-upload",
+                data: fd,
+                enctype: 'multipart/form-data',
+                processData: false,  // tell jQuery not to process the data
+                contentType: false   // tell jQuery not to set contentType
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Upload file failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
 
         //
         // GET /data/events

@@ -42,6 +42,18 @@ module.exports = {
         }
     },
 
+    regExp: function(name, value, pattern, description) {
+        if (typeof value !== "string" || !pattern.test(value)) {
+            return util.format("%s must be %s.", name, description);
+        }
+    },
+
+    requiredRegExp: function(name, value, pattern, description) {
+        if (typeof value !== "string" || value.length === 0 || !pattern.test(value)) {
+            return util.format("%s is required and must be %s.", name, description);
+        }
+    },
+
     usernameString: function(name, value) {
         if (typeof value !== "string" || value.length === 0 || value.length > 100 || !/^[a-z_.@A-Z0-9]*$/.test(value)) {
             return util.format("%s must be 100 or fewer alpha numeric or '_', '.', '@' characters", name);

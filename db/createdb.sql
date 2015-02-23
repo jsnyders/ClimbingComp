@@ -58,6 +58,7 @@ CREATE TABLE event (
   record_falls_per_climb BOOLEAN NOT NULL,
   routes_have_location BOOLEAN NOT NULL,
   routes_have_color BOOLEAN NOT NULL,
+  -- todo something to select/define the scoring/ranking system or is this tied to type
   score_card_columns INTEGER DEFAULT 2,
   notes VARCHAR(1000),
   updated_by VARCHAR(100),
@@ -72,7 +73,7 @@ CREATE TRIGGER event_update
 DROP TABLE IF EXISTS climber;
 CREATE TABLE climber (
   id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  version INTEGER,
+  version INTEGER DEFAULT 1,
   usac_member_id INTEGER,
   first_name VARCHAR(100),
   last_name VARCHAR(100) NOT NULL,
@@ -84,6 +85,8 @@ CREATE TABLE climber (
   region VARCHAR(100),  -- Example "503 (New England East)" todo consider region/division id
   team VARCHAR(100),
   coach VARCHAR(100),
+  updated_by VARCHAR(100),
+  updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
   UNIQUE INDEX usac_member_id_ndx (usac_member_id),
   INDEX name_ndx (first_name, last_name)
@@ -96,11 +99,11 @@ CREATE TRIGGER climber_update
 
 DROP TABLE IF EXISTS event_route;
 CREATE TABLE event_route (
-  number INTEGER(3) NOT NULL,
+  number INTEGER(3) NOT NULL, -- to consider that for non read-point comps routes are designated like Q1, Q2..., SF1..., F1, F2... and are also specific to a category e.g. FYDQ1
   event_id INTEGER NOT NULL,
   color VARCHAR(20),
   location VARCHAR(20),
-  points INTEGER NOT NULL,
+  points INTEGER NOT NULL, -- This is the points for a top
   -- based on the points the route is associated with a category for the purpose of adult sub category assignment
   sheet_row INTEGER,
   sheet_column INTEGER,
@@ -116,7 +119,7 @@ CREATE TABLE event_climber (
   -- for adults they can enter a different category for the event subject to some age requirements
   -- the adult category has flexible sub divisions: Recreational, Intermediate or Advanced
   -- also other kinds of comps may define categories differently but there could still be value in using the master climber list
-  version INTEGER,
+  version INTEGER DEFAULT 1,
   total INTEGER, -- xxx is this before or after total_falls is subtracted??? either way it too could be calculated
   place INTEGER, -- xxx this will be generated
   top1 INTEGER,
