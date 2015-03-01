@@ -160,17 +160,101 @@ var appModel = (function($, logger, util, undefined) {
             return result.promise();
         },
 
-        //
+        // =====================================
         // Climbers
+        // =====================================
+
+        fetchCategories: function() {
+            var result = $.Deferred();
+
+            // xxx todo get these from the server
+            logger.debug(module, "Fetch categories");
+            setTimeout( function() {
+                result.resolve([
+                    "Masters",
+                    "Open",
+                    "Adult",
+                    "Junior",
+                    "Youth-A",
+                    "Youth-B",
+                    "Youth-C",
+                    "Youth-D"
+                ]);
+            },10);
+            return result.promise();
+        },
+
+        fetchGenders: function() {
+            var result = $.Deferred();
+
+            // xxx todo get these from the server
+            logger.debug(module, "Fetch genders");
+            setTimeout( function() {
+                result.resolve([
+                    "Male",
+                    "Female"
+                ]);
+            },10);
+            return result.promise();
+        },
+
+        fetchGenderCategoriesFilters: function() {
+            var result = $.Deferred();
+
+            // xxx todo get these from the server including initial default
+            logger.debug(module, "Fetch gender categories filters");
+            setTimeout( function() {
+                result.resolve([
+                    { value: "gender:eq:Female,category:eq:Youth-D", label: "Female Youth-D", selected: true},
+                    { value: "gender:eq:Male,category:eq:Youth-D", label: "Male Youth-D"},
+                    { value: "gender:eq:Female,category:eq:Youth-C", label: "Female Youth-C"},
+                    { value: "gender:eq:Male,category:eq:Youth-C", label: "Male Youth-C"},
+                    { value: "gender:eq:Female,category:eq:Youth-B", label: "Female Youth-B"},
+                    { value: "gender:eq:Male,category:eq:Youth-B", label: "Male Youth-B"},
+                    { value: "gender:eq:Female,category:eq:Youth-A", label: "Female Youth-A"},
+                    { value: "gender:eq:Male,category:eq:Youth-A", label: "Male Youth-A"},
+                    { value: "gender:eq:Female,category:eq:Youth-A", label: "Female Junior"},
+                    { value: "gender:eq:Male,category:eq:Youth-A", label: "Male Junior"},
+                    { value: "gender:eq:Female,category:eq:Youth-A", label: "Adult"},
+                    { value: "gender:eq:Male,category:eq:Youth-A", label: "Male Junior"}
+                ]);
+            },10);
+            return result.promise();
+        },
+
         //
+        // GET /data/climbers
+        // xxx more options like search, columns, paging
+        fetchClimbers: function(filters, orderBy) {
+            var i, url,
+                params = "",
+                result = $.Deferred();
 
-        fetchClimbers: function() {
-            var result = $.Deferred(),
-                self = this;
+            logger.debug(module, "Fetch climbers");
+            url = "/data/climbers";
+            // xxx make a function for this
+            if (filters) {
+                for (i = 0; i < filters.length; i++) {
+                    if (params) {
+                        params += "&";
+                    }
+                    params += "f=" + filters[i];
+                }
+            }
+            if (orderBy) {
+                for (i = 0; i < orderBy.length; i++) {
+                    if (params) {
+                        params += "&";
+                    }
+                    params += "o=" + orderBy[i];
+                }
+            }
 
-            logger.debug(module, "Fetch Climbers");
+            if (params) {
+                url += "?" + params;
+            }
             $.ajax({
-                url: "/data/climbers",
+                url: url,
                 dataType: "json"
             }).done(function(data) {
                 var i;
@@ -185,6 +269,78 @@ var appModel = (function($, logger, util, undefined) {
             }).fail(function(jqXHR) {
                 logger.error(module, "Fetch climbers failed: " + getMessage(jqXHR));
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        //
+        // GET /data/climbers/<climber-id>
+        //
+        fetchClimber: function(climberId) {
+            var result,
+                self = this;
+
+            logger.debug(module, "Fetch climber " + climberId);
+
+            result = $.Deferred();
+            $.ajax({
+                url: "data/climbers/" + climberId,
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch climber failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        //
+        // POST /data/climbers
+        //
+        createClimber: function(climber) {
+            var result,
+                self = this;
+
+            logger.debug(module, "Create climber " + climber.firstName + " " + climber.lastName);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "POST",
+                url: "data/climbers",
+                contentType: "application/json",
+                data: JSON.stringify(climber),
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Create climber failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR)); // xxx item errors
+            });
+            return result.promise();
+        },
+
+        //
+        // PUT /data/climbers/<climber-id>
+        //
+        updateClimber: function(climber) {
+            var result,
+                climberId = climber.climberId;
+
+            logger.debug(module, "Update climber " + climber.firstName + " " + climber.lastName);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "PUT",
+                url: "data/climbers/" + climberId,
+                contentType: "application/json",
+                data: JSON.stringify(climber),
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Update climber failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR)); // xxx item errors
             });
             return result.promise();
         },
@@ -240,6 +396,9 @@ var appModel = (function($, logger, util, undefined) {
             return result.promise();
         },
 
+        // =====================================
+        // Events
+        // =====================================
 
         //
         // GET /data/events
@@ -296,6 +455,34 @@ var appModel = (function($, logger, util, undefined) {
             },10);
             return result.promise();
         },
+
+        fetchRegionFilters: function() {
+            var result = $.Deferred();
+
+            // xxx todo get these from the server including default
+            logger.debug(module, "Fetch region filters");
+            setTimeout( function() {
+                result.resolve([
+                    { value: "region:eq:101 (Washington / Alaska)", label: "101 (Washington / Alaska)"},
+                    { value: "region:eq:102 (Northwest)",           label: "102 (Northwest)"},
+                    { value: "region:eq:103 (Northern California)", label: "103 (Northern California)"},
+                    { value: "region:eq:201 (Southern California)", label: "201 (Southern California)"},
+                    { value: "region:eq:202 (Southern Mountain)",   label: "202 (Southern Mountain)"},
+                    { value: "region:eq:203 (Colorado)",            label: "203 (Colorado)"},
+                    { value: "region:eq:301 (Midwest)",             label: "301 (Midwest)"},
+                    { value: "region:eq:302 (Ohio River Valley)",   label: "302 (Ohio River Valley)"},
+                    { value: "region:eq:303 (Mid-Atlantic)",        label: "303 (Mid-Atlantic)"},
+                    { value: "region:eq:401 (Heartland)",           label: "401 (Heartland)"},
+                    { value: "region:eq:402 (Bayou)",               label: "402 (Bayou)"},
+                    { value: "region:eq:403 (Deep South)",          label: "403 (Deep South)"},
+                    { value: "region:eq:501 (Capital)",             label: "501 (Capital)"},
+                    { value: "region:eq:502 (New England West)",    label: "502 (New England West)"},
+                    { value: "region:eq:503 (New England East)",    label: "503 (New England East)", selected: true}
+                ]);
+            },10);
+            return result.promise();
+        },
+
         //
         // GET /data/events/<event-id>
         //
@@ -442,10 +629,17 @@ var appModel = (function($, logger, util, undefined) {
             return result.promise();
         },
 
+        // =====================================
+        // Event Climbers
+        // =====================================
+
         // xxx add climber
         // xxx update climber
         // xxx delete climber
 
+        // =====================================
+        // Event Routes
+        // =====================================
 
         //
         // GET /data/events/<event-id>/routes
@@ -649,6 +843,10 @@ var appModel = (function($, logger, util, undefined) {
             });
             return result.promise();
         },
+
+        // =====================================
+        // Users
+        // =====================================
 
         //
         // GET /data/users

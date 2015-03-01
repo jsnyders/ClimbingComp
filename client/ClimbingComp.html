@@ -456,6 +456,10 @@
             </div>
             <a id="cCreate" href="#adminClimber?new" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini">Add Climber</a>
             <a id="cImport" href="#adminImportClimbers" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini">Import Climbers</a>
+            <select id="cCategoryFilter" data-inline="true" data-mini="true">
+            </select>
+            <select id="cRegionFilter" data-inline="true" data-mini="true">
+            </select>
             <table id="cClimbersTable" data-role="table" data-mode="columntoggle" class="ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
                 <caption class="visuallyhidden">Climbers</caption>
                 <thead>
@@ -478,12 +482,28 @@
                 <div class="messageContent"></div>
             </div>
             <div class="ui-field-contain">
+                <label for="acMemberId">USAC Member ID:</label>
+                <input id="acMemberId" type="text" name="memberId" value="">
+            </div>
+            <div class="ui-field-contain">
                 <label for="acFirstName">First Name:</label>
                 <input id="acFirstName" type="text" name="firstName" value="">
             </div>
             <div class="ui-field-contain">
                 <label for="acLastName">Last Name:</label>
                 <input id="acLastName" type="text" name="lastName" value="">
+            </div>
+            <div class="ui-field-contain">
+                <label for="acLocation">Location:</label>
+                <input id="acLocation" type="text" name="location" value="">
+            </div>
+            <div class="ui-field-contain">
+                <label for="acGender">Gender:</label>
+                <select id="acGender"></select>
+            </div>
+            <div class="ui-field-contain">
+                <label for="acCategory">Category:</label>
+                <select id="acCategory"></select>
             </div>
 
             <a id="acCancel" href="#adminClimbers" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</a>
@@ -523,6 +543,7 @@
                     <option selected value="add">Add new</option>
                     <option value="update">Add new and update existing</option>
                     <option value="replace">Replace all</option>
+                    <option value="test">Test</option>
                 </select>
             </div>
 
@@ -535,7 +556,7 @@
         <div data-role="header">
             <h1>Import Climbers Results</h1>
         </div>
-        <div role="main" class="ui-content">
+        <div id="aicrContent" role="main" class="ui-content">
             <div class="messageArea ui-body ui-body-a ui-corner-all">
                 <h3 class="ui-bar ui-bar-a">
                     <span class="messageHeader">Error</span>
@@ -659,6 +680,7 @@
     <script src="js/scoreCard.js"></script>
     <script src="js/results.js"></script>
     <script src="js/adminClimbers.js"></script>
+    <script src="js/adminClimber.js"></script>
     <script src="js/adminEvents.js"></script>
     <script src="js/adminEvent.js"></script>
     <script src="js/adminUsers.js"></script>

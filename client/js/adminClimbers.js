@@ -57,8 +57,9 @@
             {prop: "region", label: "Region", priority: 2},
             {prop: "team", label: "Team", priority: 2},
             {prop: "coach", label: "Coach", priority: 2},
+            {prop: "updatedBy", label: "Updated By", priority: 2},
+            {prop: "updatedOn", label: "Updated On", priority: 2},
             {label: "Actions", action: "delete", icon: "ui-icon-delete", args: ["climberId", "version"]}
-            // xxx updatedBy, updatedOn
         ];
 
     var allFields = [
@@ -86,9 +87,90 @@
         return "unknown";
     }
 
+    function findColumn(prop) {
+        var i;
+        for (i = 0; i < climbersColumns.length; i++) {
+            if (climbersColumns[i].prop === prop) {
+                return climbersColumns[i];
+            }
+        }
+        return null;
+    }
+
+    function fetchClimbers() {
+        var orderBy,
+            columnBreak = null,
+            catFilter = "",
+            regionFilter = "",
+            filters = "";
+
+        app.clearMessage();
+        clearClimbers();
+
+        $.mobile.loading("show");
+        catFilter = $("#cCategoryFilter").val();
+        regionFilter = $("#cRegionFilter").val();
+        if (catFilter && regionFilter) {
+            filters = catFilter + "," + regionFilter;
+        } else {
+            filters = catFilter || regionFilter;
+        }
+        console.log("xxx filters " + filters);
+        if (filters) {
+            filters = filters.split(","); // xxx what if there is a , in the data
+        }
+
+        // xxx let the user choose
+        orderBy = "region:a,category:a,gender:d,lastName:a";
+        orderBy = orderBy.split(",");
+
+        findColumn("region").hide = false;
+        if (regionFilter === "") {
+            // xxx should also hide the region column
+            columnBreak = function(row) {
+                return row.region;
+            };
+            findColumn("region").hide = true;
+        }
+        model.fetchClimbers(filters, orderBy)
+            .done(function (climbers) {
+                util.renderTable($("#cClimbersTable"), climbersColumns, climbers, columnBreak);
+                $("#cClimbersTable").table("rebuild");
+            })
+            .fail(function (status, message) {
+                app.showErrorMessage(status, "Failed to get climbers", message);
+            })
+            .always(function () {
+                $.mobile.loading("hide");
+            });
+    }
+
+    function clearClimbers() {
+        util.renderTable($("#cClimbersTable"), climbersColumns, []);
+        $("#cClimbersTable").table("rebuild");
+    }
+
     app.addPage({
         name: "adminClimbers",
         init: function(ui) {
+            logger.debug(module, "Init page");
+
+            model.fetchGenderCategoriesFilters()
+                .done(function(list) {
+                    util.renderOptions($("#cCategoryFilter"), list, {
+                        nullValue: "",
+                        nullLabel: "All"
+                    });
+                });
+
+            model.fetchRegionFilters()
+                .done(function(list) {
+                    util.renderOptions($("#cRegionFilter"), list, {
+                        nullValue: "",
+                        nullLabel: "All"
+                    });
+                });
+
             $("#cClimbersTable").on("click", "button", function(event) {
                 var args,
                     btn$ = $(this);
@@ -107,23 +189,20 @@
                     }
                 }
             });
+            $("#cCategoryFilter").change(function() {
+                fetchClimbers();
+            });
+            $("#cRegionFilter").change(function() {
+                fetchClimbers();
+            });
         },
         prepare: function() {
             app.clearMessage(this.name);
+            clearClimbers();
         },
         open: function(ui) {
-            $.mobile.loading("show");
-            model.fetchClimbers()
-                .done(function(climbers) {
-                    util.renderTable($("#cClimbersTable"), climbersColumns, climbers);
-                    $("#cClimbersTable").table("rebuild");
-                })
-                .fail(function(status, message) {
-                    app.showErrorMessage(status, "Failed to get climbers", message);
-                })
-                .always(function() {
-                    $.mobile.loading("hide");
-                });
+            logger.debug(module, "Page open");
+            fetchClimbers();
         }
     });
 
@@ -188,6 +267,8 @@
             });
             // clear errors table
             $("#aicrErrorsTable").children().empty();
+            // hide it all
+            $("#aicrContent").hide();
 
             // xxx hide update button if needed
             $("#aicrUpdate").hide();
@@ -215,11 +296,16 @@
             }
             fields.length = len; // truncate trailing "ignore" fields
 
-            $.mobile.loading("show");
+            $.mobile.loading("show", {
+                text: "Importing. Please wait...",
+                textVisible: true
+            });
             model.uploadClimbers(hasHeader, action, fields, file)
                 .done(function(data) {
-                    var i, errors, error, item, columns,
+                    var i, errors, error, item, columns, errorMessage,
                         stats = data.stats;
+
+                    $("#aicrContent").show();
 
                     $("#aicrAdded").val(stats.added);
                     $("#aicrUpdated").val(stats.updated);
@@ -238,13 +324,16 @@
                         errors = [];
                         for (i = 0; i < data.errors.length; i++) {
                             error = data.errors[i];
+                            errorMessage = error.error;
+                            if ($.isArray(error.errors)) {
+                                errorMessage = error.errors.join(", ");
+                            }
                             item = $.extend({}, error.item); // make a copy
                             item.line = error.line;
-                            item.error = error.error;
+                            item.error = errorMessage;
                             errors.push(item);
                         }
                         util.renderTable($("#aicrErrorsTable"), columns, errors);
-
                     }
 
                 })

@@ -80,6 +80,9 @@ var util = {};
         header += "<tr class='ui-bar-d'>";
         for (j = 0; j < columns.length; j++) {
             col = columns[j];
+            if (col.hide) {
+                continue;
+            }
             if (col.priority) {
                 header += "<th data-priority='" + col.priority + "'>";
             } else {
@@ -102,6 +105,9 @@ var util = {};
             }
             for (j = 0; j < columns.length; j++) {
                 col = columns[j];
+                if (col.hide) {
+                    continue;
+                }
                 if (col.cls) {
                     table += "<td class='" + col.cls + "'>";
                 } else {
@@ -183,7 +189,8 @@ var util = {};
         if (cfg.selectedValue !== undefined) {
             $select.val(cfg.selectedValue).selectmenu("refresh");
         } else {
-            $select.html(options).change();
+// xxx is there ever a need to have the select fire change when initially rendered?
+//xxx            $select.change();
         }
     };
 

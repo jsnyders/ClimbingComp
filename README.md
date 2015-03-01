@@ -66,6 +66,13 @@ npm install -g grunt-cli
 npm install -g bower
 ```
 
+To run the unit tests you need to install mocha
+
+```
+npm install -g mocha
+```
+
+
 ### Install ClimbingComp Software
 Clone the ClimbingComp project from github or download and extract the zip file.
 
