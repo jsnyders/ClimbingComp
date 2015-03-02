@@ -352,18 +352,37 @@ table.scTable td {
     }
 }
 
+/* Show priority 1 at 720px (45em x 16px) */
+@media screen and (min-width: 45em) {
+    #cClimbersTable th.ui-table-priority-1,
+    #cClimbersTable td.ui-table-priority-1 {
+        display: table-cell;
+    }
+}
+/* Show priority 2 at 1024px (64em x 16px) */
+@media screen and (min-width: 64em) {
+    #cClimbersTable th.ui-table-priority-2,
+    #cClimbersTable td.ui-table-priority-2 {
+        display: table-cell;
+    }
+}
+
 /* Manually hidden */
 .scTable th.ui-table-cell-hidden,
 .scTable td.ui-table-cell-hidden,
 #resTable th.ui-table-cell-hidden,
-#resTable td.ui-table-cell-hidden {
+#resTable td.ui-table-cell-hidden,
+#cClimbersTable th.ui-table-cell-hidden,
+#cClimbersTable td.ui-table-cell-hidden {
     display: none;
 }
 /* Manually shown */
 .scTable th.ui-table-cell-visible,
 .scTable td.ui-table-cell-visible,
 #resTable th.ui-table-cell-visible,
-#resTable td.ui-table-cell-visible {
+#resTable td.ui-table-cell-visible,
+#cClimbersTable th.ui-table-cell-visible,
+#cClimbersTable td.ui-table-cell-visible {
     display: table-cell;
 }
 

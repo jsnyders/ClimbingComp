@@ -55,6 +55,7 @@
             {prop: "gender", label: "Gender", priority: 1},
             {prop: "category", label: "Category", priority: 1},
             {prop: "region", label: "Region", priority: 2},
+            // xxx what about location?
             {prop: "team", label: "Team", priority: 2},
             {prop: "coach", label: "Coach", priority: 2},
             {prop: "updatedBy", label: "Updated By", priority: 2},

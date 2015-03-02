@@ -201,17 +201,17 @@ var app = {};
         init: function() {
             logger.debug("LogIn", "Init page");
 
-            $("#lLogIn").on("click", function() {
+            function doLogIn() {
                 var username = $("#lUsername").val().trim(),
                     password = $("#lPassword").val().trim();
 
                 // validate username and password are required
                 if (!username) {
-                    alert("username is required");
+                    alert("Username is required");
                     return;
                 }
                 if (!password) {
-                    alert("password is required");
+                    alert("Password is required");
                     return;
                 }
                 model.logIn(username, password)
@@ -222,17 +222,25 @@ var app = {};
                         $("#lMessage").show().text(message);
                     });
                 $("#lPassword").val(""); // clear password
+            }
+
+            $("#lLogIn").on("click", function() {
+                doLogIn();
             });
 
-            $("#lCancel").on("click", function() {
-                $("#lUsername").val(""); // clear username
-                $("#lPassword").val(""); // clear password
-                $.mobile.changePage("#home");
+            $("#lPassword").on("keydown", function(event) {
+                if (event.which === 13) {
+                    doLogIn();
+                }
             });
 
         },
         prepare: function() {
             $("#lMessage").hide().empty();
+        },
+        close: function() {
+            logger.debug("LogIn", "Close page");
+            $("#lPassword").val(""); // clear password
         }
     });
 
@@ -294,8 +302,13 @@ shows parsing the url and setting the url data on the target page here seems to 
         })
         .on("pagecontainerchange", function(event, ui) {
             var p,
-                pageId = ui.toPage[0].id;
+                pageId = ui.toPage[0].id,
+                fromPageId = ui.prevPage && ui.prevPage[0].id;
 
+            p = pagesMap[fromPageId];
+            if (p && p.close) {
+                p.close(ui);
+            }
             p = pagesMap[pageId];
             if (p && p.open) {
                 p.open(ui);

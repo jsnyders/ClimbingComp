@@ -227,6 +227,12 @@
             });
 
             $("#aeUpload").click(function() {
+                app.clearMessage();
+                if ($("#aeFile").val() === "") {
+                    // xxx better messaging for validation errors
+                    alert("Choose a file first.");
+                    return;
+                }
                 model.uploadEventRoutes(event.eventId, event.routesHaveLocation, event.routesHaveColor,
                             event.scoreCardColumns, event.version,  $("#aeFile")[0].files[0])
                     .done(function() {
@@ -235,6 +241,7 @@
                     .fail(function(status, message) {
                         app.showErrorMessage(status, "Failed to upload routes", message);
                     });
+                $("#aeFile").val("");
             });
             $("#aeNewRoutes").click(function() {
                 newRoutes();
@@ -246,6 +253,8 @@
         },
         prepare: function(ui) {
             app.clearMessage(this.name);
+
+            $("#aeFile").val("");
             eventId = "";
             if (ui.args) {
                 eventId = ui.args[0];

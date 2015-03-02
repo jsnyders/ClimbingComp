@@ -35,8 +35,8 @@
             {id: "acLocation", prop: "location"},
             {id: "acGender", prop: "gender"},
             {id: "acCategory", prop: "category"},
-            {id: "acBirthYear", prop: "birthYear"},
-            {id: "acBirthDate", prop: "birthDate"},
+//xxx            {id: "acBirthYear", prop: "birthYear"},
+//xxx            {id: "acBirthDate", prop: "birthDate"},
             {id: "acRegion", prop: "region"},
             {id: "acTeam", prop: "team"},
             {id: "acCoach", prop: "coach"}
@@ -46,6 +46,27 @@
         name: "adminClimber",
         init: function() {
             logger.debug(module, "Init page");
+
+            model.fetchGenders()
+                .done(function(list) {
+                    util.renderOptions($("#acGender"), list, {
+                        valuesOnly: true
+                    });
+                });
+
+            model.fetchCategories()
+                .done(function(list) {
+                    util.renderOptions($("#acCategory"), list, {
+                        valuesOnly: true
+                    });
+                });
+
+            model.fetchRegions()
+                .done(function(list) {
+                    util.renderOptions($("#acRegion"), list, {
+                        valuesOnly: true
+                    });
+                });
 
             $("#acOK").click(function() {
                 var pw1, pw2;
