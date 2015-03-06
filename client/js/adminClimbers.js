@@ -33,10 +33,8 @@
      usacMemberId: row.usac_member_id + "", // force it to be a string
      firstName: row.first_name || "",
      lastName: row.last_name,
-     location: row.location || "",
      gender: row.gender,
      category: row.category,
-     birthYear: row.birth_year,
      birthDate: row.birth_date,
      region: row.region || "",
      team: row.team || "",
@@ -50,33 +48,38 @@
             {prop: "usacMemberId", label: "USAC Member ID", link: "adminClimber", args: ["climberId"], icon: "ui-icon-edit"},
             {prop: "firstName", label: "First Name"},
             {prop: "lastName", label: "Last Name"},
-            {prop: "birthYear", label: "Birth Year", priority: 1},
-//xxx            {prop: "birthDate", label: "Birth Date"}, //xxx one birth field only?
+            {prop: "birthDate", label: "Birth Date", format: function(value, r, c) {
+                if (!value) {
+                    return "-";
+                }
+                return util.formatDate(value);
+            }},
             {prop: "gender", label: "Gender", priority: 1},
             {prop: "category", label: "Category", priority: 1},
             {prop: "region", label: "Region", priority: 2},
-            // xxx what about location?
             {prop: "team", label: "Team", priority: 2},
             {prop: "coach", label: "Coach", priority: 2},
             {prop: "updatedBy", label: "Updated By", priority: 2},
-            {prop: "updatedOn", label: "Updated On", priority: 2},
+            {prop: "updatedOn", label: "Updated On", priority: 2, format: function(value, r, c) {
+                return util.formatDateTime(value);
+            }},
             {label: "Actions", action: "delete", icon: "ui-icon-delete", args: ["climberId", "version"]}
         ];
 
+
+    // xxx get this from model layer, persist defaults
     var allFields = [
-            {label:"Menber No.", value: "usac_member_id" },
-            {label:"First Name", value: "first_name"},
-            {label:"Last Name", value: "last_name"},
+            {label:"Menber No.", value: "usacMemberId" },
+            {label:"First Name", value: "firstName"},
+            {label:"Last Name", value: "lastName"},
             {label:"Gender", value: "gender"},
             {label:"Category", value: "category"},
-            {label:"Birthday", value: "birth_date"},
-            {label:"Birth Year", value: "birth_year"},
+            {label:"Birth Day", value: "birthDate"},
             {label:"Region", value: "region"},
             {label:"Team", value: "team"},
-            {label:"Coach", value: "coach"},
-            {label:"Location", value: "location"}
+            {label:"Coach", value: "coach"}
         ],
-        defaultFields = [ "usac_member_id", "first_name", "last_name", "gender", "category", "region", "team"];
+        defaultFields = [ "usacMemberId", "firstName", "lastName", "gender", "category", "region", "team"];
 
     function lookupFieldLabel(field) {
         var i;
@@ -127,7 +130,6 @@
 
         findColumn("region").hide = false;
         if (regionFilter === "") {
-            // xxx should also hide the region column
             columnBreak = function(row) {
                 return row.region;
             };
@@ -135,7 +137,10 @@
         }
         model.fetchClimbers(filters, orderBy)
             .done(function (climbers) {
-                util.renderTable($("#cClimbersTable"), climbersColumns, climbers, columnBreak);
+                util.renderTable($("#cClimbersTable"), climbersColumns, climbers, {
+                    breakOn: columnBreak,
+                    nullValue: "-"
+                });
                 $("#cClimbersTable").table("rebuild");
             })
             .fail(function (status, message) {
@@ -279,6 +284,8 @@
                 file = $("#aicFile")[0].files[0],
                 hasHeader = $("#aicHasHeader")[0].checked,
                 action = $("#aicAction").val(),
+                dateFormat = $("#aicDateFormat").val(),
+                continueOnErrors = $("#aicContinueOnErrors").val() === "yes",
                 fields = [];
 
             if (!file) {
@@ -301,13 +308,14 @@
                 text: "Importing. Please wait...",
                 textVisible: true
             });
-            model.uploadClimbers(hasHeader, action, fields, file)
+            model.uploadClimbers(hasHeader, action, continueOnErrors, dateFormat, fields, file)
                 .done(function(data) {
                     var i, errors, error, item, columns, errorMessage,
                         stats = data.stats;
 
                     $("#aicrContent").show();
 
+                    $("#aicrTotal").val(stats.totalLines);
                     $("#aicrAdded").val(stats.added);
                     $("#aicrUpdated").val(stats.updated);
                     $("#aicrNoChange").val(stats.noChange);
@@ -329,16 +337,19 @@
                             if ($.isArray(error.errors)) {
                                 errorMessage = error.errors.join(", ");
                             }
-                            item = $.extend({}, error.item); // make a copy
+                            item = $.extend({}, error.sourceItem); // make a copy
                             item.line = error.line;
                             item.error = errorMessage;
                             errors.push(item);
                         }
-                        util.renderTable($("#aicrErrorsTable"), columns, errors);
+                        util.renderTable($("#aicrErrorsTable"), columns, errors, {
+                            nullValue: "-"
+                        });
                     }
 
                 })
                 .fail(function(status, message) {
+                    $("#aicrContent").show();
                     app.showErrorMessage(status, "Failed to upload climbers", message);
                 })
                 .always(function() {

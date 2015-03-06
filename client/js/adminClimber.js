@@ -32,11 +32,9 @@
             {id: "acMemberId", prop: "usacMemberId"},
             {id: "acFirstName", prop: "firstName"},
             {id: "acLastName", prop: "lastName"},
-            {id: "acLocation", prop: "location"},
             {id: "acGender", prop: "gender"},
             {id: "acCategory", prop: "category"},
-//xxx            {id: "acBirthYear", prop: "birthYear"},
-//xxx            {id: "acBirthDate", prop: "birthDate"},
+            {id: "acBirthDate", prop: "birthDate"}, // xxx
             {id: "acRegion", prop: "region"},
             {id: "acTeam", prop: "team"},
             {id: "acCoach", prop: "coach"}
@@ -67,6 +65,12 @@
                         valuesOnly: true
                     });
                 });
+
+            $("#acBirthDate").date({
+                changeYear: true,
+                maxDate: new Date(),
+                yearRange: "-60:+0"
+            });
 
             $("#acOK").click(function() {
                 var pw1, pw2;
@@ -115,10 +119,8 @@
                     usacMemberId: "",
                     firstName: "",
                     lastName: "",
-                    location: "",
                     gender: "",
                     category: "",
-                    birthYear: "",
                     birthDate: "",
                     region: "",
                     team: "",

@@ -133,7 +133,7 @@
                 <p>ClimbingComp</p>
                 <p>A Mobile Web Application for scoring Rock Climbing Competitions.</p>
                 <p>Version 0.1.0</p>
-                <p>Copyright (c) 2014, John Snyders</p>
+                <p>Copyright (c) 2014, 2015, John Snyders</p>
                 <p>ClimbingComp is free software. For more information and download visit the
                     <a href="https://github.com/jsnyders/ClimbingComp">project page</a> on GitHub.</p>
                 <a id="lDone" href="#" data-rel="back" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">OK</a>
@@ -494,8 +494,8 @@
                 <input id="acLastName" type="text" name="lastName" value="">
             </div>
             <div class="ui-field-contain">
-                <label for="acLocation">Location:</label>
-                <input id="acLocation" type="text" name="location" value="">
+                <label for="acBirthDate">Birth Date:</label>
+                <input id="acBirthDate" type="text" name="birthdate" value="">
             </div>
             <div class="ui-field-contain">
                 <label for="acGender">Gender:</label>
@@ -505,7 +505,6 @@
                 <label for="acCategory">Category:</label>
                 <select id="acCategory"></select>
             </div>
-            <!-- xxx date -->
             <div class="ui-field-contain">
                 <label for="acRegion">Region:</label>
                 <select id="acRegion"></select>
@@ -546,6 +545,23 @@
                 <input  id="aicHasHeader" data-role="flipswitch" data-on-text="Yes" data-off-text="No" data-wrapper-class='sc-flipswitch' type="checkbox" checked>
             </div>
 
+            <div class="ui-field-contain">
+                <label for="aicContinueOnErrors">When the CSV file has errors:</label>
+                <select id="aicContinueOnErrors" data-inline="true">
+                    <option selected value="no">Don't import anything</option>
+                    <option value="yes">Import lines without errors</option>
+                </select>
+            </div>
+
+            <div class="ui-field-contain">
+                <label for="aicdateFormat">Date Format:</label>
+                <select id="aicDateFormat" data-inline="true">
+                    <option value="ymd">Year Month Day</option>
+                    <option selected value="mdy">Month Day Year</option>
+                    <option value="dmy">Day Month Year</option>
+                </select>
+            </div>
+
             <p id="aicFieldsLbl">Choose the meaning of each column in the CSV file:</p>
             <fieldset id="aicFields" aria-labeledby="aicFieldsLbl" data-role="controlgroup" data-type="horizontal">
             </fieldset>
@@ -577,6 +593,10 @@
                 <div class="messageContent"></div>
             </div>
             <p>Import Statistics:</p>
+            <div class="ui-field-contain field-ro input-num">
+                <label for="aicrTotal">Total Lines:</label>
+                <input id="aicrTotal" data-mini="true" type="text" readonly value="">
+            </div>
             <div class="ui-field-contain field-ro input-num">
                 <label for="aicrAdded">Added:</label>
                 <input id="aicrAdded" data-mini="true" type="text" readonly value="">

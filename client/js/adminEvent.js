@@ -54,11 +54,11 @@
         ];
 
     function renderInput(value, r, c) {
-        return "<input id='" + r + ":" + c + "' type='text' size='6' value='" + value + "'>";
+        return "<input id='" + r + ":" + c + "' type='text' size='6' value='" + util.escapeHTML(value) + "'>";
     }
 
     function renderInputNumber(value, r, c) {
-        return "<input id='" + r + ":" + c + "' type='text' size='4' value='" + value + "'>";
+        return "<input id='" + r + ":" + c + "' type='text' size='4' value='" + util.escapeHTML(value) + "'>";
     }
 
     function loadEvent(returnOnError) {

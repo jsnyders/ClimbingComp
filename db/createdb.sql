@@ -44,16 +44,66 @@ INSERT INTO config VALUES('VersionMinor',1,NULL);
 INSERT INTO config VALUES('SessionIdleTime',2 * 60 * 60,NULL); -- 2 hr
 INSERT INTO config VALUES('SessionMaxTime',8 * 60 * 60,NULL); -- 8 hr
 
+-- name value pairs
+-- used to construct select list options
+DROP TABLE IF EXISTS nvp;
+CREATE TABLE nvp (
+  scope_id INTEGER,
+  name VARCHAR(100) NOT NULL,
+  val VARCHAR(100) NOT NULL,
+  label VARCHAR(100),
+  alias VARCHAR(100),
+  PRIMARY KEY id (scope_id, name, val)
+) ENGINE={{engine}} DEFAULT CHARSET=utf8;
+
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Youth-D', 'Youth-D', 'D');
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Youth-C', 'Youth-C', 'C');
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Youth-B', 'Youth-B', 'B');
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Youth-A', 'Youth-A', 'A');
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Junior', 'Junior', 'Jr');
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Adult', 'Adult', NULL);
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Open', 'Open', NULL);
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Masters', 'Masters', NULL);
+
+INSERT INTO nvp VALUES(-1, 'REGIONS', '101 (Washington / Alaska)', '101 (Washington / Alaska)', '101');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '102 (Northwest)', '102 (Northwest)', '102');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '103 (Northern California)', '103 (Northern California)', '103');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '201 (Southern California)', '201 (Southern California)', '201');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '202 (Southern Mountain)', '202 (Southern Mountain)', '202');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '203 (Colorado)', '203 (Colorado)', '203');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '301 (Midwest)', '301 (Midwest)', '301');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '302 (Ohio River Valley)', '302 (Ohio River Valley)', '302');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '303 (Mid-Atlantic)', '303 (Mid-Atlantic)', '303');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '401 (Heartland)', '401 (Heartland)', '401');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '402 (Bayou)', '402 (Bayou)', '402');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '403 (Deep South)', '403 (Deep South)', '403');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '501 (Capital)', '501 (Capital)', '501');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '502 (New England West)', '502 (New England West)', '502');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '503 (New England East)', '503 (New England East)', '503');
+
+INSERT INTO nvp VALUES(-1, 'SERIES', 'SCS', 'SCS', NULL);
+INSERT INTO nvp VALUES(-1, 'SERIES', 'ABS', 'ABS', NULL);
+INSERT INTO nvp VALUES(-1, 'SERIES', 'CCS', 'CCS', NULL);
+
+INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Local', 'Local', NULL);
+INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Regional', 'Regional', NULL);
+INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Divisional', 'Divisional', NULL);
+INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'National', 'National', NULL);
+INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'None', 'None', NULL);
+
+INSERT INTO nvp VALUES(-1, 'EVENT_TYPE', 'Red Point', 'Red Point', NULL);
+-- todo other types such as On Sight, Speed etc.
+
 DROP TABLE IF EXISTS event;
 CREATE TABLE event (
   id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
   version INTEGER DEFAULT 1,
-  region VARCHAR(100),  -- Example "503 (New England East)", todo consider region/division id
+  region VARCHAR(100), -- REGIONS
   location VARCHAR(200) NOT NULL, -- Example 'Boston Rock Gym'
   event_date DATE NOT NULL,
-  series ENUM('SCS', 'ABS','CCS', 'Other'),  -- todo consider if/how to extend series
-  sanctioning ENUM('Local', 'Regional', 'Divisional', 'National', 'None') NOT NULL,  -- todo consider if/how to extend sanctioning
-  type ENUM('Red Point', 'On Sight', 'Speed') NOT NULL, -- todo support types other than RedPoint
+  series VARCHAR(100), -- SERIES
+  sanctioning VARCHAR(100) NOT NULL, -- SANCTIONING
+  type VARCHAR(100) NOT NULL, -- EVENT_TYPE
   state ENUM('Open', 'Active', 'Preliminary', 'Closed'),
   record_falls_per_climb BOOLEAN NOT NULL,
   routes_have_location BOOLEAN NOT NULL,
@@ -77,14 +127,13 @@ CREATE TABLE climber (
   usac_member_id INTEGER,
   first_name VARCHAR(100),
   last_name VARCHAR(100) NOT NULL,
-  location VARCHAR(200),
   gender ENUM('Male', 'Female'),
-  category ENUM('Youth-D', 'Youth-C', 'Youth-B', 'Youth-A', 'Junior', 'Adult', 'Open', 'Masters'), -- todo consider if/how to extend category
-  birth_year INTEGER,
+  category VARCHAR(100), -- CATEGORIES
   birth_date DATE,
-  region VARCHAR(100),  -- Example "503 (New England East)" todo consider region/division id
+  region VARCHAR(100), -- REGIONS
   team VARCHAR(100),
   coach VARCHAR(100),
+  -- TODO consider other things like phone number, email, location, has waver, possibly general purpose columns
   updated_by VARCHAR(100),
   updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -115,10 +164,14 @@ DROP TABLE IF EXISTS event_climber;
 CREATE TABLE event_climber (
   climber_id INTEGER NOT NULL,
   event_id INTEGER NOT NULL,
-  number INTEGER(4) NOT NULL,
+  bib_number INTEGER(4) NOT NULL,
   -- for adults they can enter a different category for the event subject to some age requirements
   -- the adult category has flexible sub divisions: Recreational, Intermediate or Advanced
   -- also other kinds of comps may define categories differently but there could still be value in using the master climber list
+  category VARCHAR(100), -- event category. CATEGORIES or event specific categories
+  region VARCHAR(100), -- region at time of event
+  team VARCHAR(100), -- team at time of event
+  coach VARCHAR(100), -- coach at time of event
   version INTEGER DEFAULT 1,
   total INTEGER, -- xxx is this before or after total_falls is subtracted??? either way it too could be calculated
   place INTEGER, -- xxx this will be generated
@@ -135,7 +188,7 @@ CREATE TABLE event_climber (
   scored_on TIMESTAMP NULL DEFAULT NULL,
 
   PRIMARY KEY id (climber_id, event_id),
-  UNIQUE INDEX event_number (number, event_id)
+  UNIQUE INDEX event_number (bib_number, event_id)
 ) ENGINE={{engine}} DEFAULT CHARSET=utf8;
 
 CREATE TRIGGER event_climber_update

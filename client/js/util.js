@@ -48,8 +48,13 @@ var util = {};
         }
     };
 
-    util.renderTable = function($table, columns, data, brakeFn) {
-        var i, j, k, row, col, br, display, argValues,
+    /*
+     * Options:
+     *   breakOn: function(row)
+     *   nullValue: <string>
+     */
+    util.renderTable = function($table, columns, data, options) {
+        var i, j, k, row, col, br, display, argValues, value,
             table = "",
             header = "",
             lastBreak = "";
@@ -72,7 +77,7 @@ var util = {};
         }
 
         //         {label: "Actions", action: "delete", icon: "ui-icon-delete", args: ["username"]}
-
+        // xxx not used
         function makeButton(col, row) {
 
         }
@@ -96,8 +101,8 @@ var util = {};
         for (i = 0; i < data.length; i++) {
             row = data[i];
             table += "<tr>";
-            if ( brakeFn ) {
-                br = brakeFn(row);
+            if (options.breakOn) {
+                br = options.breakOn(row);
                 if (br !== lastBreak) {
                     table += "<td class='colbreak' colspan='" + columns.length + "'>" + br + "</td></tr>" + header +  "<tr>";
                     lastBreak = br;
@@ -125,9 +130,13 @@ var util = {};
                     table += " class='ui-btn ui-btn-icon-notext ui-corner-all " + col.icon + "'></button>";
                 } else {
                     if ($.isFunction(col.format)) {
-                        display = col.format(util.escapeHTML(row[col.prop]), i, j);
+                        display = col.format(row[col.prop], i, j);
                     } else {
-                        display = util.escapeHTML(row[col.prop]);
+                        value = row[col.prop];
+                        if ( value === null || value === undefined ) {
+                            value = options.nullValue || "";
+                        }
+                        display = util.escapeHTML(value);
                     }
                     if (col.icon) {
                         display = "<span class='ui-icon " + col.icon +"'></span>" + display;
@@ -236,8 +245,16 @@ var util = {};
         });
     };
 
+    // xxx todo configure date display format
     util.formatDate = function(date) {
         return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    };
+
+    // xxx todo configure date display format
+    // xxx todo want local time but server needs to tell us the time zone?
+    util.formatDateTime = function(date) {
+        return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +
+            date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCHours();
     };
 
 })(util, jQuery, logger);

@@ -264,6 +264,9 @@ var appModel = (function($, logger, util, undefined) {
                     if (data[i].birthDate) {
                         data[i].birthDate = new Date(data[i].birthDate);
                     }
+                    if (data[i].updatedOn) {
+                        data[i].updatedOn = new Date(data[i].updatedOn);
+                    }
                 }
                 result.resolve(data);
             }).fail(function(jqXHR) {
@@ -367,7 +370,7 @@ var appModel = (function($, logger, util, undefined) {
             return result.promise();
         },
 
-        uploadClimbers: function(hasHeader, action, fields, file) {
+        uploadClimbers: function(hasHeader, action, continueOnErrors, dateFormat, fields, file) {
             var fd,
                 self = this,
                 result = $.Deferred();
@@ -378,6 +381,8 @@ var appModel = (function($, logger, util, undefined) {
             fd.append("file", file);
             fd.append("hasHeader", hasHeader ? "yes" : "no");
             fd.append("action", action);
+            fd.append("continueOnErrors", continueOnErrors ? "yes" : "no");
+            fd.append("dateFormat", dateFormat);
             fd.append("fields", fields.join(","));
 
             $.ajax({
