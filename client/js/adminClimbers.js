@@ -20,7 +20,8 @@
 /*
  * xxx todo
  * date format
- * will need to support filtering possibly paging
+ * sorting
+ * will need to support general filtering/sorting and possibly paging
  * break on gender+category
  */
 
@@ -44,8 +45,15 @@
 
      */
     var module = "AdminClimbers", // for logging
-        climbersColumns = [
-            {prop: "usacMemberId", label: "USAC Member ID", link: "adminClimber", args: ["climberId"], icon: "ui-icon-edit"},
+        eventId = "";
+
+    var climbersColumns = [
+            // for event climbers
+            {prop: "bibNumber", label: "Bib #", link: "adminClimber", args: ["!eventId", "climberId"], icon: "ui-icon-edit"},
+            {prop: "usacMemberId", label: "USAC Member ID" },
+            // for master list of climbers
+            {prop: "usacMemberId", label: "USAC Member ID", link: "adminClimber", args: ["!eventId", "climberId"], icon: "ui-icon-edit"},
+            // for all
             {prop: "firstName", label: "First Name"},
             {prop: "lastName", label: "Last Name"},
             {prop: "birthDate", label: "Birth Date", format: function(value, r, c) {
@@ -63,7 +71,9 @@
             {prop: "updatedOn", label: "Updated On", priority: 2, format: function(value, r, c) {
                 return util.formatDateTime(value);
             }},
-            {label: "Actions", action: "delete", icon: "ui-icon-delete", args: ["climberId", "version"]}
+            {label: "Actions", action: "delete", icon: "ui-icon-delete", args: ["climberId", "version", function(row) {
+                return row.firstName + " " + row.lastName;
+            }]}
         ];
 
 
@@ -101,8 +111,33 @@
         return null;
     }
 
+    function fetchEvents() {
+
+        function renderClimberEventOptions() {
+
+            function eventLabel(event) {
+                return util.escapeHTML(event.location) + " " + util.formatDate(event.date);
+            }
+
+            util.renderOptions($("#cClimberEvents"), model.events, {
+                value:"eventId",
+                label: eventLabel,
+                nullValue: "m",
+                nullLabel: "Master Climber List",
+                selectedValue: eventId
+            });
+        }
+
+        renderClimberEventOptions();
+        if (model.events.length === 0) {
+            model.fetchEvents().done(function() {
+                renderClimberEventOptions();
+            });
+        }
+    }
+
     function fetchClimbers() {
-        var orderBy,
+        var options, orderBy,
             columnBreak = null,
             catFilter = "",
             regionFilter = "",
@@ -135,20 +170,42 @@
             };
             findColumn("region").hide = true;
         }
-        model.fetchClimbers(filters, orderBy)
-            .done(function (climbers) {
-                util.renderTable($("#cClimbersTable"), climbersColumns, climbers, {
-                    breakOn: columnBreak,
-                    nullValue: "-"
+        options = {
+            breakOn: columnBreak,
+            nullValue: "-",
+            params: {eventId: eventId}
+        };
+        if (eventId === "m") {
+            model.fetchClimbers(filters, orderBy)
+                .done(function (climbers) {
+                    climbersColumns[0].hide = true;
+                    climbersColumns[1].hide = true;
+                    climbersColumns[2].hide = false;
+                    util.renderTable($("#cClimbersTable"), climbersColumns, climbers, options);
+                    $("#cClimbersTable").table("rebuild");
+                })
+                .fail(function (status, message) {
+                    app.showErrorMessage(status, "Failed to get master list of climbers", message);
+                })
+                .always(function () {
+                    $.mobile.loading("hide");
                 });
-                $("#cClimbersTable").table("rebuild");
-            })
-            .fail(function (status, message) {
-                app.showErrorMessage(status, "Failed to get climbers", message);
-            })
-            .always(function () {
-                $.mobile.loading("hide");
-            });
+        } else {
+            model.fetchEventClimbers(eventId, filters, orderBy)
+                .done(function (climbers) {
+                    climbersColumns[0].hide = false;
+                    climbersColumns[1].hide = false;
+                    climbersColumns[2].hide = true;
+                    util.renderTable($("#cClimbersTable"), climbersColumns, climbers, options);
+                    $("#cClimbersTable").table("rebuild");
+                })
+                .fail(function (status, message) {
+                    app.showErrorMessage(status, "Failed to get climbers for event", message);
+                })
+                .always(function () {
+                    $.mobile.loading("hide");
+                });
+        }
     }
 
     function clearClimbers() {
@@ -177,21 +234,39 @@
                     });
                 });
 
+            $("#cClimberEvents").change(function() {
+                var v =  $(this).val();
+                $.mobile.changePage("#adminClimbers?" + v, {allowSamePageTransition: true});
+            });
+
             $("#cClimbersTable").on("click", "button", function(event) {
                 var args,
                     btn$ = $(this);
 
                 if (btn$.attr("data-action") === "delete") {
-                    if (confirm("Ok to delete?")) { // xxx don't use confirm
-                        args = btn$.attr("data-args").split("\n");
-                        console.log("xxx todo delete" + args.join(":"));
-                        model.deleteClimber(args[0], args[1])
-                            .done(function() {
-                                $.mobile.changePage("#adminClimbers");
-                            })
-                            .fail(function(status, message) {
-                                app.showErrorMessage(status, "Failed to delete climber", message);
-                            });
+                    args = btn$.attr("data-args").split("\n");
+                    if (eventId === "m") {
+                        if (confirm("Ok to delete climber '" + args[2] + "'?")) { // xxx don't use confirm
+                            model.deleteClimber(args[0], args[1])
+                                .done(function() {
+                                    $.mobile.changePage("#adminClimbers?" + eventId);
+                                })
+                                .fail(function(status, message) {
+                                    app.showErrorMessage(status, "Failed to delete climber", message);
+                                });
+                        }
+
+                    } else {
+                        if (confirm("Ok to remove climber '" + args[2] + "' from this event?")) { // xxx don't use confirm
+                            model.deleteEventClimber(eventId, args[0], args[1])
+                                .done(function() {
+                                    $.mobile.changePage("#adminClimbers?" + eventId);
+                                })
+                                .fail(function(status, message) {
+                                    app.showErrorMessage(status, "Failed to delete climber", message);
+                                });
+                        }
+
                     }
                 }
             });
@@ -202,12 +277,17 @@
                 fetchClimbers();
             });
         },
-        prepare: function() {
+        prepare: function(ui) {
             app.clearMessage(this.name);
+            eventId = "m";
+            if (ui.args && ui.args.length > 0) {
+                eventId = ui.args[0];
+            }
             clearClimbers();
         },
         open: function(ui) {
             logger.debug(module, "Page open");
+            fetchEvents();
             fetchClimbers();
         }
     });
@@ -216,6 +296,10 @@
         name: "adminImportClimbers",
         init: function(ui) {
             var i, fieldOptions, html;
+
+            $("#aicCancel").click(function() {
+                $.mobile.changePage("#adminClimbers?m"); // xxx eventid
+            });
 
             $("#aicUpload").click(function() {
                 // xxx set something so that results page know it came from this action
@@ -259,6 +343,10 @@
     app.addPage({
         name: "adminImportClimbersResults",
         init: function(ui) {
+
+            $("#aicrDone").click(function() {
+                $.mobile.changePage("#adminClimbers?m"); // xxx eventid
+            });
 
             $("#aicrUpdate").click(function() {
                 alert("not yet implemented");

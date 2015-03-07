@@ -21,12 +21,12 @@
 /*
  * xxx todo
  */
-
 (function(app, model, $, logger, util, undefined) {
     "use strict";
 
     var module = "AdminClimber",
         climber = null,
+        eventId = null,
         climberId = null,
         formMap = [
             {id: "acMemberId", prop: "usacMemberId"},
@@ -39,6 +39,10 @@
             {id: "acTeam", prop: "team"},
             {id: "acCoach", prop: "coach"}
         ];
+
+    function returnToList() {
+        $.mobile.changePage("#adminClimbers?" + eventId);
+    }
 
     app.addPage({
         name: "adminClimber",
@@ -72,8 +76,11 @@
                 yearRange: "-60:+0"
             });
 
+            $("#acCancel").click(function() {
+                returnToList();
+            });
+
             $("#acOK").click(function() {
-                var pw1, pw2;
 
                 util.readForm(climber, formMap);
                 // xxx validation
@@ -83,7 +90,7 @@
                     climber.climberId = climberId;
                     model.updateClimber(climber)
                         .done(function() {
-                            $.mobile.changePage("#adminClimbers");
+                            returnToList();
                         })
                         .fail(function(status, message) {
                             app.showErrorMessage(status, "Failed to update climber", message);
@@ -92,7 +99,7 @@
                     // create climber
                     model.createClimber(climber)
                         .done(function() {
-                            $.mobile.changePage("#adminClimbers");
+                            returnToList();
                         })
                         .fail(function(status, message) {
                             app.showErrorMessage(status, "Failed to update climber", message);
@@ -102,10 +109,12 @@
         },
         prepare: function(ui) {
             app.clearMessage(this.name);
+            eventId = null;
             climberId = null;
-            if (ui.args) {
-                console.log("xxx ui.args[0] typeof is " + typeof ui.args[0]);
-                climberId = ui.args[0]; // xxx verify it is already a number
+            if (ui.args && ui.args.length === 2) {
+                console.log("xxx ui.args[1] typeof is " + typeof ui.args[1]);
+                eventId = ui.args[0];
+                climberId = ui.args[0]; // xxx verify it is already a number - don't think it is
             }
 
             if (climberId !== "new") {
@@ -136,24 +145,39 @@
             logger.debug(module, "Page open");
             climberId = null;
             if (ui.args) {
-                if (ui.args.length !== 1) {
+                if (ui.args.length !== 2) {
                     logger.warn("Missing or invalid page arguments", ui.args);
-                    $.mobile.changePage("#adminClimbers");
+                    $.mobile.changePage("#adminClimbers?m");
                     return;
                 }
-                climberId = ui.args[0];
+                eventId = ui.args[0];
+                climberId = ui.args[1];
             }
 
             if (climberId !== "new") {
-                model.fetchClimber(climberId)
-                    .done(function(data) {
-                        climber = data;
-                        util.writeForm(climber, formMap);
-                    })
-                    .fail(function(status, message) {
-                        $.mobile.changePage("#adminClimbers");
-                        app.showErrorMessage(status, "Failed to get climber", message);
-                    });
+                if (eventId === "m") {
+                    model.fetchClimber(climberId)
+                        .done(function (data) {
+                            climber = data;
+                            util.writeForm(climber, formMap);
+                        })
+                        .fail(function (status, message) {
+                            returnToList();
+                            // xxx where does this go?
+                            app.showErrorMessage(status, "Failed to get climber", message);
+                        });
+                } else {
+                    model.fetchEventClimber(eventId, climberId)
+                        .done(function (data) {
+                            climber = data;
+                            util.writeForm(climber, formMap); // xxx
+                        })
+                        .fail(function (status, message) {
+                            returnToList();
+                            // xxx where does this go?
+                            app.showErrorMessage(status, "Failed to get event climber", message);
+                        });
+                }
             }
         }
     });

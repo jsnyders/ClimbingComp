@@ -97,6 +97,12 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+/* make select list in header look nice */
+.ui-title .ui-select {
+    margin-top: -0.5em;
+    margin-bottom: -0.5em;
+}
+
 .ui-field-contain.field-ro {
     margin: .2em 0;
 }

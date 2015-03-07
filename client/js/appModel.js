@@ -638,9 +638,187 @@ var appModel = (function($, logger, util, undefined) {
         // Event Climbers
         // =====================================
 
-        // xxx add climber
-        // xxx update climber
-        // xxx delete climber
+        // xxx
+
+        //
+        // GET /data/events/<event-id>/climbers
+        // xxx more options like search, columns, paging
+        fetchEventClimbers: function(eventId, filters, orderBy) {
+            var i, url,
+                params = "",
+                result = $.Deferred();
+
+            logger.debug(module, "Fetch event " + eventId + " climbers");
+            url = "/data/events/" + eventId + "/climbers";
+            // xxx make a function for this
+            if (filters) {
+                for (i = 0; i < filters.length; i++) {
+                    if (params) {
+                        params += "&";
+                    }
+                    params += "f=" + filters[i];
+                }
+            }
+            if (orderBy) {
+                for (i = 0; i < orderBy.length; i++) {
+                    if (params) {
+                        params += "&";
+                    }
+                    params += "o=" + orderBy[i];
+                }
+            }
+
+            if (params) {
+                url += "?" + params;
+            }
+            $.ajax({
+                url: url,
+                dataType: "json"
+            }).done(function(data) {
+                var i;
+
+                data = data.items;
+                for (i = 0; i < data.length; i++) {
+                    if (data[i].birthDate) {
+                        data[i].birthDate = new Date(data[i].birthDate);
+                    }
+                    if (data[i].updatedOn) {
+                        data[i].updatedOn = new Date(data[i].updatedOn);
+                    }
+                }
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch event climbers failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        //
+        // GET /data/events/<event-id>/climbers/<climber-id>
+        //
+        fetchEventClimber: function(eventId, climberId) {
+            var result,
+                self = this;
+
+            logger.debug(module, "Fetch event " + eventId + " climber " + climberId);
+
+            result = $.Deferred();
+            $.ajax({
+                url: "data/events/" + eventId + "/climbers/" + climberId,
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch event climber failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        //
+        // POST /data/events/<event-id>/climbers
+        //
+        createEventClimber: function(eventId, climber) {
+            var result,
+                self = this;
+
+            logger.debug(module, "Create event " + eventId + " climber " + climber.firstName + " " + climber.lastName);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "POST",
+                url: "data/events/" + eventId + "/climbers",
+                contentType: "application/json",
+                data: JSON.stringify(climber),
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Create event climber failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR)); // xxx item errors
+            });
+            return result.promise();
+        },
+
+        //
+        // PUT /data/events/<event-id>/climbers/<climber-id>
+        //
+        updateEventClimber: function(eventId, climber) {
+            var result,
+                climberId = climber.climberId;
+
+            logger.debug(module, "Update event " + eventId + " climber " + climber.firstName + " " + climber.lastName);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "PUT",
+                url: "data/events/" + eventId + "/climbers/" + climberId,
+                contentType: "application/json",
+                data: JSON.stringify(climber),
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Update event climber failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR)); // xxx item errors
+            });
+            return result.promise();
+        },
+
+        //
+        // DELETE /data/events/<event-id>/climbers/<climber-id>
+        //
+        deleteEventClimber: function(eventId, climberId, version) {
+            var result;
+
+            logger.debug(module, "Delete event " + eventId + " climber " + climberId + " at version " + version);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "DELETE",
+                url: "data/events/" + eventId + "/climbers/" + climberId + "?version=" + version,
+                dataType: null
+            }).done(function(data) {
+                result.resolve();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Delete event climber failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        // xxx
+        uploadEventClimbers: function(hasHeader, action, continueOnErrors, dateFormat, fields, file) {
+            var fd,
+                self = this,
+                result = $.Deferred();
+
+            logger.debug(module, "Upload Climbers. File: " + file.name +", action: " + action);
+
+            fd = new FormData();
+            fd.append("file", file);
+            fd.append("hasHeader", hasHeader ? "yes" : "no");
+            fd.append("action", action);
+            fd.append("continueOnErrors", continueOnErrors ? "yes" : "no");
+            fd.append("dateFormat", dateFormat);
+            fd.append("fields", fields.join(","));
+
+            $.ajax({
+                type: "POST",
+                url: "data/climbers-upload",
+                data: fd,
+                enctype: 'multipart/form-data',
+                processData: false,  // tell jQuery not to process the data
+                contentType: false   // tell jQuery not to set contentType
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Upload file failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
 
         // =====================================
         // Event Routes

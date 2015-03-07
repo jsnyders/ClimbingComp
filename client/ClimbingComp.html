@@ -83,7 +83,7 @@
                 <h2 class="ui-bar ui-bar-a">Administration</h2>
                 <ul data-role="listview" data-inset="true">
                     <li><a id="hEvents" href="#adminEvents?test:arg2" data-transition="slide">Manage Climbing Events</a></li>
-                    <li><a id="hClimbers" href="#adminClimbers" data-transition="slide">Manage Climbers</a></li>
+                    <li><a id="hClimbers" href="#adminClimbers?m" data-transition="slide">Manage Climbers</a></li>
                     <li><a id="hUsers" href="#adminUsers" data-transition="slide">Manage Users</a></li>
                 </ul>
             </div>
@@ -445,7 +445,11 @@
     <div id="adminClimbers" data-role="page">
         <div data-role="header">
             <a href="#home" data-transition="slide" data-direction="reverse" class="ui-btn ui-mini ui-icon-home ui-btn-icon-left ui-shadow ui-corner-all">Home</a>
-            <h1>Manage Climbers</h1>
+            <h1>
+                Manage Climbers
+                <select id="cClimberEvents" data-inline="true" data-mini="true">
+                </select>
+            </h1>
         </div>
         <div role="main" class="ui-content">
             <div class="messageArea ui-body ui-body-a ui-corner-all">
@@ -518,7 +522,7 @@
                 <input id="acCoach" type="text" name="coach" value="">
             </div>
 
-            <a id="acCancel" href="#adminClimbers" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</a>
+            <button id="acCancel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</button>
             <button id="acOK" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">OK</button>
         </div>
     </div>
@@ -576,7 +580,7 @@
                 </select>
             </div>
 
-            <a id="aicCancel" href="#adminClimbers" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</a>
+            <button id="aicCancel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</button>
             <button id="aicUpload" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Upload</button>
         </div>
     </div>
@@ -627,7 +631,7 @@
             </table>
 
             <button id="aicrUpdate" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Update</button>
-            <a id="aicrCancel" href="#adminClimbers" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">OK</a>
+            <button id="aicrDone" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">OK</button>
         </div>
     </div>
 

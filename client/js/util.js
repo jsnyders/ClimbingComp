@@ -49,9 +49,21 @@ var util = {};
     };
 
     /*
+     * Columns:
+     *   prop: <string> name of property in data row
+     *   label: <string> label to use column heading
+     *   priority: <n>
+     *   format: function(value, rowIndex, columnIndex)
+     *   hide: <bool>
+     *   cls:
+     *   link:
+     *   action:
+     *   icon:
+     *   args [<string>...] arguments for link or action prefix with ! for global parameters
      * Options:
      *   breakOn: function(row)
      *   nullValue: <string>
+     *   params: {<key>:<value} global parameters
      */
     util.renderTable = function($table, columns, data, options) {
         var i, j, k, row, col, br, display, argValues, value,
@@ -59,18 +71,35 @@ var util = {};
             header = "",
             lastBreak = "";
 
+        function getParam(row, arg) {
+            var global = false;
+            if ($.isFunction(arg)) {
+                return arg(row);
+            } // else
+            if (arg.substr(0,1) === "!") {
+                global = true;
+                arg = arg.substr(1);
+            }
+            if (global) {
+                return options.params[arg];
+            } // else
+            return row[arg];
+        }
+
         function makeHref(col, row) {
             var i,arg,
                 href = "#" + col.link;
 
             if ( col.args ) {
-                href += "?";
+                if (href.indexOf("?") < 0) {
+                    href += "?";
+                }
                 for (i = 0; i < col.args.length; i++) {
                     arg = col.args[i];
                     if (i > 0) {
                         href += ":";
                     }
-                    href += row[arg];
+                    href += getParam(row, arg);
                 }
             }
             return href;
@@ -81,6 +110,8 @@ var util = {};
         function makeButton(col, row) {
 
         }
+
+        options = options || {};
 
         header += "<tr class='ui-bar-d'>";
         for (j = 0; j < columns.length; j++) {
@@ -123,7 +154,7 @@ var util = {};
                     if (col.args) {
                         argValues = [];
                         for (k = 0; k < col.args.length; k++) {
-                            argValues.push(row[col.args[k]]);
+                            argValues.push(getParam(row, col.args[k]));
                         }
                         table += " data-args='" + util.escapeHTML(argValues.join("\n")) + "'";
                     }

@@ -35,7 +35,7 @@
         {prop: "series", label: "Series", priority: 2},
         {prop: "type", label: "Type", priority: 2},
         {prop: "sanctioning", label: "Sanctioning", priority: 2},
-        {label: "Actions", action: "delete", icon: "ui-icon-delete", args: ["eventId", "version"]}
+        {label: "Actions", action: "delete", icon: "ui-icon-delete", args: ["eventId", "version", "location"]}
     ];
 
     app.addPage({
@@ -46,9 +46,8 @@
                     btn$ = $(this);
 
                 if (btn$.attr("data-action") === "delete") {
-                    if (confirm("Ok to delete?")) { // xxx don't use confirm
-                        args = btn$.attr("data-args").split("\n");
-                        console.log("xxx todo delete" + args.join(":"));
+                    args = btn$.attr("data-args").split("\n");
+                    if (confirm("Ok to delete event '"+ args[2] + "'?")) { // xxx don't use confirm
                         model.deleteEvent(args[0], args[1])
                             .done(function() {
                                 $.mobile.changePage("#adminEvents");
@@ -70,7 +69,7 @@
                     $("#eventsTable").table("rebuild");
                 })
                 .fail(function(status, message) {
-                    app.showErrorMessage(status, "Failed to delete event", message);
+                    app.showErrorMessage(status, "Failed to get events", message);
                 });
         }
     });
