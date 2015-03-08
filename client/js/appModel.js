@@ -375,7 +375,7 @@ var appModel = (function($, logger, util, undefined) {
                 self = this,
                 result = $.Deferred();
 
-            logger.debug(module, "Upload Climbers. File: " + file.name +", action: " + action);
+            logger.debug(module, "Upload climbers. File: " + file.name +", action: " + action);
 
             fd = new FormData();
             fd.append("file", file);
@@ -395,7 +395,7 @@ var appModel = (function($, logger, util, undefined) {
             }).done(function(data) {
                 result.resolve(data);
             }).fail(function(jqXHR) {
-                logger.error(module, "Upload file failed: " + getMessage(jqXHR));
+                logger.error(module, "Upload climbers file failed: " + getMessage(jqXHR));
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
@@ -788,13 +788,12 @@ var appModel = (function($, logger, util, undefined) {
             return result.promise();
         },
 
-        // xxx
-        uploadEventClimbers: function(hasHeader, action, continueOnErrors, dateFormat, fields, file) {
+        uploadEventClimbers: function(eventId, hasHeader, action, continueOnErrors, dateFormat, fields, file) {
             var fd,
                 self = this,
                 result = $.Deferred();
 
-            logger.debug(module, "Upload Climbers. File: " + file.name +", action: " + action);
+            logger.debug(module, "Upload event " + eventId + " climbers. File: " + file.name +", action: " + action);
 
             fd = new FormData();
             fd.append("file", file);
@@ -806,7 +805,7 @@ var appModel = (function($, logger, util, undefined) {
 
             $.ajax({
                 type: "POST",
-                url: "data/climbers-upload",
+                url: "data/events/" + eventId + "/climbers-upload",
                 data: fd,
                 enctype: 'multipart/form-data',
                 processData: false,  // tell jQuery not to process the data
@@ -814,7 +813,7 @@ var appModel = (function($, logger, util, undefined) {
             }).done(function(data) {
                 result.resolve(data);
             }).fail(function(jqXHR) {
-                logger.error(module, "Upload file failed: " + getMessage(jqXHR));
+                logger.error(module, "Upload event climbers file failed: " + getMessage(jqXHR));
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();

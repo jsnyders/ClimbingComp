@@ -446,7 +446,7 @@
         <div data-role="header">
             <a href="#home" data-transition="slide" data-direction="reverse" class="ui-btn ui-mini ui-icon-home ui-btn-icon-left ui-shadow ui-corner-all">Home</a>
             <h1>
-                Manage Climbers
+                Manage Climbers For
                 <select id="cClimberEvents" data-inline="true" data-mini="true">
                 </select>
             </h1>
@@ -458,8 +458,8 @@
                     <button type="button" class="messageCloseButton ui-btn ui-btn-icon-notext ui-btn-right ui-btn-inline ui-corner-all ui-icon-delete"></button></h3>
                 <div class="messageContent"></div>
             </div>
-            <a id="cCreate" href="#adminClimber?new" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini">Add Climber</a>
-            <a id="cImport" href="#adminImportClimbers" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini">Import Climbers</a>
+            <button id="cCreate" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini">Add Climber</button>
+            <button id="cImport" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow ui-mini">Import Climbers</button>
             <select id="cCategoryFilter" data-inline="true" data-mini="true">
             </select>
             <select id="cRegionFilter" data-inline="true" data-mini="true">
@@ -529,7 +529,7 @@
 
     <div id="adminImportClimbers" data-role="page">
         <div data-role="header">
-            <h1>Import Climbers</h1>
+            <h1>Import Climbers For <span id="aicFor"></span></h1>
         </div>
         <div role="main" class="ui-content">
             <div class="messageArea ui-body ui-body-a ui-corner-all">
@@ -587,7 +587,7 @@
 
     <div id="adminImportClimbersResults" data-role="page">
         <div data-role="header">
-            <h1>Import Climbers Results</h1>
+            <h1>Import Climbers Results For <span id="aicrFor"></span></h1>
         </div>
         <div id="aicrContent" role="main" class="ui-content">
             <div class="messageArea ui-body ui-body-a ui-corner-all">
@@ -618,10 +618,16 @@
                 <input id="aicrNotUpdated" data-mini="true" type="text" readonly value="">
             </div>
             <div class="ui-field-contain field-ro input-num">
+                <label for="aicrWarnings">Warnings:</label>
+                <input id="aicrWarnings" data-mini="true" type="text" readonly value="">
+            </div>
+            <div class="ui-field-contain field-ro input-num">
                 <label for="aicrErrors">Errors:</label>
                 <input id="aicrErrors" data-mini="true" type="text" readonly value="">
             </div>
-            <p>Errors</p>
+            <button id="aicrUpdate" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Update</button>
+            <button id="aicrDone" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">OK</button>
+            <p>Errors and Warnings:</p>
             <table id="aicrErrorsTable" class="ui-body-d ui-shadow table-stripe">
                 <caption class="visuallyhidden">Import Errors</caption>
                 <thead>
@@ -629,9 +635,6 @@
                 <tbody>
                 </tbody>
             </table>
-
-            <button id="aicrUpdate" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Update</button>
-            <button id="aicrDone" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">OK</button>
         </div>
     </div>
 

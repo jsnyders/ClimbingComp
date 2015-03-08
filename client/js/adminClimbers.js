@@ -28,24 +28,9 @@
 (function(app, model, $, logger, util, undefined) {
     "use strict";
 
-    /*
-     climberId: row.id,
-     version: row.version,
-     usacMemberId: row.usac_member_id + "", // force it to be a string
-     firstName: row.first_name || "",
-     lastName: row.last_name,
-     gender: row.gender,
-     category: row.category,
-     birthDate: row.birth_date,
-     region: row.region || "",
-     team: row.team || "",
-     coach: row.coach || "",
-     updatedBy: row.updated_by,
-     updatedOn: row.updated_on
-
-     */
     var module = "AdminClimbers", // for logging
-        eventId = "";
+        eventId = "",
+        climbersForLabel = "";
 
     var climbersColumns = [
             // for event climbers
@@ -78,7 +63,7 @@
 
 
     // xxx get this from model layer, persist defaults
-    var allFields = [
+    var allMasterFields = [
             {label:"Menber No.", value: "usacMemberId" },
             {label:"First Name", value: "firstName"},
             {label:"Last Name", value: "lastName"},
@@ -89,13 +74,28 @@
             {label:"Team", value: "team"},
             {label:"Coach", value: "coach"}
         ],
-        defaultFields = [ "usacMemberId", "firstName", "lastName", "gender", "category", "region", "team"];
+        defaultMasterFields = [ "usacMemberId", "firstName", "lastName", "gender", "category", "region", "team"];
 
-    function lookupFieldLabel(field) {
+    // xxx get this from model layer, persist defaults
+    var allEventFields = [
+            {label:"Bib No.", value: "bibNumber" },
+            {label:"Menber No.", value: "usacMemberId" },
+            {label:"First Name", value: "firstName"},
+            {label:"Last Name", value: "lastName"},
+            {label:"Gender", value: "gender"},
+            {label:"Category", value: "category"},
+            {label:"Birth Day", value: "birthDate"},
+            {label:"Region", value: "region"},
+            {label:"Team", value: "team"},
+            {label:"Coach", value: "coach"}
+        ],
+        defaultEventFields = [ "bibNumber", "usacMemberId", "firstName", "lastName", "gender", "category", "region", "team"];
+
+    function lookupFieldLabel(collection, field) {
         var i;
-        for (i = 0; i < allFields.length; i++) {
-            if (allFields[i].value === field) {
-                return allFields[i].label;
+        for (i = 0; i < collection.length; i++) {
+            if (collection[i].value === field) {
+                return collection[i].label;
             }
         }
         return "unknown";
@@ -111,12 +111,21 @@
         return null;
     }
 
+    function getClimbersForLabel() {
+        $("#cClimberEvents").children().each(function() {
+            if (this.selected) {
+                climbersForLabel = $(this).text();
+                return false;
+            }
+        });
+    }
+
     function fetchEvents() {
 
         function renderClimberEventOptions() {
 
             function eventLabel(event) {
-                return util.escapeHTML(event.location) + " " + util.formatDate(event.date);
+                return "Event at " + util.escapeHTML(event.location) + " on " + util.formatDate(event.date);
             }
 
             util.renderOptions($("#cClimberEvents"), model.events, {
@@ -154,12 +163,11 @@
         } else {
             filters = catFilter || regionFilter;
         }
-        console.log("xxx filters " + filters);
         if (filters) {
             filters = filters.split(","); // xxx what if there is a , in the data
         }
 
-        // xxx let the user choose
+        // xxx todo let the user choose
         orderBy = "region:a,category:a,gender:d,lastName:a";
         orderBy = orderBy.split(",");
 
@@ -239,6 +247,14 @@
                 $.mobile.changePage("#adminClimbers?" + v, {allowSamePageTransition: true});
             });
 
+            $("#cCreate").click(function() {
+                $.mobile.changePage("#adminClimber?" + eventId + ":new");
+            });
+
+            $("#cImport").click(function() {
+                $.mobile.changePage("#adminImportClimbers?" + eventId);
+            });
+
             $("#cClimbersTable").on("click", "button", function(event) {
                 var args,
                     btn$ = $(this);
@@ -288,6 +304,7 @@
         open: function(ui) {
             logger.debug(module, "Page open");
             fetchEvents();
+            getClimbersForLabel();
             fetchClimbers();
         }
     });
@@ -295,10 +312,9 @@
     app.addPage({
         name: "adminImportClimbers",
         init: function(ui) {
-            var i, fieldOptions, html;
 
             $("#aicCancel").click(function() {
-                $.mobile.changePage("#adminClimbers?m"); // xxx eventid
+                $.mobile.changePage("#adminClimbers?" + eventId);
             });
 
             $("#aicUpload").click(function() {
@@ -308,32 +324,51 @@
                     alert("Choose a file first.");
                     return;
                 }
-                $.mobile.changePage("#adminImportClimbersResults");
+                $.mobile.changePage("#adminImportClimbersResults?" + eventId);
             });
 
-            // setup field chooser
             // xxx TODO use drag and drop
+
+        },
+        prepare: function(ui) {
+            var i, fieldOptions, html, fields, defaults;
+
+            eventId = "m";
+            if (ui.args && ui.args.length > 0) {
+                eventId = ui.args[0];
+            }
+            app.clearMessage(this.name);
+            $("#aicFile").val("");
+            // leave the other fields as they are
+
+            // set header title
+            getClimbersForLabel();
+            $("#aicFor").text(climbersForLabel);
+
+            // setup field chooser based on if it is for an event or master list of climbers
+            if (eventId === "m") {
+                fields = allMasterFields;
+                defaults = defaultMasterFields;
+            } else {
+                fields = allEventFields;
+                defaults = defaultEventFields;
+            }
             fieldOptions = "<option value=''>ignore</option>\n";
-            allFields.forEach(function(field) {
+            fields.forEach(function(field) {
                 fieldOptions += "<option value='" + field.value + "'>" + field.label + "</option>\n";
             });
             html = "";
-            for (i = 0; i < allFields.length; i++) {
+            // allow for 2 extra columns in case some need to be skipped
+            for (i = 0; i < fields.length + 2; i++) {
                 html += "<select id='aicField" + (i + 1) + "' data-inline='true'>";
                 html += fieldOptions;
                 html += "</select>";
             }
             $("#aicFields").html(html);
             // set defaults
-            for (i = 0; i < defaultFields.length; i++) {
-                $("#aicField" + (i + 1)).val(defaultFields[i]);
+            for (i = 0; i < defaults.length; i++) {
+                $("#aicField" + (i + 1)).val(defaults[i]);
             }
-
-        },
-        prepare: function() {
-            app.clearMessage(this.name);
-            $("#aicFile").val("");
-            // leave the other fields as they are
         },
         open: function(ui) {
             // xxx anything to do?
@@ -345,7 +380,7 @@
         init: function(ui) {
 
             $("#aicrDone").click(function() {
-                $.mobile.changePage("#adminClimbers?m"); // xxx eventid
+                $.mobile.changePage("#adminClimbers?" + eventId);
             });
 
             $("#aicrUpdate").click(function() {
@@ -353,10 +388,14 @@
             });
 
         },
-        prepare: function() {
+        prepare: function(ui) {
+            eventId = "m";
+            if (ui.args && ui.args.length > 0) {
+                eventId = ui.args[0];
+            }
             app.clearMessage(this.name);
             // clear out stats
-            $("#aicrAdded,#aicrUpdated,#aicrNoChange,#aicrNotUpdated,#aicrErrors").each(function() {
+            $("#aicrTotal,#aicrAdded,#aicrUpdated,#aicrNoChange,#aicrNotUpdated,#aicrWarnings,#aicrErrors").each(function() {
                 $(this).val("");
             });
             // clear errors table
@@ -364,11 +403,15 @@
             // hide it all
             $("#aicrContent").hide();
 
+            // set header title
+            getClimbersForLabel();
+            $("#aicrFor").text(climbersForLabel);
+
             // xxx hide update button if needed
             $("#aicrUpdate").hide();
         },
         open: function(ui) {
-            var i, len,
+            var len, result,
                 file = $("#aicFile")[0].files[0],
                 hasHeader = $("#aicHasHeader")[0].checked,
                 action = $("#aicAction").val(),
@@ -376,29 +419,40 @@
                 continueOnErrors = $("#aicContinueOnErrors").val() === "yes",
                 fields = [];
 
-            if (!file) {
+            eventId = null;
+            if (ui.args && ui.args.length > 0) {
+                eventId = ui.args[0];
+            }
+
+            if (!file || !eventId) {
                 // somehow got here without going through adminImportClimbers > Upload
-                $.mobile.changePage("#adminClimbers");
+                // or without an eventId
+                $.mobile.changePage("#adminClimbers?m");
                 return;
             }
             $("#aicFile").val(""); // guard against doing the import twice by mistake
 
             len = 0;
-            for (i = 0; i < allFields.length; i++) {
-                fields.push($("#aicField" + (i + 1)).val());
+            $("#aicFields").children("select").each(function() {
+                fields.push($(this).val());
                 if (fields[fields.length - 1] !== "") {
                     len = fields.length;
                 }
-            }
+            });
             fields.length = len; // truncate trailing "ignore" fields
+
+            if (eventId === "m") {
+                result = model.uploadClimbers(hasHeader, action, continueOnErrors, dateFormat, fields, file);
+            } else {
+                result = model.uploadEventClimbers(eventId, hasHeader, action, continueOnErrors, dateFormat, fields, file);
+            }
 
             $.mobile.loading("show", {
                 text: "Importing. Please wait...",
                 textVisible: true
             });
-            model.uploadClimbers(hasHeader, action, continueOnErrors, dateFormat, fields, file)
-                .done(function(data) {
-                    var i, errors, error, item, columns, errorMessage,
+            result.done(function(data) {
+                    var i, errors, error, item, columns, errorMessage, whichFields,
                         stats = data.stats;
 
                     $("#aicrContent").show();
@@ -408,15 +462,21 @@
                     $("#aicrUpdated").val(stats.updated);
                     $("#aicrNoChange").val(stats.noChange);
                     $("#aicrNotUpdated").val(stats.notUpdated);
+                    $("#aicrWarnings").val(stats.warnings || 0);
                     $("#aicrErrors").val(stats.errors);
 
                     // xxx much more complicated review and resubmit
                     if (data.errors && data.errors.length > 0) {
+                        if (eventId === "m") {
+                            whichFields = allMasterFields;
+                        } else {
+                            whichFields = allEventFields;
+                        }
                         columns = [];
                         columns.push({prop: "line", label: "Line"});
                         columns.push({prop: "error", label: "Error"});
                         for (i = 0; i < fields.length; i++) {
-                            columns.push({prop: fields[i], label: lookupFieldLabel(fields[i])});
+                            columns.push({prop: fields[i], label: lookupFieldLabel(whichFields, fields[i])});
                         }
                         errors = [];
                         for (i = 0; i < data.errors.length; i++) {
@@ -437,8 +497,14 @@
 
                 })
                 .fail(function(status, message) {
+                    var what;
                     $("#aicrContent").show();
-                    app.showErrorMessage(status, "Failed to upload climbers", message);
+                    if (eventId === "m") {
+                        what = "Failed to upload climbers";
+                    } else {
+                        what = "Failed to upload event climbers";
+                    }
+                    app.showErrorMessage(status, what, message);
                 })
                 .always(function() {
                     $.mobile.loading("hide");

@@ -266,12 +266,11 @@ var util = {};
         "'": "&#x27;", //  &apos; not recommended because its not in the HTML spec (See: section 24.4.1) &apos; is in the XML and XHTML specs.
         "/": "&#x2F"   //  forward slash is included as it helps end an HTML entity
     };
-    var htmlRE = /&|<|>|'|"/g;
-
+    var htmlRE = /&|<|>|'|"|\//g;
 
     util.escapeHTML = function(value) {
         value = "" + value; // force it to be a string
-        return value.replace(htmlRE, function(match, ch) {
+        return value.replace(htmlRE, function(ch) {
             return htmlMap[ch];
         });
     };
