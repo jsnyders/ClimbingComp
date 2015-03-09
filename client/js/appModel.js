@@ -257,7 +257,9 @@ var appModel = (function($, logger, util, undefined) {
                 url: url,
                 dataType: "json"
             }).done(function(data) {
-                var i;
+                var i,
+                    offset = data.offset || 0,
+                    total = data.total || data.items.length;
 
                 data = data.items;
                 for (i = 0; i < data.length; i++) {
@@ -268,7 +270,7 @@ var appModel = (function($, logger, util, undefined) {
                         data[i].updatedOn = new Date(data[i].updatedOn);
                     }
                 }
-                result.resolve(data);
+                result.resolve(data, offset, total);
             }).fail(function(jqXHR) {
                 logger.error(module, "Fetch climbers failed: " + getMessage(jqXHR));
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
@@ -551,7 +553,7 @@ var appModel = (function($, logger, util, undefined) {
                     if (climber.scoreCard && climber.scoreCard.climbs) {
                         climber.scoreCard.climbs = climber.scoreCard.climbs;
                     }
-                    currentEvent.climberIndex[climber.climberId] = climber;
+                    currentEvent.climberIndex[climber.bibNumber] = climber;
                 }
                 result.resolve();
             }).fail(function(jqXHR) {
@@ -675,7 +677,9 @@ var appModel = (function($, logger, util, undefined) {
                 url: url,
                 dataType: "json"
             }).done(function(data) {
-                var i;
+                var i,
+                    offset = data.offset || 0,
+                    total = data.total || data.items.length;
 
                 data = data.items;
                 for (i = 0; i < data.length; i++) {
@@ -686,7 +690,7 @@ var appModel = (function($, logger, util, undefined) {
                         data[i].updatedOn = new Date(data[i].updatedOn);
                     }
                 }
-                result.resolve(data);
+                result.resolve(data, offset, total);
             }).fail(function(jqXHR) {
                 logger.error(module, "Fetch event climbers failed: " + getMessage(jqXHR));
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
@@ -881,14 +885,14 @@ var appModel = (function($, logger, util, undefined) {
             return result;
         },
 
-        setCurrentClimber: function(climberId) {
+        setCurrentClimber: function(bibNumber) {
             var climber;
             if (!this.currentEvent || !this.currentEvent.climbers) {
                 throw "No current event";
             }
             this.currentClimber = null;
             this.scoreCardDirty = false;
-            climber = this.currentEvent.climberIndex[climberId];
+            climber = this.currentEvent.climberIndex[bibNumber];
             if ( climber ) {
                 this.currentClimber = climber;
                 return true;
@@ -927,7 +931,7 @@ var appModel = (function($, logger, util, undefined) {
         // PUT /data/events/<event-id>/results/<climber-id>
         // updateCurrentClimberScoreCard must already have been called
         saveCurrentClimberScoreCard: function() {
-            var climberId, eventId, data,
+            var bibNumber, eventId, data,
                 self = this,
                 result = $.Deferred();
 
@@ -939,7 +943,7 @@ var appModel = (function($, logger, util, undefined) {
                 throw "No current climber";
             }
             eventId = this.currentEvent.eventId;
-            climberId = this.currentClimber.climberId;
+            bibNumber = this.currentClimber.bibNumber;
 
 
             data = $.extend({}, this.currentClimber.scoreCard); // xxx how much to send? may not need to persist the score because it can be calculated. The element ids may not make sense
@@ -947,7 +951,7 @@ var appModel = (function($, logger, util, undefined) {
             data.version = this.currentClimber.version;
             $.ajax({
                 type: "PUT",
-                url: "data/events/" + eventId + "/results/" + climberId,
+                url: "data/events/" + eventId + "/results/" + bibNumber,
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json"

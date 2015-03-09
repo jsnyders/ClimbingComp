@@ -92,8 +92,10 @@
         <!-- this gets replicated to the other pages -->
         <div class="footer" data-role="footer" data-position="fixed">
             <span class='fApp'>ClimbingComp <a href="#about" >About</a></span>
-            <span class='fUser'></span>
-            <span class='fCurEvent'></span>
+            <span class="fUserEvent">
+                <span class='fUser'></span>
+                <span class='fCurEvent'></span>
+            </span>
         </div>
     </div>
 
@@ -135,7 +137,7 @@
                 <p>Version 0.1.0</p>
                 <p>Copyright (c) 2014, 2015, John Snyders</p>
                 <p>ClimbingComp is free software. For more information and download visit the
-                    <a href="https://github.com/jsnyders/ClimbingComp">project page</a> on GitHub.</p>
+                    <a target="_blank" href="https://github.com/jsnyders/ClimbingComp">project page</a> on GitHub.</p>
                 <a id="lDone" href="#" data-rel="back" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">OK</a>
             </div>
         </div>
@@ -334,7 +336,6 @@
                 <ul>
                     <li><a href="#aeEventTab" data-ajax="false" class="ui-btn-active">Event</a></li>
                     <li><a href="#aeRoutesTab" data-ajax="false">Routes</a></li>
-                    <li><a href="#aeClimbersTab" data-ajax="false">Climbers</a></li>
                 </ul>
             </div>
             <div class="messageArea ui-body ui-body-a ui-corner-all">
@@ -386,6 +387,8 @@
                     <textarea id="aeNotes" rows="4" name="notes"></textarea>
                 </div>
 
+                <button id="aeManageClimbers" class="ui-btn ui-btn-b ui-corner-all ui-shadow">Manage climbers for this event</button>
+
                 <h2 class="ui-bar ui-bar-a">Score Card</h2>
 
                 <div class="ui-field-contain">
@@ -432,9 +435,6 @@
                 <button id="aeExport" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Export</button>
                 <div id="aeScoreCard">
                 </div>
-            </div>
-            <div id="aeClimbersTab" class="ui-content">
-                todo
             </div>
             <a id="aeCancel" href="#adminEvents" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</a>
             <button id="aeApply" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Apply</button>
@@ -627,7 +627,7 @@
             </div>
             <button id="aicrUpdate" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Update</button>
             <button id="aicrDone" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">OK</button>
-            <p>Errors and Warnings:</p>
+            <p>Errors and Warnings: <a id="aicrCSV" href="#aicrErrorsCSV" class="" data-rel="popup">[show as CSV]</a></p>
             <table id="aicrErrorsTable" class="ui-body-d ui-shadow table-stripe">
                 <caption class="visuallyhidden">Import Errors</caption>
                 <thead>
@@ -635,6 +635,10 @@
                 <tbody>
                 </tbody>
             </table>
+            <div id="aicrErrorsCSV" data-role="popup" class="ui-content" data-corners="false" data-position-to="window" data-theme="a" data-overlay-theme="a">
+                <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+                <textarea style="overflow:auto;white-space:pre;"></textarea>
+            </div>
         </div>
     </div>
 

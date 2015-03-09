@@ -123,7 +123,7 @@
             climber = model.currentClimber;
 
         $("#scClimberSelector").find(".ui-collapsible-heading-toggle").html(
-            "<span id='scNumber' title='Event Climber ID'>#" + util.escapeHTML(climber.climberId) + "</span><span id='scName' title='Name'>" +
+            "<span id='scNumber' title='Bib Number'>#" + util.escapeHTML(climber.bibNumber) + "</span><span id='scName' title='Name'>" +
                 util.escapeHTML(climber.firstName) + " " + util.escapeHTML(climber.lastName) + "</span><span id='scUsaClimbingNumber' title='USA Climbing Number'>" +
                 util.escapeHTML(climber.usacMemberId || "") + "</span><span id='scGenderAndCategory'>" +
                 util.escapeHTML(climber.gender + " " + climber.category) + "</span><span id='scScore'></span><span id='scAction'>Next</span>"
@@ -352,10 +352,10 @@
             }
 
             function keypadCheckClimberId(text) {
-                var climberId;
+                var bibNumber;
                 if (text.length === CLIMBER_ID_LENGTH) {
-                    climberId = parseInt(text, 10);
-                    if ( isNaN(climberId) || !model.setCurrentClimber(climberId)) {
+                    bibNumber = parseInt(text, 10);
+                    if ( isNaN(bibNumber) || !model.setCurrentClimber(bibNumber)) {
                         keypadClear();
                         messageShowing = true;
                         $("#scBadNum").text(text);
@@ -427,9 +427,9 @@
                     $ul.trigger("updatelayout");
                 }
             }).on("click", "a", function() {
-                var climberId = $(this).attr("data-value");
-                if (climberId) {
-                    model.setCurrentClimber(climberId);
+                var bibNumber = $(this).attr("data-value");
+                if (bibNumber) {
+                    model.setCurrentClimber(bibNumber);
                     initCurrentClimber($sc, model.currentEvent.recordFallsPerClimb);
                     closeClimberSelector();
                 }

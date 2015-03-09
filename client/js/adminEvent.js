@@ -250,6 +250,10 @@
                 alert("Not yet supported. todo");
             });
 
+            $("#aeManageClimbers").click(function() {
+                $.mobile.changePage("#adminClimbers?" + eventId);
+            });
+
         },
         prepare: function(ui) {
             app.clearMessage(this.name);
@@ -264,6 +268,7 @@
                 // update event
                 $("#aeOK").text("OK");
                 $("#aeApply").show();
+                $("#aeManageClimbers").show();
                 $("#aeTabs").tabs("option", "disabled", false); // enable all tabs
                 $("#aeTitle").text("Edit Event");
             } else {
@@ -283,6 +288,7 @@
                 util.writeForm(event, formMap);
                 $("#aeOK").text("Create");
                 $("#aeApply").hide();
+                $("#aeManageClimbers").hide();
                 $("#aeTabs").tabs("option", "disabled", [1,2]);
                 $("#aeTitle").text("Create Event");
             }

@@ -3,7 +3,7 @@
  Admin Users page
  List and delete users.
 
- Copyright (c) 2014, John Snyders
+ Copyright (c) 2014, 2015, John Snyders
 
  ClimbingComp is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
@@ -44,8 +44,8 @@
                     btn$ = $(this);
 
                 if (btn$.attr("data-action") === "delete") {
-                    if (confirm("Ok to delete?")) { // xxx don't use confirm
-                        args = btn$.attr("data-args").split("\n");
+                    args = btn$.attr("data-args").split("\n");
+                    if (confirm("Ok to delete user '" + args[0] + "'?")) { // xxx don't use confirm
                         model.deleteUser(args[0], args[1])
                             .done(function() {
                                 $.mobile.changePage("#adminUsers");
@@ -60,6 +60,7 @@
         },
         prepare: function() {
             app.clearMessage(this.name);
+            app.updateFooter();
         },
         open: function(ui) {
             model.fetchUsers()

@@ -294,7 +294,18 @@ table.scTable td {
     margin: 2px;
 }
 
+/*
+ * Manage Climbers styles
+ */
+#adminClimbers .ui-header h1,
+#adminImportClimbers .ui-header h1,
+#adminImportClimbersResults .ui-header h1 {
+    margin: 0 10%;
+}
 
+#aicrErrorsCSV-popup {
+    width: 90%;
+}
 
 /* At small screen width (400px, 25em * 16px) don't display score card columns side by side */
 @media all and (max-width: 25em) {
@@ -312,11 +323,19 @@ table.scTable td {
 
 /* Misc small screen settings at 768px (48em x 16px) */
 @media all and (max-width: 48em) {
+    /* score card */
+    #scUsaClimbingNumber {
+        display: none;
+    }
+}
+
+/* Misc small screen settings at (400px, 25em * 16px) */
+@media all and (max-width: 25em) {
     /* footer */
     .footer {
         text-align: center;
     }
-    .fApp, .fCurEvent {
+    .fApp, .fUserEvent {
         float: none;
         display: block;
     }
@@ -373,13 +392,23 @@ table.scTable td {
     }
 }
 
+/* Show priority 1 at 720px (45em x 16px) */
+@media screen and (min-width: 45em) {
+    #eEventsTable th.ui-table-priority-1,
+    #eEventsTable td.ui-table-priority-1 {
+        display: table-cell;
+    }
+}
+
 /* Manually hidden */
 .scTable th.ui-table-cell-hidden,
 .scTable td.ui-table-cell-hidden,
 #resTable th.ui-table-cell-hidden,
 #resTable td.ui-table-cell-hidden,
 #cClimbersTable th.ui-table-cell-hidden,
-#cClimbersTable td.ui-table-cell-hidden {
+#cClimbersTable td.ui-table-cell-hidden,
+#eEventsTable th.ui-table-cell-hidden,
+#eEventsTable td.ui-table-cell-hidden {
     display: none;
 }
 /* Manually shown */
@@ -388,7 +417,9 @@ table.scTable td {
 #resTable th.ui-table-cell-visible,
 #resTable td.ui-table-cell-visible,
 #cClimbersTable th.ui-table-cell-visible,
-#cClimbersTable td.ui-table-cell-visible {
+#cClimbersTable td.ui-table-cell-visible,
+#eEventsTable th.ui-table-cell-visible,
+#eEventsTable td.ui-table-cell-visible {
     display: table-cell;
 }
 

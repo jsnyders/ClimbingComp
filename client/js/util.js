@@ -64,6 +64,8 @@ var util = {};
      *   breakOn: function(row)
      *   nullValue: <string>
      *   params: {<key>:<value} global parameters
+     *   page: function() called to get more data
+     *   total: <n> total number of rows if present is displayed as a table footer
      */
     util.renderTable = function($table, columns, data, options) {
         var i, j, k, row, col, br, display, argValues, value,
@@ -113,7 +115,7 @@ var util = {};
 
         options = options || {};
 
-        header += "<tr class='ui-bar-d'>";
+        header += "<tr class='ui-bar-d tableHeader'>";
         for (j = 0; j < columns.length; j++) {
             col = columns[j];
             if (col.hide) {
@@ -181,8 +183,29 @@ var util = {};
             }
             table += "</tr>";
         }
+        // xxx paging support
         $table.children("tbody").html(table);
+        if (options.total) {
+            $table.next(".tableSummary").remove();
+            $table.after("<div class='tableSummary'>Total: " + util.escapeHTML(options.total) + "</div>");
+        }
 
+    };
+
+    util.tableToCSV = function($table) {
+        var csv = "";
+        $table.children("tbody").children("tr").each(function(r) {
+            if (r > 0) {
+                csv += "\n";
+            }
+            $(this).children("td").each(function(c) {
+                if (c > 0) {
+                    csv += ",";
+                }
+                csv += util.escapeCSV($(this).text());
+            });
+        });
+        return csv;
     };
 
     util.renderOptions = function($select, list, cfg) {
@@ -273,6 +296,14 @@ var util = {};
         return value.replace(htmlRE, function(ch) {
             return htmlMap[ch];
         });
+    };
+
+    util.escapeCSV = function(value) {
+        var m = /^\s*([+-]?\d*)(.\d*)?\s*$/.exec(value);
+        if (m && !isNaN(parseFloat(value)) ) {
+            return value; // its a number
+        }
+        return "\"" + value.replace("\"", "\"\"") + "\"";
     };
 
     // xxx todo configure date display format

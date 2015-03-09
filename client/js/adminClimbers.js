@@ -41,7 +41,7 @@
             // for all
             {prop: "firstName", label: "First Name"},
             {prop: "lastName", label: "Last Name"},
-            {prop: "birthDate", label: "Birth Date", format: function(value, r, c) {
+            {prop: "birthDate", label: "Birth Date", priority: 1, format: function(value, r, c) {
                 if (!value) {
                     return "-";
                 }
@@ -185,10 +185,11 @@
         };
         if (eventId === "m") {
             model.fetchClimbers(filters, orderBy)
-                .done(function (climbers) {
+                .done(function (climbers, offset, total) {
                     climbersColumns[0].hide = true;
                     climbersColumns[1].hide = true;
                     climbersColumns[2].hide = false;
+                    options.total = total;
                     util.renderTable($("#cClimbersTable"), climbersColumns, climbers, options);
                     $("#cClimbersTable").table("rebuild");
                 })
@@ -200,10 +201,11 @@
                 });
         } else {
             model.fetchEventClimbers(eventId, filters, orderBy)
-                .done(function (climbers) {
+                .done(function (climbers, offset, total) {
                     climbersColumns[0].hide = false;
                     climbersColumns[1].hide = false;
                     climbersColumns[2].hide = true;
+                    options.total = total;
                     util.renderTable($("#cClimbersTable"), climbersColumns, climbers, options);
                     $("#cClimbersTable").table("rebuild");
                 })
@@ -295,6 +297,7 @@
         },
         prepare: function(ui) {
             app.clearMessage(this.name);
+            app.updateFooter();
             eventId = "m";
             if (ui.args && ui.args.length > 0) {
                 eventId = ui.args[0];
@@ -387,6 +390,12 @@
                 alert("not yet implemented");
             });
 
+            $("#aicrErrorsCSV").on("popupafteropen", function() {
+                var csv = util.tableToCSV($("#aicrErrorsTable"));
+
+                $("#aicrErrorsCSV").find("textarea").height($(window).height() - 160).text(csv).focus()[0].select();
+            });
+
         },
         prepare: function(ui) {
             eventId = "m";
@@ -409,6 +418,7 @@
 
             // xxx hide update button if needed
             $("#aicrUpdate").hide();
+            $("#aicrCSV").hide();
         },
         open: function(ui) {
             var len, result,
@@ -467,6 +477,7 @@
 
                     // xxx much more complicated review and resubmit
                     if (data.errors && data.errors.length > 0) {
+                        $("#aicrCSV").show();
                         if (eventId === "m") {
                             whichFields = allMasterFields;
                         } else {

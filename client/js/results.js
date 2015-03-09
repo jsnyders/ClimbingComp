@@ -14,7 +14,7 @@
 
     var module = "Results",
         resultColumns = [
-        {prop: "climberId", label: "ID"},
+        {prop: "bibNumber", label: "Bib #"},
         {prop: "usacMemberId", label: "Member #", priority: '1'},
         {prop: "firstName", label: "First Name"},
         {prop: "lastName", label: "Last Name"},
