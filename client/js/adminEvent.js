@@ -23,7 +23,7 @@
  * bug: when first opened doesn't always show active tab
  * event climbers: list, add, edit, delete, upload, export?
  * route export
- * print score card
+ * print scorecard
  */
 
 (function(app, model, $, logger, util, undefined) {
@@ -87,7 +87,7 @@
         for (i = 0; i < event.scoreCardColumns; i++) {
             html += '<div class="ui-block-' + ltr[i] +
                 '"><table id="aeRouteCol-' + i +
-                '" class="ui-body-d ui-shadow table-stripe aeRouteTable"><caption class="visuallyhidden">Score Card xxx </caption><thead></thead><tbody></tbody></table></div>';
+                '" class="ui-body-d ui-shadow table-stripe aeRouteTable"><caption class="visuallyhidden">Scorecard xxx </caption><thead></thead><tbody></tbody></table></div>';
             columnsRoutes.push([]);
         }
         $("#aeScoreCard").html(html);

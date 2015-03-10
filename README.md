@@ -1,18 +1,18 @@
 # ClimbingComp
 
 ClimbingComp is a rock climbing competition scoring app. It allows multiple people using tablets or laptops
-to quickly enter score card data so final results can be posted fast.
+to quickly enter scorecard data so final results can be posted fast.
 
 It is in an early stage of development but has been used successfully at a few climbing competitions in 2014.
 
 The traditional way of scoring a climbing competition relies on using spreadsheet software. This creates a data
 entry bottleneck where only one person at a time can enter data. Even when the data entry is divided between
-multiple people there is extra overhead in partitioning the score cards and consolidating the results.
-In addition spreadsheet software is not optimized for rapid score card entry.
+multiple people there is extra overhead in partitioning the scorecards and consolidating the results.
+In addition spreadsheet software is not optimized for rapid scorecard entry.
 
 ClimbingComp is designed to address the inherent problems with using a spreadsheet. ClimbingComp is a web application
 so it can be used by many people at once, All the data is stored centrally. The UI is optimized for competition
-score card data entry making it faster and reducing errors.
+scorecard data entry making it faster and reducing errors.
 
 It is designed based on the USA Climbing climbing competition format and scoring rules but may be applicable, or
 adapted to other situations.
@@ -24,7 +24,7 @@ Source: [https://github.com/jsnyders/ClimbingComp](https://github.com/jsnyders/C
 ## Features
 
 * Its a web app that works on tablets laptops or desktops
-* Data entry screen has same layout as score card for easy data entry
+* Data entry screen has same layout as scorecard for easy data entry
 
 ## License
 GNU Affero General Public License. See LICENSE.txt for details.

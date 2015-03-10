@@ -74,7 +74,7 @@
                     <select data-mini="true" id="hEvent"></select>
                 </div>
                 <ul id="hEventActions" data-role="listview" data-inset="true">
-                    <li><a id="hScoreCardLink" href="#scorecard" class="ui-state-disabled" data-transition="slide">Score Cards</a></li>
+                    <li><a id="hScoreCardLink" href="#scorecard" class="ui-state-disabled" data-transition="slide">Scorecards</a></li>
                     <li><a id="hResultsLink" href="#results" class="ui-state-disabled" data-transition="slide">Results</a></li>
                 </ul>
             </div>
@@ -146,7 +146,7 @@
     <div id="scorecard" data-role="page">
         <div data-role="header">
             <a id="scHomeBtn" href="#home" data-transition="slide" data-mini="true" data-direction="reverse" class="ui-btn ui-icon-home ui-btn-icon-left ui-shadow ui-corner-all">Home</a>
-            <h1>Score Card</h1>
+            <h1>Scorecard</h1>
         </div>
         <div role="main" class="ui-content">
             <div class="messageArea ui-body ui-body-a ui-corner-all">
@@ -250,8 +250,8 @@
                     </fieldset>
                 </div>
                 <div class="ui-block-a">
-                    <table id="scTableLeft" data-role="table" data-mode="columntoggle" class="scTable scoreCardC0 ui-responsive ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
-                        <caption class="visuallyhidden">Score card left column table of routes.</caption>
+                    <table data-role="table" data-mode="columntoggle" class="scTable first scoreCardC0 ui-responsive ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
+                        <caption class="visuallyhidden">Scorecard left column table of routes.</caption>
                         <thead>
                         </thead>
                         <tbody>
@@ -259,8 +259,8 @@
                     </table>
                 </div>
                 <div class="ui-block-b">
-                    <table id="scTableRight" data-role="table" data-mode="columntoggle" class="scTable scoreCardC1 ui-responsive ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
-                        <caption class="visuallyhidden">Score card right column table of routes.</caption>
+                    <table data-role="table" data-mode="columntoggle" class="scTable last scoreCardC1 ui-responsive ui-body-d ui-shadow table-stripe" data-column-btn-theme="b">
+                        <caption class="visuallyhidden">Scorecard right column table of routes.</caption>
                         <thead>
                         </thead>
                         <tbody>
@@ -389,7 +389,7 @@
 
                 <button id="aeManageClimbers" class="ui-btn ui-btn-b ui-corner-all ui-shadow">Manage climbers for this event</button>
 
-                <h2 class="ui-bar ui-bar-a">Score Card</h2>
+                <h2 class="ui-bar ui-bar-a">Scorecard</h2>
 
                 <div class="ui-field-contain">
                     <label for="aeColumns">Columns:</label>
@@ -415,7 +415,7 @@
                     <p>The import file must be in CSV format with these columns:</p>
                     <code id="aeImportColumns"></code>
                     <p>The first line is assumed to contain column headings and is ignored. Number starts at 1.
-                       Row and Column are optional. If included they start at 0. The number of columns must match Score Card Columns.
+                       Row and Column are optional. If included they start at 0. The number of columns must match Scorecard Columns.
                        Extra columns are ignored. All existing routes are overwritten.</p>
                     <div class="ui-field-contain">
                         <label for="aeFile">File to upload:</label>
@@ -694,7 +694,7 @@
                 <label for="auRole">Role:</label>
                 <select id="auRole" name="role">
                     <option selected value="Reader">Read Only Access</option>
-                    <option value="Contributor">Score Card Entry</option>
+                    <option value="Contributor">Scorecard Entry</option>
                     <option value="Admin">Administrator</option>
                 </select>
             </div>
@@ -721,7 +721,7 @@
     <script src="js/util.js"></script>
     <script src="js/appModel.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/scoreCard.js"></script>
+    <script src="js/scorecard.js"></script>
     <script src="js/results.js"></script>
     <script src="js/adminClimbers.js"></script>
     <script src="js/adminClimber.js"></script>

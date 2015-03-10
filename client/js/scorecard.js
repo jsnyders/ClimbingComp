@@ -1,7 +1,7 @@
 /*global jQuery, logger, app, appModel, util*/
 /*
- scoreCard.js
- Score Card page
+ scorecard.js
+ Scorecard page
 
  Copyright (c) 2014, John Snyders
 
@@ -22,8 +22,8 @@
  * xxx todo
  * On a small screen when the text input doesn't fit next to keypad put it above the keypad
  * When number of falls is > 10 and extra radio buttons are hidden give some kind of indication there there are falls
- * *Make score card heading fit on small screens
- * better keyboard support on score card
+ * *Make scorecard heading fit on small screens
+ * better keyboard support on scorecard
  */
 
 (function(app, model, $, logger, util, undefined) {
@@ -54,17 +54,17 @@
         }
 
         header += "<tr class='ui-bar-d'><th>Rt #</th>"; // xxx want Route # or Rt # depending on screen size
-        if (options.includeLocation) {
-            header += "<th data-priority='2'>Location</th>";
+        if (options.includeLocation && options.showLocation) { // xxx showLocation not yet implemented
+            header += "<th data-priority='2'>Location</th>"; // xxx customize location label I have seen location, Rope #
         }
         if (options.includeColor) {
-            header += "<th data-priority='2'>Color</th>";
+            header += "<th data-priority='1'>Color</th>";
         }
-        header += "<th data-priority='1'>Points</th>";
+        header += "<th>Points</th>";
         if (options.includeFalls) {
             header += "<th>Falls</th>";
         }
-        header += "<th>Topped</th></tr>";
+        header += "<th>Topped</th><th data-priority='2'>Rt #</th></tr>";
 
         setColumnTableHeader(0, header);
         setColumnTableHeader(1, header);
@@ -85,7 +85,7 @@
             topId = "scTop_" + row.sheetRow + "_" + row.sheetColumn;
             fallsId= "scFalls_" + row.sheetRow + "_" + row.sheetColumn;
             table += "<tr><td class='num'>" + row.number + "</td>";
-            if (options.includeLocation) {
+            if (options.includeLocation && options.showLocation) { // xxx showLocation not yet implemented
                 table += "<td>" + row.location + "</td>";
             }
             if (options.includeColor) {
@@ -96,7 +96,8 @@
                 table += "<td><select id='" + fallsId + "'data-mini='true'><option value='0' selected>&nbsp;</option><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option>" +
                 "<option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option></select></td>";
             }
-            table += "<td class='num'><input data-role='flipswitch' data-mini='true' id='" + topId + "' data-on-text='Yes' data-off-text='No' data-wrapper-class='sc-flipswitch' type='checkbox'></td>";
+            table += "<td class='num'><input data-role='flipswitch' data-mini='true' id='" +
+                        topId + "' data-on-text='Yes' data-off-text='No' data-wrapper-class='sc-flipswitch' type='checkbox'></td><td class='num'>" + row.number + "</td></tr>";
         }
         setColumnTableRows(curCol, table);
     }
@@ -246,7 +247,7 @@
                 callback(true);
             })
             .fail(function(status, message) {
-                app.showErrorMessage(status, "Failed to save score card", message);
+                app.showErrorMessage(status, "Failed to save scorecard", message);
                 callback(false);
             });
     }
@@ -271,7 +272,7 @@
 
             logger.debug(module, "Init page");
 
-            // init score card behavior
+            // init scorecard behavior
             $sc.on("change", function(event) {
                 if (!duringInitCard) {
                     updateCard($sc, model.currentEvent.recordFallsPerClimb);
@@ -468,7 +469,7 @@
         var event = model.currentEvent,
             $sc = $("#scorecard .ScoreCardCtrl");
 
-        logger.debug(module, "Init score card");
+        logger.debug(module, "Init scorecard");
 
         renderScoreCard($sc, {
             includeFalls: event.recordFallsPerClimb,

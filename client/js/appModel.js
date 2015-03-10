@@ -44,7 +44,7 @@ var appModel = (function($, logger, util, undefined) {
     // keep in sync with auRole select list on adminUser page
     var ROLE_DISPLAY = {
         Admin: "Administrator",
-        Contributor: "Score Card Entry",
+        Contributor: "Scorecard Entry",
         Reader: "Read Only Access"
     };
 
@@ -901,7 +901,7 @@ var appModel = (function($, logger, util, undefined) {
         },
 
         updateCurrentClimberScoreCard: function(scoreCard) {
-            logger.debug(module, "Update Current Climber Score Card");
+            logger.debug(module, "Update Current Climber Scorecard");
             if (!this.currentClimber) {
                 throw "No current climber";
             }
@@ -935,7 +935,7 @@ var appModel = (function($, logger, util, undefined) {
                 self = this,
                 result = $.Deferred();
 
-            logger.debug(module, "Save Current Climber Score Card");
+            logger.debug(module, "Save Current Climber Scorecard");
             if (!this.currentEvent) {
                 throw "No current event";
             }
@@ -965,7 +965,7 @@ var appModel = (function($, logger, util, undefined) {
                 }
                 result.resolve();
             }).fail(function(jqXHR) {
-                logger.error(module, "Update current climber score card failed: " + getMessage(jqXHR));
+                logger.error(module, "Update current climber scorecard failed: " + getMessage(jqXHR));
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
