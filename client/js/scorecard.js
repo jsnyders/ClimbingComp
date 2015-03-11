@@ -29,7 +29,7 @@
 (function(app, model, $, logger, util, undefined) {
     "use strict";
 
-    var CLIMBER_ID_LENGTH = 3;
+    var BIB_NUMBER_LENGTH = 3; // todo xxx get this from model via database, most likely event configuration
 
     var module = "ScoreCard",
         duringInitCard = false;
@@ -354,7 +354,7 @@
 
             function keypadCheckClimberId(text) {
                 var bibNumber;
-                if (text.length === CLIMBER_ID_LENGTH) {
+                if (text.length === BIB_NUMBER_LENGTH) {
                     bibNumber = parseInt(text, 10);
                     if ( isNaN(bibNumber) || !model.setCurrentClimber(bibNumber)) {
                         keypadClear();
