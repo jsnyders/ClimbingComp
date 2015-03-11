@@ -287,7 +287,7 @@ var util = {};
         ">": "&gt;",
         "\"": "&quot;",
         "'": "&#x27;", //  &apos; not recommended because its not in the HTML spec (See: section 24.4.1) &apos; is in the XML and XHTML specs.
-        "/": "&#x2F"   //  forward slash is included as it helps end an HTML entity
+        "/": "&#x2F;"   //  forward slash is included as it helps end an HTML entity
     };
     var htmlRE = /&|<|>|'|"|\//g;
 

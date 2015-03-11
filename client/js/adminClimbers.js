@@ -69,7 +69,7 @@
             {label:"Last Name", value: "lastName"},
             {label:"Gender", value: "gender"},
             {label:"Category", value: "category"},
-            {label:"Birth Day", value: "birthDate"},
+            {label:"Birth Date", value: "birthDate"},
             {label:"Region", value: "region"},
             {label:"Team", value: "team"},
             {label:"Coach", value: "coach"}
@@ -84,7 +84,7 @@
             {label:"Last Name", value: "lastName"},
             {label:"Gender", value: "gender"},
             {label:"Category", value: "category"},
-            {label:"Birth Day", value: "birthDate"},
+            {label:"Birth Date", value: "birthDate"},
             {label:"Region", value: "region"},
             {label:"Team", value: "team"},
             {label:"Coach", value: "coach"}
