@@ -485,6 +485,13 @@
                     <button type="button" class="messageCloseButton ui-btn ui-btn-icon-notext ui-btn-right ui-btn-inline ui-corner-all ui-icon-delete"></button></h3>
                 <div class="messageContent"></div>
             </div>
+            <div class="ui-field-contain ui-readonly">
+                <span id="acEvent"></span>
+            </div>
+            <div class="ui-field-contain">
+                <label for="acBibNumber">Bib Number:</label>
+                <input id="acBibNumber" type="text" name="bibNumber" value="">
+            </div>
             <div class="ui-field-contain">
                 <label for="acMemberId">USAC Member ID:</label>
                 <input id="acMemberId" type="text" name="memberId" value="">
@@ -520,6 +527,13 @@
             <div class="ui-field-contain">
                 <label for="acCoach">Coach:</label>
                 <input id="acCoach" type="text" name="coach" value="">
+            </div>
+            <div id="acChooseClimber" data-role="popup" class="ui-content" data-position-to="window" data-theme="a" data-overlay-theme="a">
+                <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+                <p>More than one climber from the master list of climbers matches this climber name.<br>Choose which climber to add to this event.</p>
+                <div id="acClimberMatches">
+                </div>
+                <button id="acCreate" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Create</button>
             </div>
 
             <button id="acCancel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</button>

@@ -640,8 +640,6 @@ var appModel = (function($, logger, util, undefined) {
         // Event Climbers
         // =====================================
 
-        // xxx
-
         //
         // GET /data/events/<event-id>/climbers
         // xxx more options like search, columns, paging
@@ -727,7 +725,7 @@ var appModel = (function($, logger, util, undefined) {
             var result,
                 self = this;
 
-            logger.debug(module, "Create event " + eventId + " climber " + climber.firstName + " " + climber.lastName);
+            logger.debug(module, "Create event " + eventId + " climber " + climber.climberId + " bibNumber " + climber.bibNumber);
 
             result = $.Deferred();
             $.ajax({

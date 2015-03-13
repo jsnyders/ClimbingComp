@@ -2,7 +2,7 @@
  main.js
  web app main page
 
- Copyright (c) 2014, John Snyders
+ Copyright (c) 2014, 2015, John Snyders
 
  ClimbingComp is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by

@@ -172,6 +172,10 @@ td .ui-btn {
     border-radius: 1em;
 }
 
+.ui-readonly .ui-input-text {
+    border: none!important;
+}
+
 /*
  * App Global
  */
