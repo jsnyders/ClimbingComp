@@ -158,6 +158,9 @@
             });
 
             $("#acMemberId,#acLastName,#acFirstName").change(function() {
+                if (eventId === "m") {
+                    return; // when editing the master list of climbers don't look up the climber in the master list
+                }
                 lookupClimber(function(climbers) {
                     var climber;
                     if (climbers && climbers.length === 1) {
