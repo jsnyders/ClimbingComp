@@ -223,6 +223,29 @@
         $("#cClimbersTable").table("rebuild");
     }
 
+    // xxx TODO use drag and drop reordering
+    function renderColumnsChooser(fields, defaults, el$) {
+        var i, fieldOptions, html,
+            prefix = el$[0].id;
+
+        fieldOptions = "<option value=''>ignore</option>\n";
+        fields.forEach(function(field) {
+            fieldOptions += "<option value='" + field.value + "'>" + field.label + "</option>\n";
+        });
+        html = "";
+        // allow for 2 extra columns in case some need to be skipped
+        for (i = 0; i < fields.length + 2; i++) {
+            html += "<select id='" + prefix + (i + 1) + "' data-inline='true'>";
+            html += fieldOptions;
+            html += "</select>";
+        }
+        el$.html(html);
+        // set defaults
+        for (i = 0; i < defaults.length; i++) {
+            $("#" + prefix + (i + 1)).val(defaults[i]);
+        }
+    }
+
     app.addPage({
         name: "adminClimbers",
         init: function(ui) {
@@ -315,7 +338,6 @@
     app.addPage({
         name: "adminImportClimbers",
         init: function(ui) {
-
             $("#aicCancel").click(function() {
                 $.mobile.changePage("#adminClimbers?" + eventId);
             });
@@ -330,12 +352,11 @@
                 $.mobile.changePage("#adminImportClimbersResults?" + eventId);
             });
 
-            // xxx TODO use drag and drop
-
+            // setup field chooser based on if it is for an event or master list of climbers
+            renderColumnsChooser(allMasterFields, defaultMasterFields, $("#aicMasterFields"));
+            renderColumnsChooser(allEventFields, defaultEventFields, $("#aicEventFields"));
         },
         prepare: function(ui) {
-            var i, fieldOptions, html, fields, defaults;
-
             eventId = "m";
             if (ui.args && ui.args.length > 0) {
                 eventId = ui.args[0];
@@ -348,29 +369,13 @@
             getClimbersForLabel();
             $("#aicFor").text(climbersForLabel);
 
-            // setup field chooser based on if it is for an event or master list of climbers
+            // show/hide field chooser based on if it is for an event or master list of climbers
             if (eventId === "m") {
-                fields = allMasterFields;
-                defaults = defaultMasterFields;
+                $("#aicMasterFields").show();
+                $("#aicEventFields").hide();
             } else {
-                fields = allEventFields;
-                defaults = defaultEventFields;
-            }
-            fieldOptions = "<option value=''>ignore</option>\n";
-            fields.forEach(function(field) {
-                fieldOptions += "<option value='" + field.value + "'>" + field.label + "</option>\n";
-            });
-            html = "";
-            // allow for 2 extra columns in case some need to be skipped
-            for (i = 0; i < fields.length + 2; i++) {
-                html += "<select id='aicField" + (i + 1) + "' data-inline='true'>";
-                html += fieldOptions;
-                html += "</select>";
-            }
-            $("#aicFields").html(html);
-            // set defaults
-            for (i = 0; i < defaults.length; i++) {
-                $("#aicField" + (i + 1)).val(defaults[i]);
+                $("#aicMasterFields").hide();
+                $("#aicEventFields").show();
             }
         },
         open: function(ui) {
@@ -421,7 +426,7 @@
             $("#aicrCSV").hide();
         },
         open: function(ui) {
-            var len, result,
+            var len, result, cols$,
                 file = $("#aicFile")[0].files[0],
                 hasHeader = $("#aicHasHeader")[0].checked,
                 action = $("#aicAction").val(),
@@ -442,8 +447,13 @@
             }
             $("#aicFile").val(""); // guard against doing the import twice by mistake
 
+            if (eventId === "m") {
+                cols$ = $("#aicMasterFields");
+            } else {
+                cols$ = $("#aicEventFields");
+            }
             len = 0;
-            $("#aicFields").children("select").each(function() {
+            cols$.find("select").each(function() {
                 fields.push($(this).val());
                 if (fields[fields.length - 1] !== "") {
                     len = fields.length;

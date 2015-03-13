@@ -282,7 +282,7 @@ table.scTable td .ui-flipswitch {
     height: 1.875em;
 }
 
-table.scTable tr.top5 {
+table.scTable tr.topN {
     background-color: #FFFF55;
 }
 

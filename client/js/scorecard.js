@@ -3,7 +3,7 @@
  scorecard.js
  Scorecard page
 
- Copyright (c) 2014, John Snyders
+ Copyright (c) 2014, 2015, John Snyders
 
  ClimbingComp is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
@@ -30,6 +30,7 @@
     "use strict";
 
     var BIB_NUMBER_LENGTH = 3; // todo xxx get this from model via database, most likely event configuration
+    var TOP_N = 3; // todo xxx get this from event configuration default to 5 for ABS and 3 for SCS
 
     var module = "ScoreCard",
         duringInitCard = false;
@@ -132,7 +133,7 @@
 
         duringInitCard = true;
         // show scorecard and clear out card and include climber climb info
-        $sc.show().find(".top5").removeClass("top5");
+        $sc.show().find(".topN").removeClass("topN");
         if (!fallsPerClimb) {
             falls = 0;
             if (climber.scoreCard) {
@@ -195,15 +196,15 @@
         totalPoints = 0;
         totalFalls = 0;
         count = 0;
-        $sc.find(".top5").removeClass("top5");
+        $sc.find(".topN").removeClass("topN");
         $("#scScore").removeClass("u-ok");
-        for (i = 0; i < climbs.length && i < 5; i++) {
+        for (i = 0; i < climbs.length && i < TOP_N; i++) {
             climb = climbs[i];
             if (climb.points > 0) {
                 topPoints[count] = climb.points;
                 count += 1;
                 totalPoints += climb.points;
-                $(climb.topId).closest("tr").addClass("top5");
+                $(climb.topId).closest("tr").addClass("topN");
                 if (fallsPerClimb) {
                     totalFalls += climb.falls;
                 }
@@ -215,7 +216,7 @@
         }
 
         if (!noUpdate) {
-            logger.debug(module, "Update score for " + model.currentClimber.climberId);
+            logger.debug(module, "Update score for " + model.currentClimber.bibNumber);
             model.updateCurrentClimberScoreCard({
                 totalPoints: totalPoints,
                 totalFalls: totalFalls,
@@ -229,7 +230,7 @@
         }
 
         $("#scScore").text("Total: " + totalPoints);
-        if ( count >= 5 ) {
+        if ( count >= TOP_N ) {
             $("#scScore").addClass("u-ok");
         }
 
@@ -347,7 +348,7 @@
                 clearMessage();
             }
 
-            function keypadCheckClimberId(text) {
+            function keypadCheckBibNumber(text) {
                 var bibNumber;
                 if (text.length === BIB_NUMBER_LENGTH) {
                     bibNumber = parseInt(text, 10);
@@ -374,7 +375,7 @@
                     keypadClear();
                 } else {
                     keypadAppend(value);
-                    keypadCheckClimberId($("#scKeypadDisplay").text());
+                    keypadCheckBibNumber($("#scKeypadDisplay").text());
                 }
             });
             $scKeypadDisplay.on("keypress", function(event) {
@@ -386,7 +387,7 @@
                 digit = String.fromCharCode(event.which);
                 if ( digit >= "0" && digit <= "9" ) {
                     keypadAppend(digit);
-                    keypadCheckClimberId($("#scKeypadDisplay").text());
+                    keypadCheckBibNumber($("#scKeypadDisplay").text());
                 }
             }).on("keydown", function(event) {
                     if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
@@ -416,7 +417,7 @@
                         climber = climbers[i];
                         display = climber.firstName + " " + climber.lastName;
                         filter = climber.usacMemberId + " " +climber.team + " " + display;
-                        html += "<li data-filtertext='" + filter + "'><a data-value='" + climber.climberId + "' href='#'>" + display + "</a></li>";
+                        html += "<li data-filtertext='" + filter + "'><a data-value='" + climber.bibNumber + "' href='#'>" + display + "</a></li>";
                     }
                     $ul.html(html);
                     $ul.listview("refresh");
