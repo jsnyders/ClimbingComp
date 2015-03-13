@@ -943,7 +943,6 @@ var appModel = (function($, logger, util, undefined) {
             eventId = this.currentEvent.eventId;
             bibNumber = this.currentClimber.bibNumber;
 
-
             data = $.extend({}, this.currentClimber.scoreCard); // xxx how much to send? may not need to persist the score because it can be calculated. The element ids may not make sense
             data.climbs = this.currentClimber.scoreCard.climbs;
             data.version = this.currentClimber.version;

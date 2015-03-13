@@ -162,7 +162,7 @@
     }
 
     function updateCard($sc, fallsPerClimb, noUpdate) {
-        var i, route, topId, fallsId, topped, falls, climb, totalPoints, totalFalls, score, count,
+        var i, route, topId, fallsId, topped, falls, climb, totalPoints, totalFalls, count,
             topPoints = [],
             climbs = [],
             routes = model.currentEvent.routes;
@@ -213,17 +213,12 @@
             totalFalls = $("[name=scTF]:checked").val();
             totalFalls = parseInt(totalFalls, 10);
         }
-        score = totalPoints - totalFalls;
-        if (score < 0) {
-            score = 0;
-        }
 
         if (!noUpdate) {
             logger.debug(module, "Update score for " + model.currentClimber.climberId);
             model.updateCurrentClimberScoreCard({
                 totalPoints: totalPoints,
                 totalFalls: totalFalls,
-                score: score,
                 top1: topPoints[0],
                 top2: topPoints[1],
                 top3: topPoints[2],
@@ -233,7 +228,7 @@
             });
         }
 
-        $("#scScore").text("Score: " + score);
+        $("#scScore").text("Total: " + totalPoints);
         if ( count >= 5 ) {
             $("#scScore").addClass("u-ok");
         }

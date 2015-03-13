@@ -174,7 +174,7 @@ CREATE TABLE event_climber (
   coach VARCHAR(100), -- coach at time of event
   version INTEGER DEFAULT 1,
   total INTEGER, -- xxx is this before or after total_falls is subtracted??? either way it too could be calculated
-  place INTEGER, -- xxx this will be generated
+  place INTEGER, -- xxx this will be generated, rename to rank?
   top1 INTEGER,
   top2 INTEGER,
   top3 INTEGER,
