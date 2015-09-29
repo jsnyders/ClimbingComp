@@ -1,6 +1,6 @@
 {
-    "name": "ClimbingComp",
-    "version": "0.2.0",
+    "name": "climbing-comp",
+    "version": "0.3.0",
     "description": "Mobile Web Application for scoring Rock Climbing Competitions",
     "keywords": ["webapp, climbing"],
     "main": "main",
