@@ -64,22 +64,31 @@ INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Junior', 'Junior', 'Jr');
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Adult', 'Adult', NULL);
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Open', 'Open', NULL);
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Masters', 'Masters', NULL);
+-- TODO adult categories are broken down in to Recreational, Intermediate, Advanced
+-- need to be able to define rules typically based on age/birth date for membership in category
+-- but the rules can also be based on performance. For example from the USAC rules:
+-- “For those competitors who register to compete in either Recreational, Intermediate or Advanced, please know that you
+-- may attempt any problem at the competitions for your top 5 problems. If, however, you complete 3 or more problems in 
+-- the category above the one in which you registered (or 1 problem in two divisions above your registered category) 
+-- you will be automatically bumped to the next category.”
 
-INSERT INTO nvp VALUES(-1, 'REGIONS', '101 (Washington / Alaska)', '101 (Washington / Alaska)', '101');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '102 (Northwest)', '102 (Northwest)', '102');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '103 (Northern California)', '103 (Northern California)', '103');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '201 (Southern California)', '201 (Southern California)', '201');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '202 (Southern Mountain)', '202 (Southern Mountain)', '202');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '203 (Colorado)', '203 (Colorado)', '203');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '301 (Midwest)', '301 (Midwest)', '301');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '302 (Ohio River Valley)', '302 (Ohio River Valley)', '302');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '303 (Mid-Atlantic)', '303 (Mid-Atlantic)', '303');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '401 (Heartland)', '401 (Heartland)', '401');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '402 (Bayou)', '402 (Bayou)', '402');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '403 (Deep South)', '403 (Deep South)', '403');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '501 (Capital)', '501 (Capital)', '501');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '502 (New England West)', '502 (New England West)', '502');
-INSERT INTO nvp VALUES(-1, 'REGIONS', '503 (New England East)', '503 (New England East)', '503');
+
+INSERT INTO nvp VALUES(-1, 'REGIONS', '101-Puget Sound', '101-Puget Sound', '101');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '102-Cascadia', '102-Cascadia', '102');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '201-Northern CA', '201-Northern CA', '201');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '202-Southern CA', '202-Southern CA', '202');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '301-Mountain West', '301-Mountain West', '301');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '302-Front Range', '302-Front Range', '302');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '401-The Desert', '401-The Desert', '401');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '402-South Central', '402-South Central', '402');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '501-Midwest', '501-Midwest', '501');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '502-Great Lakes', '502-Great Lakes', '502');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '601-Southeast', '601-Southeast', '601');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '602-Midsouth', '602-Midsouth', '602');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '701-Capital', '701-Capital', '701');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '702-Rustbelt', '702-Rustbelt', '702');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '801-New England West', '801-New England West', '801');
+INSERT INTO nvp VALUES(-1, 'REGIONS', '802-New England East', '802-New England East', '802');
 
 INSERT INTO nvp VALUES(-1, 'SERIES', 'SCS', 'SCS', NULL);
 INSERT INTO nvp VALUES(-1, 'SERIES', 'ABS', 'ABS', NULL);
@@ -93,6 +102,10 @@ INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'None', 'None', NULL);
 
 INSERT INTO nvp VALUES(-1, 'EVENT_TYPE', 'Red Point', 'Red Point', NULL);
 -- todo other types such as On Sight, Speed etc.
+-- USAC rules call these formats: On Sight, Flash, Redpoint, Redpoint modified
+-- A comp may have multiple rounds and they can be of different formats. 
+-- The heist even mixes bouldering and lead climbing 
+
 
 DROP TABLE IF EXISTS event;
 CREATE TABLE event (
@@ -105,9 +118,11 @@ CREATE TABLE event (
   sanctioning VARCHAR(100) NOT NULL, -- SANCTIONING
   type VARCHAR(100) NOT NULL, -- EVENT_TYPE
   state ENUM('Open', 'Active', 'Preliminary', 'Closed'),
+  bib_number_digits INTEGER(1) NOT NULL DEFAULT 3,
   record_falls_per_climb BOOLEAN NOT NULL,
   routes_have_location BOOLEAN NOT NULL,
   routes_have_color BOOLEAN NOT NULL,
+  -- xxx for redpoint need to configure the number of routes to consider for top score ABS defaults to 5 SCS defaults to 3
   -- todo something to select/define the scoring/ranking system or is this tied to type
   score_card_columns INTEGER DEFAULT 2,
   notes VARCHAR(1000),
@@ -154,9 +169,11 @@ CREATE TABLE event_route (
   location VARCHAR(20),
   points INTEGER NOT NULL, -- This is the points for a top
   -- based on the points the route is associated with a category for the purpose of adult sub category assignment
+  -- or for a modified red point comp you can have different colored score cards so that competitors in a given category can only climb routes matching that category
+  -- time limit typically the same for all routes but the rules allow each route to have its own time limit
   sheet_row INTEGER,
   sheet_column INTEGER,
-
+  -- for onsight/flash each hold has a point value and there are some other things like bridges etc. There is also a picture of the route.
   PRIMARY KEY id (number, event_id)
 ) ENGINE={{engine}} DEFAULT CHARSET=utf8;
 
@@ -169,10 +186,12 @@ CREATE TABLE event_climber (
   -- the adult category has flexible sub divisions: Recreational, Intermediate or Advanced
   -- also other kinds of comps may define categories differently but there could still be value in using the master climber list
   category VARCHAR(100), -- event category. CATEGORIES or event specific categories
+  -- score card category could be different from category typically assigned based on rules(category)
   region VARCHAR(100), -- region at time of event
   team VARCHAR(100), -- team at time of event
   coach VARCHAR(100), -- coach at time of event
   version INTEGER DEFAULT 1,
+  start_order INTEGER, -- for 
   total INTEGER, -- xxx is this before or after total_falls is subtracted??? either way it too could be calculated
   place INTEGER, -- xxx this will be generated, rename to rank?
   top1 INTEGER,
@@ -181,6 +200,7 @@ CREATE TABLE event_climber (
   top4 INTEGER,
   top5 INTEGER,
   total_falls INTEGER,
+  time_taken INTEGER, -- xxx what type to use for delta time?  speed is recorded to two decimal places e.g.14.45 seconds
   climbs VARCHAR(6000), -- data for the client use only
   updated_by VARCHAR(100),
   updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
