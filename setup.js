@@ -27,6 +27,8 @@
 var fs = require("fs");
 var db = require("mysql");
 var prompt = require("prompt");
+var st = require("stringtemplate-js");
+var createDBGroup = st.loadGroup(require("./db/createdb.sql_stg"));
 
 prompt.colors = false;
 prompt.message = "";
@@ -96,12 +98,6 @@ prompt.get([
 function processDBScript(host, admin, adminPwd, options, file) {
     var conn, script;
 
-    try {
-        script = fs.readFileSync(file, 'utf8');
-    } catch (ex) {
-        console.log("Error reading '" + file + "'. Reason: " + ex.message);
-        process.exit(1);
-    }
     // default db engine
     options.engine = "MyISAM";
 
@@ -128,14 +124,9 @@ function processDBScript(host, admin, adminPwd, options, file) {
                     }
                 }
             }
-            script = script.replace(/{{([a-zA-Z0-9]+)}}/g, function(m, key) {
-                var value = options[key];
-                if (!value) {
-                    console.log("Error parsing " + file + ". Unknown token " + m);
-                    process.exit(1);
-                }
-                return value;
-            });
+
+            // generate script from createdb script template using options
+            script = createDBGroup.render("createdb", {config: options});
 
             // get confirmation before making any changes
             console.log("\nSetup is now ready to create the database on host " + host + " logging in as " + admin + ".");

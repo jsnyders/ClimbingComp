@@ -1,3 +1,4 @@
+/*
 -- createdb.sql
 -- Create database for Climbing Comp web app
 --
@@ -22,20 +23,22 @@
 -- Large user supplied name: 200
 -- File path: 1000
 -- Description: 1000
+*/
 
-DROP DATABASE IF EXISTS {{database}};
-CREATE DATABASE {{database}} CHARACTER SET = utf8;
-DROP USER '{{user}}'@'{{host}}';
-CREATE USER '{{user}}'@'{{host}}' IDENTIFIED BY '{{password}}';
-GRANT ALL ON {{database}}.* TO {{user}};
-USE {{database}};
+createdb(config) ::= <<
+DROP DATABASE IF EXISTS $config.database$;
+CREATE DATABASE $config.database$ CHARACTER SET = utf8;
+DROP USER '$config.user$'@'$config.host$';
+CREATE USER '$config.user$'@'$config.host$' IDENTIFIED BY '$config.password$';
+GRANT ALL ON $config.database$.* TO $config.user$;
+USE $config.database$;
 
 DROP TABLE IF EXISTS config;
 CREATE TABLE config (
   name VARCHAR(100) PRIMARY KEY,
   nvalue INTEGER,
   tvalue VARCHAR(1000)
-) ENGINE={{engine}} DEFAULT CHARSET=utf8;
+) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
 
 -- the schema version
 INSERT INTO config VALUES('VersionMajor',0,NULL);
@@ -54,7 +57,7 @@ CREATE TABLE nvp (
   label VARCHAR(100),
   alias VARCHAR(100),
   PRIMARY KEY id (scope_id, name, val)
-) ENGINE={{engine}} DEFAULT CHARSET=utf8;
+) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
 
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Youth-D', 'Youth-D', 'D');
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Youth-C', 'Youth-C', 'C');
@@ -128,7 +131,7 @@ CREATE TABLE event (
   notes VARCHAR(1000),
   updated_by VARCHAR(100),
   updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE={{engine}} DEFAULT CHARSET=utf8;
+) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
 
 CREATE TRIGGER event_update
   BEFORE UPDATE ON event
@@ -148,13 +151,13 @@ CREATE TABLE climber (
   region VARCHAR(100), -- REGIONS
   team VARCHAR(100),
   coach VARCHAR(100),
-  -- TODO consider other things like phone number, email, location, has waver, possibly general purpose columns
+  -- TODO consider other things like phone number, email, location, has waver, Citizen, possibly general purpose columns
   updated_by VARCHAR(100),
   updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
   UNIQUE INDEX usac_member_id_ndx (usac_member_id),
   INDEX name_ndx (first_name, last_name)
-) ENGINE={{engine}} DEFAULT CHARSET=utf8;
+) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
 
 CREATE TRIGGER climber_update
   BEFORE UPDATE ON climber
@@ -175,13 +178,13 @@ CREATE TABLE event_route (
   sheet_column INTEGER,
   -- for onsight/flash each hold has a point value and there are some other things like bridges etc. There is also a picture of the route.
   PRIMARY KEY id (number, event_id)
-) ENGINE={{engine}} DEFAULT CHARSET=utf8;
+) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS event_climber;
 CREATE TABLE event_climber (
   climber_id INTEGER NOT NULL,
   event_id INTEGER NOT NULL,
-  bib_number INTEGER(4) NOT NULL,
+  bib_number INTEGER(4) NOT NULL, -- xxx usac bib number starts with F or M and then 4 digits can have F1010 and M1010
   -- for adults they can enter a different category for the event subject to some age requirements
   -- the adult category has flexible sub divisions: Recreational, Intermediate or Advanced
   -- also other kinds of comps may define categories differently but there could still be value in using the master climber list
@@ -209,7 +212,7 @@ CREATE TABLE event_climber (
 
   PRIMARY KEY id (climber_id, event_id),
   UNIQUE INDEX event_number (bib_number, event_id)
-) ENGINE={{engine}} DEFAULT CHARSET=utf8;
+) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
 
 CREATE TRIGGER event_climber_update
   BEFORE UPDATE ON event_climber
@@ -228,7 +231,7 @@ CREATE TABLE `app_user` (
   last_name VARCHAR(100),
 
   UNIQUE INDEX username_idx (username)
-) ENGINE={{engine}} DEFAULT CHARSET=utf8;
+) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
 
 CREATE TRIGGER app_user_update
   BEFORE UPDATE ON app_user
@@ -248,4 +251,5 @@ CREATE TABLE `app_session` (
   role ENUM('Reader', 'Contributor', 'Admin') NOT NULL,
 
   UNIQUE INDEX session_idx (session_id)
-) ENGINE={{engine}} DEFAULT CHARSET=utf8;
+) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
+>>
