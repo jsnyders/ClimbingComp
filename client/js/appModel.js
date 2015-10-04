@@ -167,27 +167,28 @@ var appModel = (function($, logger, util, undefined) {
         fetchCategories: function() {
             var result = $.Deferred();
 
-            // xxx todo get these from the server
             logger.debug(module, "Fetch categories");
-            setTimeout( function() {
-                result.resolve([
-                    "Masters",
-                    "Open",
-                    "Adult",
-                    "Junior",
-                    "Youth-A",
-                    "Youth-B",
-                    "Youth-C",
-                    "Youth-D"
-                ]);
-            },10);
+            $.ajax({
+                url: "/data/nvp/CATEGORIES",
+                dataType: "json"
+            }).done(function(data) {
+                var i,
+                    list = [];
+                // in this case we know the label and the value are the same
+                for (i = 0; i < data.items.length; i++) {
+                    list.push(data.items[i].value);
+                }
+                result.resolve(list);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch categories failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
             return result.promise();
         },
 
         fetchGenders: function() {
             var result = $.Deferred();
 
-            // xxx todo get these from the server
             logger.debug(module, "Fetch genders");
             setTimeout( function() {
                 result.resolve([
@@ -201,24 +202,32 @@ var appModel = (function($, logger, util, undefined) {
         fetchGenderCategoriesFilters: function() {
             var result = $.Deferred();
 
-            // xxx todo get these from the server including initial default
+            // xxx todo how to get the initial default
             logger.debug(module, "Fetch gender categories filters");
-            setTimeout( function() {
-                result.resolve([
-                    { value: "gender:eq:Female,category:eq:Youth-D", label: "Female Youth-D", selected: true},
-                    { value: "gender:eq:Male,category:eq:Youth-D", label: "Male Youth-D"},
-                    { value: "gender:eq:Female,category:eq:Youth-C", label: "Female Youth-C"},
-                    { value: "gender:eq:Male,category:eq:Youth-C", label: "Male Youth-C"},
-                    { value: "gender:eq:Female,category:eq:Youth-B", label: "Female Youth-B"},
-                    { value: "gender:eq:Male,category:eq:Youth-B", label: "Male Youth-B"},
-                    { value: "gender:eq:Female,category:eq:Youth-A", label: "Female Youth-A"},
-                    { value: "gender:eq:Male,category:eq:Youth-A", label: "Male Youth-A"},
-                    { value: "gender:eq:Female,category:eq:Youth-A", label: "Female Junior"},
-                    { value: "gender:eq:Male,category:eq:Youth-A", label: "Male Junior"},
-                    { value: "gender:eq:Female,category:eq:Youth-A", label: "Adult"},
-                    { value: "gender:eq:Male,category:eq:Youth-A", label: "Male Junior"}
-                ]);
-            },10);
+            $.ajax({
+                url: "/data/nvp/CATEGORIES",
+                dataType: "json"
+            }).done(function(data) {
+                var i, item, value,
+                    list = [];
+                // in this case we know the label and the value are the same
+                for (i = 0; i < data.items.length; i++) {
+                    item = data.items[i];
+                    value = item.value;
+                    list.push({
+                        value: "gender:eq:Female,category:eq:" + value,
+                        label: "Female " + value
+                    });
+                    list.push({
+                        value: "gender:eq:Male,category:eq:" + value,
+                        label: "Male " + value
+                    });
+                }
+                result.resolve(list);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch gender category filters failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
             return result.promise();
         },
 
@@ -439,54 +448,49 @@ var appModel = (function($, logger, util, undefined) {
             var result = $.Deferred(),
                 self = this;
 
-            // xxx todo get these from the server
             logger.debug(module, "Fetch Regions");
-            setTimeout( function() {
-                result.resolve([
-                    "101 (Washington / Alaska)",
-                    "102 (Northwest)",
-                    "103 (Northern California)",
-                    "201 (Southern California)",
-                    "202 (Southern Mountain)",
-                    "203 (Colorado)",
-                    "301 (Midwest)",
-                    "302 (Ohio River Valley)",
-                    "303 (Mid-Atlantic)",
-                    "401 (Heartland)",
-                    "402 (Bayou)",
-                    "403 (Deep South)",
-                    "501 (Capital)",
-                    "502 (New England West)",
-                    "503 (New England East)"
-                ]);
-            },10);
+            $.ajax({
+                url: "/data/nvp/REGIONS",
+                dataType: "json"
+            }).done(function(data) {
+                var i,
+                    list = [];
+                // in this case we know the label and the value are the same
+                for (i = 0; i < data.items.length; i++) {
+                    list.push(data.items[i].value);
+                }
+                result.resolve(list);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch regions failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
             return result.promise();
         },
 
         fetchRegionFilters: function() {
             var result = $.Deferred();
 
-            // xxx todo get these from the server including default
             logger.debug(module, "Fetch region filters");
-            setTimeout( function() {
-                result.resolve([
-                    { value: "region:eq:101 (Washington / Alaska)", label: "101 (Washington / Alaska)"},
-                    { value: "region:eq:102 (Northwest)",           label: "102 (Northwest)"},
-                    { value: "region:eq:103 (Northern California)", label: "103 (Northern California)"},
-                    { value: "region:eq:201 (Southern California)", label: "201 (Southern California)"},
-                    { value: "region:eq:202 (Southern Mountain)",   label: "202 (Southern Mountain)"},
-                    { value: "region:eq:203 (Colorado)",            label: "203 (Colorado)"},
-                    { value: "region:eq:301 (Midwest)",             label: "301 (Midwest)"},
-                    { value: "region:eq:302 (Ohio River Valley)",   label: "302 (Ohio River Valley)"},
-                    { value: "region:eq:303 (Mid-Atlantic)",        label: "303 (Mid-Atlantic)"},
-                    { value: "region:eq:401 (Heartland)",           label: "401 (Heartland)"},
-                    { value: "region:eq:402 (Bayou)",               label: "402 (Bayou)"},
-                    { value: "region:eq:403 (Deep South)",          label: "403 (Deep South)"},
-                    { value: "region:eq:501 (Capital)",             label: "501 (Capital)"},
-                    { value: "region:eq:502 (New England West)",    label: "502 (New England West)"},
-                    { value: "region:eq:503 (New England East)",    label: "503 (New England East)", selected: true}
-                ]);
-            },10);
+            $.ajax({
+                url: "/data/nvp/REGIONS",
+                dataType: "json"
+            }).done(function(data) {
+                var i, item, value,
+                    list = [];
+                // in this case we know the label and the value are the same
+                for (i = 0; i < data.items.length; i++) {
+                    item = data.items[i];
+                    value = item.value;
+                    list.push({
+                        value: "region:eq:" + value,
+                        label: value
+                    });
+                }
+                result.resolve(list);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch regions failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
             return result.promise();
         },
 

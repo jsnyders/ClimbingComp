@@ -31,6 +31,7 @@ var bunyan = require('bunyan');
 var restify = require("restify");
 var db = require('mysql');
 var htmlFormatter = require("./lib/htmlFormatter");
+var conv = require("./lib/conv");
 
 var version = "0.2.0";
 
@@ -156,7 +157,14 @@ dbPool.getConnection(function(err, conn) {
 
         log.debug("Configuration: ", configuration);
 
-        startServer(protocol, port);
+        conv.initConversionData(dbPool, function(err) {
+            if (err) {
+                console.log("Failed to read metadata from database.", err);
+                process.exit();
+            }
+
+            startServer(protocol, port);
+        });
     });
 });
 
@@ -235,6 +243,8 @@ require("./lib/resources/eventRoutes").addResources(server, dbPool);
 require("./lib/resources/results").addResources(server, dbPool);
 
 require("./lib/resources/users").addResources(server, dbPool);
+
+require("./lib/resources/nvpLists").addResources(server, dbPool);
 
 var maxAge = 0; // xxx during development
 require("./lib/resources/static").addResources(server, clientRoot, maxAge);

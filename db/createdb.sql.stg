@@ -252,4 +252,5 @@ CREATE TABLE `app_session` (
 
   UNIQUE INDEX session_idx (session_id)
 ) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
+
 >>
