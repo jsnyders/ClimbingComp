@@ -30,6 +30,7 @@
     "use strict";
 
     var module = "AdminEvent",
+        optionsInitialized = false,
         event = null,
         routes = null,
         eventId = null,
@@ -38,9 +39,13 @@
             {id: "aeRegion", prop: "region"},
             {id: "aeDate", prop: "date"},
             {id: "aeSeries", prop: "series"},
-            {id: "aeType", prop: "type"},
+            {id: "aeDiscipline", prop: "discipline"},
+            // fixed at one round for now 
+            {id: "aeFormat", prop: "format"},
+            {id: "aeNumRoutes", prop: "numRoutes"},
             {id: "aeSanctioning", prop: "sanctioning"},
             {id: "aeFallsPerClimb", prop: "recordFallsPerClimb"},
+            {id: "aeBibNumDigits", prop: "bibNumberDigits"},
             {id: "aeNotes", prop: "notes"},
             {id: "aeColumns", prop: "scoreCardColumns"},
             {id: "aeRoutesHaveLocation", prop: "routesHaveLocation"},
@@ -180,12 +185,6 @@
                     }
                 }
             });
-            model.fetchRegions()
-                .done(function(list) {
-                    util.renderOptions($("#aeRegion"), list, {
-                        valuesOnly: true
-                    });
-                });
 
             function save(done) {
                 util.readForm(event, formMap);
@@ -193,6 +192,16 @@
                 if (eventId !== "new") {
                     // update event
                     event.eventId = eventId;
+                    // xxx fixed at one round for now
+                    event.rounds = [
+                        {
+                            format: event.format,
+                            numRoutes: parseInt(event.numRoutes, 10),
+                            numAdvance: null
+                        }
+                    ];
+                    delete event.format;
+                    delete event.numRoutes;
                     model.updateEvent(event)
                         .done(function(data) {
                             if (done) {
@@ -256,6 +265,17 @@
 
         },
         prepare: function(ui) {
+            if (!optionsInitialized) {
+                optionsInitialized = true;
+                model.fetchRegions()
+                    .done(function (list) {
+                        util.renderOptions($("#aeRegion"), list, {
+                            valuesOnly: true
+                        });
+                    });
+                // xxx need to fetch series, sanctioning etc.
+            }
+
             app.clearMessage(this.name);
 
             $("#aeFile").val("");
@@ -276,9 +296,11 @@
                 // xxx where to get good defaults from?
                 event = {
                     location: "",
-                    region: "503 (New England East)",
+                    region: "802-New England East",
                     series: "ABS",
-                    type: "Red Point",
+                    discipline: "Bouldering",
+                    format: "Red Point",
+                    numRoutes: 6,
                     sanctioning: "Local",
                     recordFallsPerClimb: false,
                     routesHaveLocation: true,

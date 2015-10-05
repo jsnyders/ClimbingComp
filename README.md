@@ -3,7 +3,7 @@
 ClimbingComp is a rock climbing competition scoring app. It allows multiple people using tablets or laptops
 to quickly enter scorecard data so final results can be posted fast.
 
-It is in an early stage of development but has been used successfully at a few climbing competitions in 2014.
+It is in an early stage of development but has been used successfully at a few climbing competitions in 2014, 2015.
 
 The traditional way of scoring a climbing competition relies on using spreadsheet software. This creates a data
 entry bottleneck where only one person at a time can enter data. Even when the data entry is divided between
@@ -35,9 +35,9 @@ will be simplified so that these tools are not needed.
 
 ### Install MariaDB
 
-Get the 5.5 series MariaDB software from [https://downloads.mariadb.org](https://downloads.mariadb.org) and follow instructions.
+Get the 10.0 series MariaDB software from [https://downloads.mariadb.org](https://downloads.mariadb.org) and follow instructions.
 
-MySQL should also work but this has not been tested.
+MariaDB 5.5 and MySQL should also work but this has not been tested.
 
 Test that MariaDB is installed with:
 
@@ -46,6 +46,15 @@ mysql --version
 mysql -u root -p -h localhost
 > exit
 ```
+
+Depending on your OS and how MariDB is configured you may need to log into root as the root user
+
+```
+sudo mysql -u root -h localhost
+> exit
+```
+
+You will need to know the username and password of a database user than has the permission to create new databases.
 
 ### Install Node.js
 Download and install node.js from [http://nodejs.org/download/](http://nodejs.org/download/)
@@ -57,6 +66,8 @@ node --version
 node
 > process.exit();
 ```
+
+Currently developing and testing with node version v0.12.4. Need to verify working on newer versions of node.
 
 The node package manager (npm) should come bundled with node.js. Two other node tools are needed.
 Install grunt and bower globally:

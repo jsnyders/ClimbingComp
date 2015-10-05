@@ -367,20 +367,46 @@
                     </select>
                 </div>
                 <div class="ui-field-contain">
+                    <label for="aeDiscipline">Discipline:</label>
+                    <select id="aeDiscipline" name="discipline">
+                        <option value="Bouldering">Bouldering</option>
+                        <option value="Speed">Speed</option>
+                        <option selected value="Sport">Sport</option>
+                    </select>
+                </div>
+                <div class="ui-field-contain">
                     <label for="aeSanctioning">Sanctioning:</label>
                     <select id="aeSanctioning" name="sanctioning">
                         <option selected value="Local">Local</option>
                     </select>
                 </div>
                 <div class="ui-field-contain">
-                    <label for="aeType">Type:</label>
-                    <select id="aeType" name="type">
+                    <label for="aeFormat">Format:</label>
+                    <select id="aeFormat" name="format">
                         <option selected value="Red Point">Red Point</option>
+                    </select>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeNumRoutes">Number of Top Routes:</label>
+                    <select id="aeNumRoutes" name="numRoutes">
+                        <option selected value="1">1</option>
+                        <option selected value="2">2</option>
+                        <option selected value="3">3</option>
+                        <option selected value="4">4</option>
+                        <option selected value="5">5</option>
+                        <option selected value="6">6</option>
                     </select>
                 </div>
                 <div class="ui-field-contain">
                     <label for="aeFallsPerClimb">Record Falls Per Climb:</label>
                     <input  id="aeFallsPerClimb" data-role="flipswitch" name="routesHaveLocation" data-on-text="Yes" data-off-text="No" type="checkbox">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="aeBibNumDigits">Bib Number Digits:</label>
+                    <select id="aeBibNumDigits" name="bibNumDigits">
+                        <option selected value="3" selected>3</option>
+                        <option selected value="4">4</option>
+                    </select>
                 </div>
                 <div class="ui-field-contain">
                     <label for="aeNotes">Notes:</label>

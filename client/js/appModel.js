@@ -555,7 +555,7 @@ var appModel = (function($, logger, util, undefined) {
                 for (i = 0; i < currentEvent.climbers.length; i++) {
                     climber = currentEvent.climbers[i];
                     if (climber.scoreCard && climber.scoreCard.climbs) {
-                        climber.scoreCard.climbs = climber.scoreCard.climbs;
+                        climber.scoreCard.climbs = climber.scoreCard.climbs; // xxx this makes no sense
                     }
                     currentEvent.climberIndex[climber.bibNumber] = climber;
                 }

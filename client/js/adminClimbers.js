@@ -30,7 +30,8 @@
 
     var module = "AdminClimbers", // for logging
         eventId = "",
-        climbersForLabel = "";
+        climbersForLabel = "",
+        filtersInitialized = false;
 
     var climbersColumns = [
             // for event climbers
@@ -251,22 +252,6 @@
         init: function(ui) {
             logger.debug(module, "Init page");
 
-            model.fetchGenderCategoriesFilters()
-                .done(function(list) {
-                    util.renderOptions($("#cCategoryFilter"), list, {
-                        nullValue: "",
-                        nullLabel: "All"
-                    });
-                });
-
-            model.fetchRegionFilters()
-                .done(function(list) {
-                    util.renderOptions($("#cRegionFilter"), list, {
-                        nullValue: "",
-                        nullLabel: "All"
-                    });
-                });
-
             $("#cClimberEvents").change(function() {
                 var v =  $(this).val();
                 $.mobile.changePage("#adminClimbers?" + v, {allowSamePageTransition: true});
@@ -319,6 +304,25 @@
             });
         },
         prepare: function(ui) {
+            if (!filtersInitialized) {
+                filtersInitialized = true;
+                model.fetchGenderCategoriesFilters()
+                    .done(function (list) {
+                        util.renderOptions($("#cCategoryFilter"), list, {
+                            nullValue: "",
+                            nullLabel: "All"
+                        });
+                    });
+
+                model.fetchRegionFilters()
+                    .done(function (list) {
+                        util.renderOptions($("#cRegionFilter"), list, {
+                            nullValue: "",
+                            nullLabel: "All"
+                        });
+                    });
+            }
+
             app.clearMessage(this.name);
             app.updateFooter();
             eventId = "m";

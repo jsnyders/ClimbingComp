@@ -25,6 +25,7 @@
     "use strict";
 
     var module = "AdminClimber",
+        optionsInitialized = false,
         climber = null,
         eventId = null,
         climberId = null,
@@ -125,27 +126,6 @@
         name: "adminClimber",
         init: function() {
             logger.debug(module, "Init page");
-
-            model.fetchGenders()
-                .done(function(list) {
-                    util.renderOptions($("#acGender"), list, {
-                        valuesOnly: true
-                    });
-                });
-
-            model.fetchCategories()
-                .done(function(list) {
-                    util.renderOptions($("#acCategory"), list, {
-                        valuesOnly: true
-                    });
-                });
-
-            model.fetchRegions()
-                .done(function(list) {
-                    util.renderOptions($("#acRegion"), list, {
-                        valuesOnly: true
-                    });
-                });
 
             $("#acBirthDate").date({
                 changeYear: true,
@@ -271,6 +251,30 @@
             });
         },
         prepare: function(ui) {
+
+            if (!optionsInitialized) {
+                optionsInitialized = true;
+                model.fetchGenders()
+                    .done(function(list) {
+                        util.renderOptions($("#acGender"), list, {
+                            valuesOnly: true
+                        });
+                    });
+
+                model.fetchCategories()
+                    .done(function(list) {
+                        util.renderOptions($("#acCategory"), list, {
+                            valuesOnly: true
+                        });
+                    });
+
+                model.fetchRegions()
+                    .done(function(list) {
+                        util.renderOptions($("#acRegion"), list, {
+                            valuesOnly: true
+                        });
+                    });
+            }
             app.clearMessage(this.name);
             eventId = null;
             climberId = null;

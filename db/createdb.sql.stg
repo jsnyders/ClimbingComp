@@ -47,6 +47,22 @@ INSERT INTO config VALUES('VersionMinor',1,NULL);
 INSERT INTO config VALUES('SessionIdleTime',2 * 60 * 60,NULL); -- 2 hr
 INSERT INTO config VALUES('SessionMaxTime',8 * 60 * 60,NULL); -- 8 hr
 
+INSERT INTO config VALUES('NUM_ROUTES_DEFAULT_Sport', 3, NULL);
+INSERT INTO config VALUES('NUM_ROUTES_DEFAULT_Bouldering', 5, NULL);
+INSERT INTO config VALUES('NUM_ROUTES_DEFAULT_Speed', 2, NULL);
+
+-- CATEGORY RULES
+INSERT INTO config VALUES('CAT_RULE_Youth-D', NULL, '(AGE <= 11)');
+INSERT INTO config VALUES('CAT_RULE_Youth-C', NULL, '(AGE = 12 OR AGE = 13)');
+INSERT INTO config VALUES('CAT_RULE_Youth-B', NULL, '(AGE = 14 OR AGE = 15)');
+INSERT INTO config VALUES('CAT_RULE_Youth-A', NULL, '(AGE = 16 OR AGE = 17)');
+INSERT INTO config VALUES('CAT_RULE_Junior', NULL, '(AGE = 18 OR AGE = 19)');
+INSERT INTO config VALUES('CAT_RULE_Adult-Recreational', NULL, '(AGE >= 16)'); -- and ability <= V1/5.9
+INSERT INTO config VALUES('CAT_RULE_Adult-Intermediate', NULL, '(AGE >= 16)'); -- and ability V2 to V3/5.9+ to 5.11
+INSERT INTO config VALUES('CAT_RULE_Adult-Advanced', NULL, '(AGE >= 16)'); -- and ability >= V4/5.11+
+INSERT INTO config VALUES('CAT_RULE_Open', NULL, '(AGE >= 16)');
+INSERT INTO config VALUES('CAT_RULE_Masters', NULL, '(AGE >= 45)');
+
 -- name value pairs
 -- used to construct select list options
 DROP TABLE IF EXISTS nvp;
@@ -65,10 +81,12 @@ INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Youth-B', 'Youth-B', 'B');
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Youth-A', 'Youth-A', 'A');
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Junior', 'Junior', 'Jr');
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Adult', 'Adult', NULL);
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Adult-Recreational', 'Adult-Recreational', 'Recreational');
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Adult-Intermediate', 'Adult-Intermediate', 'Intermediate');
+INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Adult-Advanced', 'Adult-Advanced', 'Advanced');
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Open', 'Open', NULL);
 INSERT INTO nvp VALUES(-1, 'CATEGORIES', 'Masters', 'Masters', NULL);
--- TODO adult categories are broken down in to Recreational, Intermediate, Advanced
--- need to be able to define rules typically based on age/birth date for membership in category
+-- TODO need to be able to define rules typically based on age/birth date for membership in category
 -- but the rules can also be based on performance. For example from the USAC rules:
 -- “For those competitors who register to compete in either Recreational, Intermediate or Advanced, please know that you
 -- may attempt any problem at the competitions for your top 5 problems. If, however, you complete 3 or more problems in 
@@ -97,16 +115,24 @@ INSERT INTO nvp VALUES(-1, 'SERIES', 'SCS', 'SCS', NULL);
 INSERT INTO nvp VALUES(-1, 'SERIES', 'ABS', 'ABS', NULL);
 INSERT INTO nvp VALUES(-1, 'SERIES', 'CCS', 'CCS', NULL);
 
+INSERT INTO nvp VALUES(-1, 'DISCIPLINE', 'Sport', 'Sport', NULL);
+INSERT INTO nvp VALUES(-1, 'DISCIPLINE', 'Speed', 'Speed', NULL);
+INSERT INTO nvp VALUES(-1, 'DISCIPLINE', 'Bouldering', 'Bouldering', NULL);
+
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Local', 'Local', NULL);
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Regional', 'Regional', NULL);
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Divisional', 'Divisional', NULL);
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'National', 'National', NULL);
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'None', 'None', NULL);
 
-INSERT INTO nvp VALUES(-1, 'EVENT_TYPE', 'Red Point', 'Red Point', NULL);
--- todo other types such as On Sight, Speed etc.
--- USAC rules call these formats: On Sight, Flash, Redpoint, Redpoint modified
--- A comp may have multiple rounds and they can be of different formats. 
+INSERT INTO nvp VALUES(-1, 'FORMAT', 'Red Point', 'Red Point', NULL);
+INSERT INTO nvp VALUES(-1, 'FORMAT', 'Red Point Modified', 'Red Point Modified', NULL);
+--INSERT INTO nvp VALUES(-1, 'FORMAT', 'Flash', 'Flash', NULL);
+--INSERT INTO nvp VALUES(-1, 'FORMAT', 'Onsight', 'Onsight', NULL);
+--INSERT INTO nvp VALUES(-1, 'FORMAT', 'Speed', 'Speed', NULL);
+
+-- A comp (CSS for example) may include sport, bouldering and speed. Consider these distinct events. Makes sense 
+--  because they can have different climbers for each type/format
 -- The heist even mixes bouldering and lead climbing 
 
 
@@ -118,14 +144,24 @@ CREATE TABLE event (
   location VARCHAR(200) NOT NULL, -- Example 'Boston Rock Gym'
   event_date DATE NOT NULL,
   series VARCHAR(100), -- SERIES
+  discipline VARCHAR(100) NOT NULL, -- DISCIPLINE xxx is this really needed? somewhat overlap with series but if needed belongs with the round
   sanctioning VARCHAR(100) NOT NULL, -- SANCTIONING
-  type VARCHAR(100) NOT NULL, -- EVENT_TYPE
-  state ENUM('Open', 'Active', 'Preliminary', 'Closed'),
+  state ENUM('Open', 'Active', 'Preliminary', 'Closed') NOT NULL,
+  current_round INTEGER(1),
   bib_number_digits INTEGER(1) NOT NULL DEFAULT 3,
   record_falls_per_climb BOOLEAN NOT NULL,
   routes_have_location BOOLEAN NOT NULL,
   routes_have_color BOOLEAN NOT NULL,
-  -- xxx for redpoint need to configure the number of routes to consider for top score ABS defaults to 5 SCS defaults to 3
+  num_rounds INTEGER(1) NOT NULL, -- must be >= 1 and <= 3
+  round_1_num_routes INTEGER, -- for redpoint this is number to consider for top score
+  round_1_format VARCHAR(100), -- FORMAT
+  round_1_num_advance INTEGER, -- how many people in each category advance to the next round
+  round_2_num_routes INTEGER,
+  round_2_format VARCHAR(100),
+  round_2_num_advance INTEGER, -- how many people in each category advance to the next round
+  round_3_num_routes INTEGER,
+  round_3_format VARCHAR(100),
+  round_3_num_advance INTEGER, -- how many people in each category advance to the next competition
   -- todo something to select/define the scoring/ranking system or is this tied to type
   score_card_columns INTEGER DEFAULT 2,
   notes VARCHAR(1000),
@@ -151,6 +187,7 @@ CREATE TABLE climber (
   region VARCHAR(100), -- REGIONS
   team VARCHAR(100),
   coach VARCHAR(100),
+  -- TOOD need to mark a climber as taking no space for the purpose of number of climbers advancing to next level 
   -- TODO consider other things like phone number, email, location, has waver, Citizen, possibly general purpose columns
   updated_by VARCHAR(100),
   updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -166,10 +203,12 @@ CREATE TRIGGER climber_update
 
 DROP TABLE IF EXISTS event_route;
 CREATE TABLE event_route (
-  number INTEGER(3) NOT NULL, -- to consider that for non read-point comps routes are designated like Q1, Q2..., SF1..., F1, F2... and are also specific to a category e.g. FYDQ1
   event_id INTEGER NOT NULL,
+  round INTEGER(1) NOT NULL,
+  number INTEGER(3) NOT NULL, -- to consider that for non read-point comps routes are designated like Q1, Q2..., SF1..., F1, F2... and are also specific to a category e.g. FYDQ1
   color VARCHAR(20),
   location VARCHAR(20),
+  route_category VARCHAR(20), -- For modified redpoint this is something like Advanced, Youth, or Open. For onsight/flash this is something like FYDQ1
   points INTEGER NOT NULL, -- This is the points for a top
   -- based on the points the route is associated with a category for the purpose of adult sub category assignment
   -- or for a modified red point comp you can have different colored score cards so that competitors in a given category can only climb routes matching that category
@@ -194,16 +233,26 @@ CREATE TABLE event_climber (
   team VARCHAR(100), -- team at time of event
   coach VARCHAR(100), -- coach at time of event
   version INTEGER DEFAULT 1,
-  start_order INTEGER, -- for 
-  total INTEGER, -- xxx is this before or after total_falls is subtracted??? either way it too could be calculated
-  place INTEGER, -- xxx this will be generated, rename to rank?
-  top1 INTEGER,
-  top2 INTEGER,
-  top3 INTEGER,
-  top4 INTEGER,
-  top5 INTEGER,
+  start_order INTEGER, -- for onsight event types this is the initial running order of the climber unique within gender+category
+  route_1_score DECIMAL(7,2),
+  -- xxx for each route redpoint needs attempta/falls, onsight needs top (1/0) and possibly ranking points
+  route_2_score DECIMAL(7,2),
+  route_3_score DECIMAL(7,2),
+  route_4_score DECIMAL(7,2),
+  route_5_score DECIMAL(7,2),
+  route_6_score DECIMAL(7,2),
+  route_7_score DECIMAL(7,2),
+  route_8_score DECIMAL(7,2),
+  route_9_score DECIMAL(7,2),
+  route_10_score DECIMAL(7,2),
+  route_11_score DECIMAL(7,2),
+  route_12_score DECIMAL(7,2),
+  route_13_score DECIMAL(7,2),
+  route_14_score DECIMAL(7,2),
+  route_15_score DECIMAL(7,2),
+  route_16_score DECIMAL(7,2),
   total_falls INTEGER,
-  time_taken INTEGER, -- xxx what type to use for delta time?  speed is recorded to two decimal places e.g.14.45 seconds
+  final_time  DECIMAL(5,2),  -- Time used to break ties in super finals. Time in seconds to 2 decimal places.
   climbs VARCHAR(6000), -- data for the client use only
   updated_by VARCHAR(100),
   updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
