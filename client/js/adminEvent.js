@@ -40,7 +40,7 @@
             {id: "aeDate", prop: "date"},
             {id: "aeSeries", prop: "series"},
             {id: "aeDiscipline", prop: "discipline"},
-            // fixed at one round for now 
+            // todo fixed at one round for now
             {id: "aeFormat", prop: "format"},
             {id: "aeNumRoutes", prop: "numRoutes"},
             {id: "aeSanctioning", prop: "sanctioning"},
@@ -70,6 +70,10 @@
         model.fetchEvent(eventId)
             .done(function(data) {
                 event = data;
+                // xxx fixed at one round for now
+                event.format = event.rounds[0].format;
+                event.numRoutes = event.rounds[0].numRoutes;
+                delete event.rounds;
                 util.writeForm(event, formMap);
             })
             .fail(function(status, message) {
@@ -189,25 +193,32 @@
             function save(done) {
                 util.readForm(event, formMap);
                 // xxx validation
+
+                // xxx fixed at one round for now
+                event.rounds = [
+                    {
+                        format: event.format,
+                        numRoutes: parseInt(event.numRoutes, 10),
+                        numAdvance: null
+                    }
+                ];
+                delete event.format;
+                delete event.numRoutes;
+                event.currentRound = 1;
+
                 if (eventId !== "new") {
                     // update event
                     event.eventId = eventId;
-                    // xxx fixed at one round for now
-                    event.rounds = [
-                        {
-                            format: event.format,
-                            numRoutes: parseInt(event.numRoutes, 10),
-                            numAdvance: null
-                        }
-                    ];
-                    delete event.format;
-                    delete event.numRoutes;
                     model.updateEvent(event)
                         .done(function(data) {
                             if (done) {
                                 $.mobile.changePage("#adminEvents");
                             } else {
                                 event = data;
+                                // xxx fixed at one round for now
+                                event.format = event.rounds[0].format;
+                                event.numRoutes = event.rounds[0].numRoutes;
+                                delete event.rounds;
                                 util.writeForm(event, formMap);
                             }
                         })
@@ -295,12 +306,15 @@
                 // create event
                 // xxx where to get good defaults from?
                 event = {
+                    state: "Open",
+                    currentRound: 1,
                     location: "",
                     region: "802-New England East",
                     series: "ABS",
                     discipline: "Bouldering",
                     format: "Red Point",
-                    numRoutes: 6,
+                    numRoutes: 5,
+                    bibNumberDigits: 3,
                     sanctioning: "Local",
                     recordFallsPerClimb: false,
                     routesHaveLocation: true,
