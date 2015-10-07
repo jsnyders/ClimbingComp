@@ -418,15 +418,18 @@ var appModel = (function($, logger, util, undefined) {
 
         //
         // GET /data/events
-        // xxx todo filter by state
         //
-        fetchEvents: function() {
+        fetchEvents: function(state) {
             var result = $.Deferred(),
-                self = this;
+                self = this,
+                qparams = "";
 
+            if (state === "all" || state === "running") {
+                qparams = "?state=" + state;
+            }
             logger.debug(module, "Fetch Events");
             $.ajax({
-                url: "/data/events",
+                url: "/data/events" + qparams,
                 dataType: "json"
             }).done(function(data) {
                 var i;
@@ -510,6 +513,27 @@ var appModel = (function($, logger, util, undefined) {
                 result.resolve(data);
             }).fail(function(jqXHR) {
                 logger.error(module, "Fetch event failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        //
+        // GET /data/events/<event-id>
+        //
+        fetchEventDefaults: function() {
+            var result = $.Deferred();
+
+            logger.debug(module, "Fetch Event");
+
+            $.ajax({
+                url: "data/events-create-defaults",
+                dataType: "json"
+            }).done(function(data) {
+                data.date = new Date(data.date);
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch event defaults failed: " + getMessage(jqXHR));
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();

@@ -1,6 +1,6 @@
 /*
  * Template group createdb.sql
- * Compiled on Sun Oct 04 2015 22:52:17 GMT-0400 (EDT)
+ * Compiled on Tue Oct 06 2015 23:09:39 GMT-0400 (EDT)
  */
 var path = require("path");
 var base = path.dirname(module.filename);
@@ -90,13 +90,6 @@ r = function(w, rc) {
     w.write("INSERT INTO config VALUES('SessionMaxTime',8 * 60 * 60,NULL); -- 8 hr");
     w.write("\n");
     w.write("\n");
-    w.write("INSERT INTO config VALUES('NUM_ROUTES_DEFAULT_Sport', 3, NULL);");
-    w.write("\n");
-    w.write("INSERT INTO config VALUES('NUM_ROUTES_DEFAULT_Bouldering', 5, NULL);");
-    w.write("\n");
-    w.write("INSERT INTO config VALUES('NUM_ROUTES_DEFAULT_Speed', 2, NULL);");
-    w.write("\n");
-    w.write("\n");
     w.write("-- CATEGORY RULES");
     w.write("\n");
     w.write("INSERT INTO config VALUES('CAT_RULE_Youth-D', NULL, '(AGE <= 11)');");
@@ -153,7 +146,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 76, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 72, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -233,13 +226,6 @@ r = function(w, rc) {
     w.write("INSERT INTO nvp VALUES(-1, 'SERIES', 'CCS', 'CCS', NULL);");
     w.write("\n");
     w.write("\n");
-    w.write("INSERT INTO nvp VALUES(-1, 'DISCIPLINE', 'Sport', 'Sport', NULL);");
-    w.write("\n");
-    w.write("INSERT INTO nvp VALUES(-1, 'DISCIPLINE', 'Speed', 'Speed', NULL);");
-    w.write("\n");
-    w.write("INSERT INTO nvp VALUES(-1, 'DISCIPLINE', 'Bouldering', 'Bouldering', NULL);");
-    w.write("\n");
-    w.write("\n");
     w.write("INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Local', 'Local', NULL);");
     w.write("\n");
     w.write("INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Regional', 'Regional', NULL);");
@@ -299,15 +285,11 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("discipline VARCHAR(100) NOT NULL, -- DISCIPLINE");
-    w.popIndentation();
-    w.write("\n");
-    w.pushIndentation("  ");
     w.write("sanctioning VARCHAR(100) NOT NULL, -- SANCTIONING");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("state ENUM('Open', 'Active', 'Preliminary', 'Closed') NOT NULL,");
+    w.write("state ENUM('Internal', 'Open', 'Active', 'Preliminary', 'Closed') NOT NULL,");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
@@ -391,7 +373,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 170, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 161, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -407,6 +389,27 @@ r = function(w, rc) {
     w.write("\n");
     w.pushIndentation("      ");
     w.write("set NEW.version = NEW.version + 1;");
+    w.popIndentation();
+    w.write("\n");
+    w.write("\n");
+    w.write("-- This is used to populate initial default for newly created events");
+    w.write("\n");
+    w.write("INSERT INTO event (state, location, event_date, region, series, sanctioning,");
+    w.write("\n");
+    w.pushIndentation("                    ");
+    w.write("num_rounds, round_1_num_routes, round_1_format, routes_have_location, routes_have_color,");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("                    ");
+    w.write("bib_number_digits, record_falls_per_climb, score_card_columns) ");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("    ");
+    w.write("VALUES ('Internal', 'DEFAULT', CURDATE(), '802-New England East', 'ABS', 'Local',");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("            ");
+    w.write("1, 5, 'Red Point', TRUE, TRUE, 3, FALSE, 2 );");
     w.popIndentation();
     w.write("\n");
     w.write("\n");
@@ -484,7 +487,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 197, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 195, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -564,7 +567,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 220, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 218, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -730,7 +733,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 264, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 262, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -789,7 +792,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 283, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 281, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -847,7 +850,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 303, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 301, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
 };

@@ -39,7 +39,6 @@
             {id: "aeRegion", prop: "region"},
             {id: "aeDate", prop: "date"},
             {id: "aeSeries", prop: "series"},
-            {id: "aeDiscipline", prop: "discipline"},
             // todo fixed at one round for now
             {id: "aeFormat", prop: "format"},
             {id: "aeNumRoutes", prop: "numRoutes"},
@@ -83,6 +82,22 @@
                 } else {
                     app.showErrorMessage(status, "Failed to get event", message);
                 }
+            });
+    }
+
+    function loadEventDefaults() {
+        model.fetchEventDefaults()
+            .done(function(data) {
+                event = data;
+                event.date = ""; // don't let this default
+                event.format = event.rounds[0].format;
+                event.numRoutes = event.rounds[0].numRoutes;
+                delete event.rounds;
+                util.writeForm(event, formMap);
+            })
+            .fail(function(status, message) {
+                $.mobile.changePage("#adminEvents");
+                app.showErrorMessage(status, "Failed to get event defaults", message);
             });
     }
 
@@ -304,24 +319,6 @@
                 $("#aeTitle").text("Edit Event");
             } else {
                 // create event
-                // xxx where to get good defaults from?
-                event = {
-                    state: "Open",
-                    currentRound: 1,
-                    location: "",
-                    region: "802-New England East",
-                    series: "ABS",
-                    discipline: "Bouldering",
-                    format: "Red Point",
-                    numRoutes: 5,
-                    bibNumberDigits: 3,
-                    sanctioning: "Local",
-                    recordFallsPerClimb: false,
-                    routesHaveLocation: true,
-                    routesHaveColor: true,
-                    scoreCardColumns: 2
-                };
-                util.writeForm(event, formMap);
                 $("#aeOK").text("Create");
                 $("#aeApply").hide();
                 $("#aeManageClimbers").hide();
@@ -343,6 +340,8 @@
 
             if (eventId !== "new") {
                 loadEvent(true);
+            } else {
+                loadEventDefaults();
             }
         }
     });

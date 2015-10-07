@@ -47,10 +47,6 @@ INSERT INTO config VALUES('VersionMinor',1,NULL);
 INSERT INTO config VALUES('SessionIdleTime',2 * 60 * 60,NULL); -- 2 hr
 INSERT INTO config VALUES('SessionMaxTime',8 * 60 * 60,NULL); -- 8 hr
 
-INSERT INTO config VALUES('NUM_ROUTES_DEFAULT_Sport', 3, NULL);
-INSERT INTO config VALUES('NUM_ROUTES_DEFAULT_Bouldering', 5, NULL);
-INSERT INTO config VALUES('NUM_ROUTES_DEFAULT_Speed', 2, NULL);
-
 -- CATEGORY RULES
 INSERT INTO config VALUES('CAT_RULE_Youth-D', NULL, '(AGE <= 11)');
 INSERT INTO config VALUES('CAT_RULE_Youth-C', NULL, '(AGE = 12 OR AGE = 13)');
@@ -115,10 +111,6 @@ INSERT INTO nvp VALUES(-1, 'SERIES', 'SCS', 'SCS', NULL);
 INSERT INTO nvp VALUES(-1, 'SERIES', 'ABS', 'ABS', NULL);
 INSERT INTO nvp VALUES(-1, 'SERIES', 'CCS', 'CCS', NULL);
 
-INSERT INTO nvp VALUES(-1, 'DISCIPLINE', 'Sport', 'Sport', NULL);
-INSERT INTO nvp VALUES(-1, 'DISCIPLINE', 'Speed', 'Speed', NULL);
-INSERT INTO nvp VALUES(-1, 'DISCIPLINE', 'Bouldering', 'Bouldering', NULL);
-
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Local', 'Local', NULL);
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Regional', 'Regional', NULL);
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Divisional', 'Divisional', NULL);
@@ -144,9 +136,8 @@ CREATE TABLE event (
   location VARCHAR(200) NOT NULL, -- Example 'Boston Rock Gym'
   event_date DATE NOT NULL,
   series VARCHAR(100), -- SERIES
-  discipline VARCHAR(100) NOT NULL, -- DISCIPLINE xxx is this really needed? somewhat overlap with series but if needed belongs with the round
   sanctioning VARCHAR(100) NOT NULL, -- SANCTIONING
-  state ENUM('Open', 'Active', 'Preliminary', 'Closed') NOT NULL,
+  state ENUM('Internal', 'Open', 'Active', 'Preliminary', 'Closed') NOT NULL,
   current_round INTEGER(1),
   bib_number_digits INTEGER(1) NOT NULL DEFAULT 3,
   record_falls_per_climb BOOLEAN NOT NULL,
@@ -174,11 +165,18 @@ CREATE TRIGGER event_update
     FOR EACH ROW
       set NEW.version = NEW.version + 1;
 
+-- This is used to populate initial default for newly created events
+INSERT INTO event (state, location, event_date, region, series, sanctioning,
+                    num_rounds, round_1_num_routes, round_1_format, routes_have_location, routes_have_color,
+                    bib_number_digits, record_falls_per_climb, score_card_columns) 
+    VALUES ('Internal', 'DEFAULT', CURDATE(), '802-New England East', 'ABS', 'Local',
+            1, 5, 'Red Point', TRUE, TRUE, 3, FALSE, 2 );
+
 DROP TABLE IF EXISTS climber;
 CREATE TABLE climber (
   id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
   version INTEGER DEFAULT 1,
-  usac_member_id INTEGER,
+  usac_member_id INTEGER, -- todo consider if this should be a string
   first_name VARCHAR(100),
   last_name VARCHAR(100) NOT NULL,
   gender ENUM('Male', 'Female'),

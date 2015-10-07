@@ -164,8 +164,7 @@ var app = {};
                 }
                 $("#hCurrentEventSection").show();
 
-                // xxx need to get only active events
-                model.fetchEvents().done(function() {
+                model.fetchEvents("running").done(function() {
                     renderEventsOptions();
                 });
             }
