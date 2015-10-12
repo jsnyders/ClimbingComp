@@ -57,6 +57,33 @@
             {prop: "points", label: "Points", format: renderInputNumber}
         ];
 
+    var stateTransitions = {
+        "Open": {
+            state: "Active", // or active last
+            label: "Begin Competition"
+        },
+        "Active": {
+            state: "Preliminary",
+            label: "Post Preliminary Results"
+        },
+        "Preliminary": {
+            state: "Active", // or active last
+            label: "Begin Next Round"
+        },
+        "ActiveLast": {
+            state: "PreliminaryLast",
+            label: "Post Preliminary Results"
+        },
+        "PreliminaryLast": {
+            state: "Closed",
+            label: "Complete Competition"
+        },
+        "Closed": {
+            state: "Open",
+            label: "Restart"
+        }
+    };
+
     function renderInput(value, r, c) {
         return "<input id='" + r + ":" + c + "' type='text' size='6' value='" + util.escapeHTML(value) + "'>";
     }
@@ -65,15 +92,27 @@
         return "<input id='" + r + ":" + c + "' type='text' size='4' value='" + util.escapeHTML(value) + "'>";
     }
 
+    function getCurrentState( event ) {
+        var state;
+        state = event.state;
+        if (event.currentRound === event.rounds.length && (state === "Active" || state === "Preliminary")) {
+            state += "Last";
+        }
+        return state;
+    }
+
     function loadEvent(returnOnError) {
         model.fetchEvent(eventId)
             .done(function(data) {
+                var state;
+
                 event = data;
                 // xxx fixed at one round for now
                 event.format = event.rounds[0].format;
                 event.numRoutes = event.rounds[0].numRoutes;
-                delete event.rounds;
                 util.writeForm(event, formMap);
+                state = getCurrentState(event);
+                $("#aeChangeState").show().text( stateTransitions[state].label );
             })
             .fail(function(status, message) {
                 if (returnOnError) {
@@ -92,7 +131,6 @@
                 event.date = ""; // don't let this default
                 event.format = event.rounds[0].format;
                 event.numRoutes = event.rounds[0].numRoutes;
-                delete event.rounds;
                 util.writeForm(event, formMap);
             })
             .fail(function(status, message) {
@@ -233,7 +271,6 @@
                                 // xxx fixed at one round for now
                                 event.format = event.rounds[0].format;
                                 event.numRoutes = event.rounds[0].numRoutes;
-                                delete event.rounds;
                                 util.writeForm(event, formMap);
                             }
                         })
@@ -289,6 +326,23 @@
                 $.mobile.changePage("#adminClimbers?" + eventId);
             });
 
+            $("#aeChangeState").click(function() {
+                var state = getCurrentState( event),
+                    next = stateTransitions[state].state;
+
+                if (next === "ActiveLast") {
+                    next = "Active";
+                } else if (next === "PreliminaryLast") {
+                    next = "Preliminary";
+                }
+                // xxx increment current round if needed
+                // xxx before going into active state check if climbers and routes have been defined
+                // xxx before going into preliminary state check that all score cards have been entered
+                // xxx restart should clear out results?
+                event.state = next;
+                save(true);
+            });
+
         },
         prepare: function(ui) {
             if (!optionsInitialized) {
@@ -310,6 +364,7 @@
                 eventId = ui.args[0];
             }
 
+            $("#aeChangeState").hide();
             if (eventId !== "new") {
                 // update event
                 $("#aeOK").text("OK");
