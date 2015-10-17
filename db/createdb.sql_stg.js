@@ -1,6 +1,6 @@
 /*
  * Template group createdb.sql
- * Compiled on Tue Oct 06 2015 23:09:39 GMT-0400 (EDT)
+ * Compiled on Fri Oct 16 2015 21:18:59 GMT-0400 (EDT)
  */
 var path = require("path");
 var base = path.dirname(module.filename);
@@ -426,7 +426,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("usac_member_id INTEGER,");
+    w.write("usac_member_id INTEGER, -- todo consider if this should be a string");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
@@ -563,7 +563,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("PRIMARY KEY id (number, event_id)");
+    w.write("PRIMARY KEY id (event_id, round, number)");
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");

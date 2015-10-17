@@ -214,7 +214,7 @@ CREATE TABLE event_route (
   sheet_row INTEGER,
   sheet_column INTEGER,
   -- for onsight/flash each hold has a point value and there are some other things like bridges etc. There is also a picture of the route.
-  PRIMARY KEY id (number, event_id)
+  PRIMARY KEY id (event_id, round, number)
 ) ENGINE=$config.engine$ DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS event_climber;

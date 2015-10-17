@@ -29,9 +29,6 @@
 (function(app, model, $, logger, util, undefined) {
     "use strict";
 
-    var BIB_NUMBER_LENGTH = 3; // todo xxx get this from model via database, most likely event configuration
-    var TOP_N = 3; // todo xxx get this from event configuration default to 5 for ABS and 3 for SCS
-
     var module = "ScoreCard",
         duringInitCard = false;
 
@@ -166,7 +163,8 @@
         var i, route, topId, fallsId, topped, falls, climb, totalPoints, totalFalls, count,
             topPoints = [],
             climbs = [],
-            routes = model.currentEvent.routes;
+            routes = model.currentEvent.routes,
+            top_n = model.currentEvent.rounds[model.currentEvent.currentRound - 1].numRoutes;
 
         for (i = 0; i < routes.length; i++) {
             route = routes[i];
@@ -198,7 +196,7 @@
         count = 0;
         $sc.find(".topN").removeClass("topN");
         $("#scScore").removeClass("u-ok");
-        for (i = 0; i < climbs.length && i < TOP_N; i++) {
+        for (i = 0; i < climbs.length && i < top_n; i++) {
             climb = climbs[i];
             if (climb.points > 0) {
                 topPoints[count] = climb.points;
@@ -230,7 +228,7 @@
         }
 
         $("#scScore").text("Total: " + totalPoints);
-        if ( count >= TOP_N ) {
+        if (count >= top_n) {
             $("#scScore").addClass("u-ok");
         }
 
@@ -350,7 +348,7 @@
 
             function keypadCheckBibNumber(text) {
                 var bibNumber;
-                if (text.length === BIB_NUMBER_LENGTH) {
+                if (text.length === model.currentEvent.bibNumberDigits) {
                     bibNumber = parseInt(text, 10);
                     if ( isNaN(bibNumber) || !model.setCurrentClimber(bibNumber)) {
                         keypadClear();

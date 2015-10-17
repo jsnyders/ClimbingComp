@@ -176,7 +176,7 @@
     }
 
     function fetchRoutes() {
-        model.fetchRoutes(eventId)
+        model.fetchRoutes(eventId, event.currentRound)
             .done(function(data) {
                 if (data.version !== event.version) {
                     console.log("xxx route version different from event version");
@@ -305,7 +305,7 @@
                     alert("Choose a file first.");
                     return;
                 }
-                model.uploadEventRoutes(event.eventId, event.routesHaveLocation, event.routesHaveColor,
+                model.uploadEventRoutes(event.eventId, event.currentRound, event.routesHaveLocation, event.routesHaveColor,
                             event.scoreCardColumns, event.version,  $("#aeFile")[0].files[0])
                     .done(function() {
                         fetchRoutes();

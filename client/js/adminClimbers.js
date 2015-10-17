@@ -75,7 +75,7 @@
             {label:"Team", value: "team"},
             {label:"Coach", value: "coach"}
         ],
-        defaultMasterFields = [ "usacMemberId", "firstName", "lastName", "gender", "category", "region", "team"];
+        defaultMasterFields = [ "usacMemberId", "firstName", "lastName", "birthDate", "gender", "category", "team", "region" ];
 
     // xxx get this from model layer, persist defaults
     var allEventFields = [
@@ -90,7 +90,7 @@
             {label:"Team", value: "team"},
             {label:"Coach", value: "coach"}
         ],
-        defaultEventFields = [ "bibNumber", "usacMemberId", "firstName", "lastName", "gender", "category", "region", "team"];
+        defaultEventFields = [ "bibNumber", "usacMemberId", "firstName", "lastName", "gender", "category", "region", "team" ];
 
     function lookupFieldLabel(collection, field) {
         var i;
@@ -310,7 +310,8 @@
                     .done(function (list) {
                         util.renderOptions($("#cCategoryFilter"), list, {
                             nullValue: "",
-                            nullLabel: "All"
+                            nullLabel: "All",
+                            selectedValue: ""
                         });
                     });
 
@@ -318,7 +319,8 @@
                     .done(function (list) {
                         util.renderOptions($("#cRegionFilter"), list, {
                             nullValue: "",
-                            nullLabel: "All"
+                            nullLabel: "All",
+                            selectedValue: ""
                         });
                     });
             }

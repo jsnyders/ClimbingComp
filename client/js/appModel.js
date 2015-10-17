@@ -856,13 +856,13 @@ var appModel = (function($, logger, util, undefined) {
         //
         // GET /data/events/<event-id>/routes
         //
-        fetchRoutes: function(eventId) {
+        fetchRoutes: function(eventId, round) {
             var result = $.Deferred(),
                 self = this;
 
             logger.debug(module, "Fetch event routes");
             $.ajax({
-                url: "/data/events/" + eventId + "/routes",
+                url: "/data/events/" + eventId + "/routes?round=" + round,
                 dataType: "json"
             }).done(function(data) {
                 result.resolve(data);
@@ -1025,7 +1025,7 @@ var appModel = (function($, logger, util, undefined) {
 
 
         //xxx
-        uploadEventRoutes: function(eventId, routesHaveLocation, routesHaveColor, scoreCardColumns, version, file) {
+        uploadEventRoutes: function(eventId, round, routesHaveLocation, routesHaveColor, scoreCardColumns, version, file) {
             var fd,
                 self = this,
                 result = $.Deferred();
@@ -1040,7 +1040,7 @@ var appModel = (function($, logger, util, undefined) {
             fd.append("version", version);
             $.ajax({
                 type: "POST",
-                url: "data/events/" + eventId + "/routes-upload",
+                url: "data/events/" + eventId + "/routes-upload?round=" + round,
                 data: fd,
                 enctype: 'multipart/form-data',
                 processData: false,  // tell jQuery not to process the data

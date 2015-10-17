@@ -102,7 +102,6 @@
                     .fail(function (status, message) {
                         app.showErrorMessage(status, "Failed to create event climber", message);
                     });
-                returnToList();
             })
             .fail(function (status, message) {
                 app.showErrorMessage(status, "Failed to create climber", message);
@@ -132,6 +131,8 @@
                 maxDate: new Date(),
                 yearRange: "-60:+0"
             });
+
+            // xxx when bday entered default category
 
             $("#acCancel").click(function() {
                 returnToList();
