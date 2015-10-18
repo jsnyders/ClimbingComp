@@ -160,7 +160,7 @@
     }
 
     function updateCard($sc, fallsPerClimb, noUpdate) {
-        var i, route, topId, fallsId, topped, falls, climb, totalPoints, totalFalls, count,
+        var i, scorecard, route, topId, fallsId, topped, falls, climb, totalPoints, totalFalls, count, tieBreaker,
             topPoints = [],
             climbs = [],
             routes = model.currentEvent.routes,
@@ -193,18 +193,26 @@
 
         totalPoints = 0;
         totalFalls = 0;
+        tieBreaker = "";
         count = 0;
         $sc.find(".topN").removeClass("topN");
         $("#scScore").removeClass("u-ok");
-        for (i = 0; i < climbs.length && i < top_n; i++) {
+        for (i = 0; i < climbs.length; i++) {
             climb = climbs[i];
-            if (climb.points > 0) {
-                topPoints[count] = climb.points;
-                count += 1;
-                totalPoints += climb.points;
-                $(climb.topId).closest("tr").addClass("topN");
-                if (fallsPerClimb) {
-                    totalFalls += climb.falls;
+            if ( i < top_n ) {
+                if (climb.points > 0) {
+                    topPoints[count] = climb.points;
+                    count += 1;
+                    totalPoints += climb.points;
+                    $(climb.topId).closest("tr").addClass("topN");
+                    if (fallsPerClimb) {
+                        totalFalls += climb.falls;
+                    }
+                }
+            } else {
+                if (climb.points > 0) {
+                    tieBreaker += util.zeroPad(climb.points, 6) + ":";
+                    tieBreaker += util.zeroPad(climb.falls, 2) + ",";
                 }
             }
         }
@@ -215,16 +223,14 @@
 
         if (!noUpdate) {
             logger.debug(module, "Update score for " + model.currentClimber.bibNumber);
-            model.updateCurrentClimberScoreCard({
-                totalPoints: totalPoints,
+            scorecard = {
                 totalFalls: totalFalls,
-                top1: topPoints[0],
-                top2: topPoints[1],
-                top3: topPoints[2],
-                top4: topPoints[3],
-                top5: topPoints[4],
-                climbs: climbs
-            });
+                tieBreaker: tieBreaker,
+                topPoints: topPoints,
+                round: model.currentEvent.currentRound,
+                climbs: climbs // xxx probably need to make this per round
+            };
+            model.updateCurrentClimberScoreCard(scorecard);
         }
 
         $("#scScore").text("Total: " + totalPoints);

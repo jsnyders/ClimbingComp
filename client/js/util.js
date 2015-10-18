@@ -318,4 +318,14 @@ var util = {};
             date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCHours();
     };
 
+    var zeros = "0000000000000000000000";
+
+    util.zeroPad = function(n, length) {
+        var value = "" + n;
+        if (value.length < length) {
+            value = zeros.substring(0, length - value.length) + value;
+        }
+        return value;
+    };
+
 })(util, jQuery, logger);
