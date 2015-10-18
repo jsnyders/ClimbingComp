@@ -1000,16 +1000,13 @@ var appModel = (function($, logger, util, undefined) {
         // GET /data/events/<event-id>/results
         // xxx group: all, category/gender, team
         // xxx todo implement filter local or on server?
-        fetchEventResults: function(eventId) {
-            var event = this.currentEvent, // xxx assume eventId is currentEvent
-                result = $.Deferred();
-
-            eventId = event.eventId;
+        fetchEventResults: function(eventId, round) {
+            var result = $.Deferred();
 
             logger.debug(module, "Fetch Event Results");
 
             $.ajax({
-                url: "/data/events/" + eventId + "/results",
+                url: "/data/events/" + eventId + "/results?round=" + round,
                 dataType: "json"
             }).done(function(data) {
                 logger.info(module, "Fetch event results loaded " + data.length + " results");

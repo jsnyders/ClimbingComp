@@ -22,7 +22,6 @@
 
 /*
  * xxx todo
- * Events should have a state: open (add/edit routes, climbers), active (fill out scorecards), closed (results final) Set on admin page
  * progress spinner see: "loader"
  */
 

@@ -14,61 +14,42 @@
 
     var module = "Results",
         resultColumns = [
-        {prop: "bibNumber", label: "Bib #"},
-        {prop: "usacMemberId", label: "Member #", priority: '1'},
-        {prop: "firstName", label: "First Name"},
-        {prop: "lastName", label: "Last Name"},
-        {prop: "region", label: "Region", priority: 3},
-        {prop: "team", label: "Team", priority: 3},
-        {prop: "total", label: "Total", num: true},
-        {prop: "place", label: "Place", num: true},
-        {prop: "top1", label: "Best 1", num: true, priority: 2},
-        {prop: "top2", label: "Best 2", num: true, priority: 2},
-        {prop: "top3", label: "Best 3", num: true, priority: 2},
-        {prop: "top4", label: "Best 4", num: true, priority: 2},
-        {prop: "top5", label: "Best 5", num: true, priority: 2},
-        {prop: "totalFalls", label: "Falls", num: true, priority: 1}
-    ];
+            {prop: "bibNumber", label: "Bib #"}, // xxx link to score card
+            {prop: "usacMemberId", label: "Member #", priority: '1'},
+            {prop: "firstName", label: "First Name"},
+            {prop: "lastName", label: "Last Name"},
+            {prop: "region", label: "Region", priority: 3},
+            {prop: "team", label: "Team", priority: 3},
+            {prop: "total", label: "Total", cls: "num"},
+            {prop: "place", label: "Place", cls: "num"}
+        ];
 
-    // xxx switch over to util.renderTable
     function renderResults(results) {
-        var i, j, row, col, br,
-            table = "",
-            header = "",
-            lastBreak = "",
+        var i, columns,
+            event = model.currentEvent,
+            top_n = event.rounds[event.currentRound - 1].numRoutes,
             $table = $("#resTable");
 
-        header += "<tr class='ui-bar-d'>";
-        for (j = 0; j < resultColumns.length; j++) {
-            col = resultColumns[j];
-            if (col.priority) {
-                header += "<th data-priority='" + col.priority + "'>" + col.label + "</th>";
-            } else {
-                header += "<th>" + col.label + "</th>";
-            }
+        columns = [];
+        for (i = 0; i < resultColumns.length; i++) {
+            columns.push(resultColumns[i]);
         }
-        header += "</tr>";
-        $table.children("thead").html(header);
+        for (i = 0; i < top_n; i++) {
+            columns.push({
+                prop: "top" + (i + 1), label: "Best " + (i + 1), cls: "num", priority: 2
+            });
+        }
+        // xxx option to show attempts vs falls
+        columns.push({
+            prop: "totalFalls", label: "Falls", cls: "num", priority: 1
+        });
 
-        for (i = 0; i < results.length; i++) {
-            row = results[i];
-            table += "<tr>";
-            br = row.gender + " " + row.category;
-            if (br !== lastBreak) {
-                table += "<td class='colbreak' colspan='14'>" + br + "</td></tr>" + header +  "<tr>";
-                lastBreak = br;
-            }
-            for (j = 0; j < resultColumns.length; j++) {
-                col = resultColumns[j];
-                if (col.num) {
-                    table += "<td class='num'>" + row[col.prop] + "</td>";
-                } else {
-                    table += "<td>" + row[col.prop] + "</td>";
-                }
-            }
-            table += "</tr>";
-        }
-        $table.children("tbody").html(table);
+        util.renderTable($table, columns, results, {
+            breakOn: function(row) {
+                return row.gender + " " + row.category;
+            },
+            nullValue: "-"
+        });
     }
 
     app.addPage({
@@ -86,17 +67,18 @@
                 return;
             }
 
-            $("#resExport").attr("href", "data/events/" + model.currentEvent.eventId + "/results?fmt=export");
+            $("#resExport").attr("href", "data/events/" + model.currentEvent.eventId + "/results?round=" + model.currentEvent.currentRound + "&fmt=csv");
+            // xxx another link for PDF
 
             $("#resHeading").find(".ui-collapsible-heading-toggle")
-                .text(event.sanctioning + " " + event.type + " " + event.series + " Climbing Event, " + event.location);
+                .text(event.sanctioning + " " + event.series + " Climbing Event, " + event.location);
 
-            $("#resDetails").html("<ul><li>Region: " + util.escapeHTML(event.region) + "</li><li>More details tbd</li></ul>");
+            $("#resDetails").html("<ul><li>Region: " + util.escapeHTML(event.region) + "</li><li>More details tbd</li></ul>"); //xxx add details
 
             // clean out old results first
             $("#resTable").children("thead,tbody").empty();
 
-            model.fetchEventResults()
+            model.fetchEventResults(event.eventId, event.currentRound)
                 .done(function(results) {
                     renderResults(results);
                     $("#resTable").table("rebuild");
