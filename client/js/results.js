@@ -58,7 +58,8 @@
             logger.debug(module, "Init page");
         },
         open: function(ui) {
-            var event = model.currentEvent;
+            var href,
+                event = model.currentEvent;
 
             logger.debug(module, "Page is now active");
 
@@ -67,8 +68,9 @@
                 return;
             }
 
-            $("#resExport").attr("href", "data/events/" + model.currentEvent.eventId + "/results?round=" + model.currentEvent.currentRound + "&fmt=csv");
-            // xxx another link for PDF
+            href = "data/events/" + model.currentEvent.eventId + "/results?round=" + model.currentEvent.currentRound;
+            $("#resExport").attr("href", href + "&fmt=csv");
+            $("#resPrint").attr("href", href + "&fmt=pdf");
 
             $("#resHeading").find(".ui-collapsible-heading-toggle")
                 .text(event.sanctioning + " " + event.series + " Climbing Event, " + event.location);
