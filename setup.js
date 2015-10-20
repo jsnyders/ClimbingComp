@@ -134,7 +134,7 @@ function processDBScript(host, admin, adminPwd, options, file) {
                         ") will be created and\nany existing database by that name will be overwritten.");
             console.log("User '" + options.user + "'@'" + options.host + "' will be created and granted all rights to " + options.database + ".");
             console.log("Any existing user by that name will be overwritten.");
-            console.log("Database connection information including the password for user '" + options.user + "' will written to config.json.\n");
+            console.log("Database connection information including the password for user '" + options.user + "' will be\nwritten to config.json.\n");
             prompt.get([
                     {
                         name: "continue",

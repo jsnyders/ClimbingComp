@@ -1,6 +1,6 @@
 /*
  * Template group createdb.sql
- * Compiled on Fri Oct 16 2015 21:18:59 GMT-0400 (EDT)
+ * Compiled on Mon Oct 19 2015 22:09:07 GMT-0400 (EDT)
  */
 var path = require("path");
 var base = path.dirname(module.filename);
@@ -321,7 +321,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("round_1_format VARCHAR(100), -- FORMAT");
+    w.write("round_1_format VARCHAR(100), -- FORMAT - this defines the method of scoring and ranking");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
@@ -353,10 +353,6 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("-- todo something to select/define the scoring/ranking system or is this tied to type");
-    w.popIndentation();
-    w.write("\n");
-    w.pushIndentation("  ");
     w.write("score_card_columns INTEGER DEFAULT 2,");
     w.popIndentation();
     w.write("\n");
@@ -373,7 +369,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 161, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 160, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -462,7 +458,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("-- TOOD need to mark a climber as taking no space for the purpose of number of climbers advancing to next level ");
+    w.write("-- TODO need to mark a climber as taking no space for the purpose of number of climbers advancing to next level ");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
@@ -487,7 +483,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 195, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 194, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -567,7 +563,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 218, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 217, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -632,7 +628,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("-- xxx for each route redpoint needs attempta/falls, onsight needs top (1/0) and possibly ranking points");
+    w.write("-- xxx for each route redpoint needs attempts/falls, onsight needs top (1/0) and possibly ranking points");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
@@ -697,6 +693,10 @@ r = function(w, rc) {
     w.write("\n");
     w.pushIndentation("  ");
     w.write("total_falls INTEGER,");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("  ");
+    w.write("tie_breaker VARCHAR(200),  -- A string used to break ties. For red point it is additional climbs beyond the top n.");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");

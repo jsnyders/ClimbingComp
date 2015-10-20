@@ -145,7 +145,7 @@ CREATE TABLE event (
   routes_have_color BOOLEAN NOT NULL,
   num_rounds INTEGER(1) NOT NULL, -- must be >= 1 and <= 3
   round_1_num_routes INTEGER, -- for redpoint this is number to consider for top score
-  round_1_format VARCHAR(100), -- FORMAT
+  round_1_format VARCHAR(100), -- FORMAT - this defines the method of scoring and ranking
   round_1_num_advance INTEGER, -- how many people in each category advance to the next round
   round_2_num_routes INTEGER,
   round_2_format VARCHAR(100),
@@ -153,7 +153,6 @@ CREATE TABLE event (
   round_3_num_routes INTEGER,
   round_3_format VARCHAR(100),
   round_3_num_advance INTEGER, -- how many people in each category advance to the next competition
-  -- todo something to select/define the scoring/ranking system or is this tied to type
   score_card_columns INTEGER DEFAULT 2,
   notes VARCHAR(1000),
   updated_by VARCHAR(100),
@@ -185,7 +184,7 @@ CREATE TABLE climber (
   region VARCHAR(100), -- REGIONS
   team VARCHAR(100),
   coach VARCHAR(100),
-  -- TOOD need to mark a climber as taking no space for the purpose of number of climbers advancing to next level 
+  -- TODO need to mark a climber as taking no space for the purpose of number of climbers advancing to next level 
   -- TODO consider other things like phone number, email, location, has waver, Citizen, possibly general purpose columns
   updated_by VARCHAR(100),
   updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -233,7 +232,7 @@ CREATE TABLE event_climber (
   version INTEGER DEFAULT 1,
   start_order INTEGER, -- for onsight event types this is the initial running order of the climber unique within gender+category
   route_1_score DECIMAL(7,2),
-  -- xxx for each route redpoint needs attempta/falls, onsight needs top (1/0) and possibly ranking points
+  -- xxx for each route redpoint needs attempts/falls, onsight needs top (1/0) and possibly ranking points
   route_2_score DECIMAL(7,2),
   route_3_score DECIMAL(7,2),
   route_4_score DECIMAL(7,2),
@@ -250,6 +249,7 @@ CREATE TABLE event_climber (
   route_15_score DECIMAL(7,2),
   route_16_score DECIMAL(7,2),
   total_falls INTEGER,
+  tie_breaker VARCHAR(200),  -- A string used to break ties. For red point it is additional climbs beyond the top n.
   final_time  DECIMAL(5,2),  -- Time used to break ties in super finals. Time in seconds to 2 decimal places.
   climbs VARCHAR(6000), -- data for the client use only
   updated_by VARCHAR(100),

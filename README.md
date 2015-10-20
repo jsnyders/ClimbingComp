@@ -23,7 +23,7 @@ Source: [https://github.com/jsnyders/ClimbingComp](https://github.com/jsnyders/C
 
 ## Features
 
-* Its a web app that works on tablets laptops or desktops
+* Its a web app that works on tablets, laptops, or desktops
 * Data entry screen has same layout as scorecard for easy data entry
 
 ## License
@@ -54,7 +54,7 @@ sudo mysql -u root -h localhost
 > exit
 ```
 
-You will need to know the username and password of a database user than has the permission to create new databases.
+You will need to know the username and password of a database user than has the permission to create new databases and users.
 
 ### Install Node.js
 Download and install node.js from [http://nodejs.org/download/](http://nodejs.org/download/)
@@ -102,15 +102,14 @@ npm run setup
 ```
 Enter the database configuration information when prompted.
 
-Start the server
+
+### Running ClimbingComp for the first time
+Start the ClimbingComp server with all default options
 
 ```
 cd <project-folder-root>
 npm start
 ```
-
-TODO more information about other command line options.
-
 
 Then open a browser and go to URL
 
@@ -121,6 +120,14 @@ http://localhost:8080/ClimbingComp.html
 When the database was created a default administrator was created with username admin and password admin.
 Click Sign In and enter the username and password. Then click Manager users and change the password and/or
 create other users.
+
+There are a few options you can use to start the server for example changing the port number.
+For information about the command line options, type: 
+
+```
+cd <project-folder-root>
+node main.js --help
+```
 
 If you want to use SSL
 
@@ -210,6 +217,13 @@ After reviewing the results press OK button.
 If all goes well the Manage Climbers page will list all the climbers. Scroll to the bottom to see the total.
 You can filter the list by Gender and Category and/or Region.
 
+### Create an Event
+
+TODO
+
+### Define the Event Routes
+
+### Add Climbers 
 
 ### Network considerations
 
