@@ -209,7 +209,7 @@
                         totalFalls += climb.falls;
                     }
                 }
-            } else {
+            } else { // xxx cap at 10 routes including the top N
                 if (climb.points > 0) {
                     tieBreaker += util.zeroPad(climb.points, 6) + ":";
                     tieBreaker += util.zeroPad(99 - climb.falls, 2) + ","; // subtract from 99 so that higher numbers are better just like points

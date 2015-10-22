@@ -1,6 +1,6 @@
 /*
  * Template group createdb.sql
- * Compiled on Mon Oct 19 2015 22:09:07 GMT-0400 (EDT)
+ * Compiled on Wed Oct 21 2015 23:48:12 GMT-0400 (EDT)
  */
 var path = require("path");
 var base = path.dirname(module.filename);
@@ -237,9 +237,9 @@ r = function(w, rc) {
     w.write("INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'None', 'None', NULL);");
     w.write("\n");
     w.write("\n");
-    w.write("INSERT INTO nvp VALUES(-1, 'FORMAT', 'Red Point', 'Red Point', NULL);");
+    w.write("INSERT INTO nvp VALUES(-1, 'FORMAT', 'Redpoint', 'Redpoint', NULL);");
     w.write("\n");
-    w.write("INSERT INTO nvp VALUES(-1, 'FORMAT', 'Red Point Modified', 'Red Point Modified', NULL);");
+    w.write("INSERT INTO nvp VALUES(-1, 'FORMAT', 'Redpoint Modified', 'Redpoint Modified', NULL);");
     w.write("\n");
     w.write("--INSERT INTO nvp VALUES(-1, 'FORMAT', 'Flash', 'Flash', NULL);");
     w.write("\n");
@@ -405,7 +405,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("            ");
-    w.write("1, 5, 'Red Point', TRUE, TRUE, 3, FALSE, 2 );");
+    w.write("1, 5, 'Redpoint', TRUE, TRUE, 3, FALSE, 2 );");
     w.popIndentation();
     w.write("\n");
     w.write("\n");
@@ -539,7 +539,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("-- or for a modified red point comp you can have different colored score cards so that competitors in a given category can only climb routes matching that category");
+    w.write("-- or for a modified redpoint comp you can have different colored score cards so that competitors in a given category can only climb routes matching that category");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
@@ -696,7 +696,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
-    w.write("tie_breaker VARCHAR(200),  -- A string used to break ties. For red point it is additional climbs beyond the top n.");
+    w.write("tie_breaker VARCHAR(200),  -- A string used to break ties. For redpoint it is additional climbs beyond the top n.");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");

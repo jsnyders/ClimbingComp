@@ -117,8 +117,8 @@ INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'Divisional', 'Divisional', NULL);
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'National', 'National', NULL);
 INSERT INTO nvp VALUES(-1, 'SANCTIONING', 'None', 'None', NULL);
 
-INSERT INTO nvp VALUES(-1, 'FORMAT', 'Red Point', 'Red Point', NULL);
-INSERT INTO nvp VALUES(-1, 'FORMAT', 'Red Point Modified', 'Red Point Modified', NULL);
+INSERT INTO nvp VALUES(-1, 'FORMAT', 'Redpoint', 'Redpoint', NULL);
+INSERT INTO nvp VALUES(-1, 'FORMAT', 'Redpoint Modified', 'Redpoint Modified', NULL);
 --INSERT INTO nvp VALUES(-1, 'FORMAT', 'Flash', 'Flash', NULL);
 --INSERT INTO nvp VALUES(-1, 'FORMAT', 'Onsight', 'Onsight', NULL);
 --INSERT INTO nvp VALUES(-1, 'FORMAT', 'Speed', 'Speed', NULL);
@@ -169,7 +169,7 @@ INSERT INTO event (state, location, event_date, region, series, sanctioning,
                     num_rounds, round_1_num_routes, round_1_format, routes_have_location, routes_have_color,
                     bib_number_digits, record_falls_per_climb, score_card_columns) 
     VALUES ('Internal', 'DEFAULT', CURDATE(), '802-New England East', 'ABS', 'Local',
-            1, 5, 'Red Point', TRUE, TRUE, 3, FALSE, 2 );
+            1, 5, 'Redpoint', TRUE, TRUE, 3, FALSE, 2 );
 
 DROP TABLE IF EXISTS climber;
 CREATE TABLE climber (
@@ -208,7 +208,7 @@ CREATE TABLE event_route (
   route_category VARCHAR(20), -- For modified redpoint this is something like Advanced, Youth, or Open. For onsight/flash this is something like FYDQ1
   points INTEGER NOT NULL, -- This is the points for a top
   -- based on the points the route is associated with a category for the purpose of adult sub category assignment
-  -- or for a modified red point comp you can have different colored score cards so that competitors in a given category can only climb routes matching that category
+  -- or for a modified redpoint comp you can have different colored score cards so that competitors in a given category can only climb routes matching that category
   -- time limit typically the same for all routes but the rules allow each route to have its own time limit
   sheet_row INTEGER,
   sheet_column INTEGER,
@@ -249,7 +249,7 @@ CREATE TABLE event_climber (
   route_15_score DECIMAL(7,2),
   route_16_score DECIMAL(7,2),
   total_falls INTEGER,
-  tie_breaker VARCHAR(200),  -- A string used to break ties. For red point it is additional climbs beyond the top n.
+  tie_breaker VARCHAR(200),  -- A string used to break ties. For redpoint it is additional climbs beyond the top n.
   final_time  DECIMAL(5,2),  -- Time used to break ties in super finals. Time in seconds to 2 decimal places.
   climbs VARCHAR(6000), -- data for the client use only
   updated_by VARCHAR(100),

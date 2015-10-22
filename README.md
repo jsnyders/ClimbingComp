@@ -17,7 +17,7 @@ scorecard data entry making it faster and reducing errors.
 It is designed based on the USA Climbing climbing competition format and scoring rules but may be applicable, or
 adapted to other situations.
 
-Currently it only handles Red Point format comps.
+Currently it only handles redpoint format comps.
 
 Source: [https://github.com/jsnyders/ClimbingComp](https://github.com/jsnyders/ClimbingComp)
 

@@ -20,8 +20,8 @@
             {prop: "lastName", label: "Last Name"},
             {prop: "region", label: "Region", priority: 3},
             {prop: "team", label: "Team", priority: 3},
-            {prop: "total", label: "Total", cls: "num"},
-            {prop: "place", label: "Place", cls: "num"}
+            {prop: "place", label: "Place", cls: "num"},
+            {prop: "total", label: "Total", cls: "num"}
         ];
 
     function renderResults(results) {
@@ -34,15 +34,17 @@
         for (i = 0; i < resultColumns.length; i++) {
             columns.push(resultColumns[i]);
         }
+
+        // xxx option to show attempts vs falls
+        columns.push({
+            prop: "totalFalls", label: "Falls", cls: "num", priority: 1
+        });
+
         for (i = 0; i < top_n; i++) {
             columns.push({
                 prop: "top" + (i + 1), label: "Best " + (i + 1), cls: "num", priority: 2
             });
         }
-        // xxx option to show attempts vs falls
-        columns.push({
-            prop: "totalFalls", label: "Falls", cls: "num", priority: 1
-        });
 
         util.renderTable($table, columns, results, {
             breakOn: function(row) {
