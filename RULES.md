@@ -1,25 +1,25 @@
 # Rules for Scoring and Ranking competitions used by ClimbingComp 
 
 This is an explanation of how ClimbingComp scores and ranks climbers in competitions. Only the scoring is
-described here. Other aspects of the competition such as rules for climbing, how much time to allow, 
-how many routes to set etc. are also important but don't have an impact on the scoring and ranking.
+described here. Other aspects of the competition such as rules for climbing, how much time to allow,
+how many routes to set etc. are also important but don't have an impact on the scoring and ranking formulas.
 
 ## Redpoint format
 In a redpoint climbing competition there are a number of routes each designated with a point value based on its 
 difficulty (higher numbers are more difficult). Climbers can attempt as many routes as they have time for and 
 may attempt the same route multiple times. Climbers only receives points for topping a route. A climber's
-total score is the sum of the points of the top (largest point value) N routes they topped, where N is a parameter of 
-the competition round, an integer between 1 and 6. The total number of falls on the top N routes is used to break ties.
-If the total score and total number of falls is the same (a tie) then the next highest point value route climbed by
-each climber is considered. If there is still a tie then the number of falls on that route is considered. This 
-process of considering additional routes and falls continues for up to 10 routes total (this includes the 
+total score is the sum of the points of the N largest valued routes (top N) they topped (completed). Where N is a 
+parameter of the competition round; an integer between 1 and 6. The total number of falls on the top N routes is used
+to break ties. If the total score and total number of falls is the same (a tie) then the next highest point value route 
+climbed by each tied climber is considered. If there is still a tie then the number of falls on that route is considered.
+This process of considering additional routes and falls continues for up to 10 routes total (this includes the 
 initial top N so if N is 3 and there is a tie then up to 7 more routes and falls will be considered). In the unlikely
 event that 10 routes is not enough to break the tie then the climbers are tied.
 
 ### Recording
 The score card lists each route along with its point value and a blank space to record the number of falls and
 a blank space to record judges initials indicating the root was topped (and points awarded). Falls are indicated 
-with a tally mark for each fall. The score card has its routes listed in order from lowest to highest. 
+with a tally mark for each fall. The scorecard has its routes listed in order from lowest to highest. 
 Routes are identified with a sequential number starting from 1 and may include other identifying information such
 as location or color. 
 
@@ -57,11 +57,11 @@ If a climber topped fewer than 10 routes then the TB string will end after the l
 it is possible for TB to be the empty string if the climber only climbed N routes. The purpose of this TB string is
 that it can be compared lexicographically to determine ranking. Greater values are better.
 
-Notation: *pad* is a function that takes its first argument, an number, and converts it to a string and adds zeros on
+Notation: *pad* is a function that takes its first argument, a number, and converts it to a string and adds zeros on
 the left until the string is its second argument characters long. So pad(77, 4) results in "0077". The bar 
-character (|) is the string concatenation operator. T as an ordered array of topped routes from highest to lowest. 
-F is an array of the number of falls attempting a given route. It is ordered the same as T so that F(x) is the number of falls while
-attempting route T(x).
+character (|) is the string concatenation operator. T is an ordered array of topped routes from highest to lowest. 
+F is an array of the number of falls attempting a given route. It is ordered the same as T so that F(x) is the number
+of falls while attempting route T(x).
 
 The implementation relies on the following assumptions: 
 
@@ -74,7 +74,7 @@ Ranking climbers is accomplished by sorting on the above described scoring infor
 gender and category, sort by TS descending, then by TF ascending, and finally by TB descending.
 The first climber in the returned order is given place 1, the second climber place 2 and so on. The nth climber
 in the above given order is in nth place except that if two or more climbers have the same ranking then they are tied
-and receive the same place rank. The order in which they the climbers are listed is not defined.
+and receive the same place rank. The order in which tied climbers are listed is not defined.
 
 ### Reporting
 The report is broken down by gender and category. For each cliber the following columns are included:
@@ -83,6 +83,18 @@ The report is broken down by gender and category. For each cliber the following 
 Bib Number, Member Number, First Name, Last Name, Region, Team, Place, Total Score, Total Fals, Best 1, Best 2, ... Best N
 ```
 
+The report also includes as necessary a note about ties as a popup. These are the possible cases:
+
+* If there is a tie and no additional tie breaker data is available then the assumption is that during data entry 
+people stopped entering data after N tops. So the note reminds you that it may be possible to break the tie
+by entering more climbs. It is possible that there are no more climbs to enter in which case the note can be ignored
+and the tie stands.
+* If there is a tie in the total score and total falls **but** it was broken by looking at additional routes
+then the note tells you so and reminds you to double check the score cards (because people may not have been consistent
+or as carefull entering routes after the top N). The reason for this note is that you can't tell just by looking 
+at the results why climbers with the same score and falls came in different places (were not tied).
+* If there is a tie that cannot be broken then there is no note.
+
 TODO provide an option to include Total Falls and/or Attempts.
 
 TODO consider showing who last entered the scorecard and possibly when.
@@ -90,7 +102,6 @@ TODO consider showing who last entered the scorecard and possibly when.
 The CSV export file includes the gender and category as columns. It also includes both total falls and total attempts.
 It includes the username of the person that last entered the scorecard.
 
-TODO explain notes about ties
 
 ### Notes
 These rules are based on the [2015-206 USA Climbing Rule Book](http://sports.activecm.net/Assets/USA+Climbing+Digital+Assets/Documents/2015-2016+USA+Climbing+Rule+Book.pdf).
