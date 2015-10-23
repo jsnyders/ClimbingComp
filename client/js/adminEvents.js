@@ -28,7 +28,7 @@
     var module = "AdminEvents",
         eventsColumns = [
             {prop: "location", label: "Location", link: "adminEvent", args: ["eventId"], icon: "ui-icon-edit"},
-            {prop: "date", label: "Date", format: function(value, r, c) {
+            {prop: "date", label: "Date", format: function(value, row, r, c) {
                 return util.formatDate(value);
             }},
             {prop: "region", label: "Region", priority: 1},

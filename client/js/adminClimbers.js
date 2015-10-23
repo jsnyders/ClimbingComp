@@ -42,7 +42,7 @@
             // for all
             {prop: "firstName", label: "First Name"},
             {prop: "lastName", label: "Last Name"},
-            {prop: "birthDate", label: "Birth Date", priority: 1, format: function(value, r, c) {
+            {prop: "birthDate", label: "Birth Date", priority: 1, format: function(value, row, r, c) {
                 if (!value) {
                     return "-";
                 }
@@ -54,7 +54,7 @@
             {prop: "team", label: "Team", priority: 2},
             {prop: "coach", label: "Coach", priority: 2},
             {prop: "updatedBy", label: "Updated By", priority: 2},
-            {prop: "updatedOn", label: "Updated On", priority: 2, format: function(value, r, c) {
+            {prop: "updatedOn", label: "Updated On", priority: 2, format: function(value, row, r, c) {
                 return util.formatDateTime(value);
             }},
             {label: "Actions", action: "delete", icon: "ui-icon-delete", args: ["climberId", "version", function(row) {

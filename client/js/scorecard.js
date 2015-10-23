@@ -32,6 +32,8 @@
     var module = "ScoreCard",
         duringInitCard = false;
 
+    var MAX_ROUTES_TO_BREAK_TIE = 10;
+
     // options:
     //  includeFalls
     //  includeLocation
@@ -209,11 +211,13 @@
                         totalFalls += climb.falls;
                     }
                 }
-            } else { // xxx cap at 10 routes including the top N
+            } else if (i < MAX_ROUTES_TO_BREAK_TIE) {
                 if (climb.points > 0) {
                     tieBreaker += util.zeroPad(climb.points, 6) + ":";
                     tieBreaker += util.zeroPad(99 - climb.falls, 2) + ","; // subtract from 99 so that higher numbers are better just like points
                 }
+            } else {
+                break;
             }
         }
         if (!fallsPerClimb) {

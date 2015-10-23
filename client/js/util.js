@@ -53,7 +53,7 @@ var util = {};
      *   prop: <string> name of property in data row
      *   label: <string> label to use column heading
      *   priority: <n>
-     *   format: function(value, rowIndex, columnIndex)
+     *   format: function(value, row, rowIndex, columnIndex)
      *   hide: <bool>
      *   cls:
      *   link:
@@ -163,7 +163,7 @@ var util = {};
                     table += " class='ui-btn ui-btn-icon-notext ui-corner-all " + col.icon + "'></button>";
                 } else {
                     if ($.isFunction(col.format)) {
-                        display = col.format(row[col.prop], i, j);
+                        display = col.format(row[col.prop], row, i, j);
                     } else {
                         value = row[col.prop];
                         if ( value === null || value === undefined ) {

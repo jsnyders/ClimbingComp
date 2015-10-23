@@ -301,6 +301,13 @@ table.scTable th,
     font-weight: bold !important;
 }
 
+.ui-btn.info-btn,
+.ui-btn.info-btn:hover,
+.ui-btn.info-btn:active {
+    background: none;
+    border: 0;
+}
+
 table.scTable td {
     text-align: left;
     white-space: nowrap;

@@ -20,7 +20,17 @@
             {prop: "lastName", label: "Last Name"},
             {prop: "region", label: "Region", priority: 3},
             {prop: "team", label: "Team", priority: 3},
-            {prop: "place", label: "Place", cls: "num"},
+            {prop: "place", label: "Place", cls: "num", format: function(value, row, rowIndex) {
+                var id;
+                if (row.note) {
+                    id = "resultPopup" + rowIndex;
+                    return "<a href='#" + id + "' data-rel='popup' data-transition='pop' " +
+                           "class='info-btn ui-btn ui-alt-icon ui-nodisc-icon ui-btn-inline ui-icon-info ui-btn-icon-notext' title='Details'>Details</a> " +
+                           "<div id='"+ id + "' class='dyn-popup ui-content' data-theme='a' style='max-width:350px;'>" + row.note + "</div>" + value;
+                } else {
+                    return value || "";
+                }
+            }},
             {prop: "total", label: "Total", cls: "num"}
         ];
 
@@ -52,6 +62,7 @@
             },
             nullValue: "-"
         });
+        $table.find(".dyn-popup").popup();
     }
 
     app.addPage({
