@@ -742,7 +742,23 @@
                 <label for="auPasswordConfirm">Confirm Password:</label>
                 <input id="auPasswordConfirm" type="password" name="password2" value="">
             </div>
-
+            <div class="ui-field-contain">
+                <a id="auChangePWpopup" href="#auChangePassword" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-btn ui-corner-all ui-shadow ui-btn-inline">Change Password</a>
+            </div>
+            <div data-role="popup" id="auChangePassword" class="ui-corner-all">
+                <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+                <div style="padding:1em;min-width:20em;">
+                    <div class="ui-field-contain">
+                        <label for="auSetPassword">Password:</label>
+                        <input id="auSetPassword" type="password" name="password" value="">
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="auSetPasswordConfirm">Confirm Password:</label>
+                        <input id="auSetPasswordConfirm" type="password" name="password2" value="">
+                    </div>
+                    <button id="auChangePW" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Change Password</button>
+                </div>
+            </div>
             <a id="auCancel" href="#adminUsers" class="ui-btn ui-btn-inline ui-corner-all ui-shadow">Cancel</a>
             <button id="auOK" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">OK</button>
         </div>

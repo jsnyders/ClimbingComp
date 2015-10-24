@@ -254,7 +254,8 @@ server.on("listening", function() {
 
     address = server.address();
     port = address.port;
-    if ( address.address === "0.0.0.0" ) {
+    if ((address.family === "IPv4" && address.address === "0.0.0.0") || 
+            (address.family === "IPv6" && address.address === "::")) {
         ifs = os.networkInterfaces();
         for (ifName in ifs) {
             if (ifs.hasOwnProperty(ifName)) {

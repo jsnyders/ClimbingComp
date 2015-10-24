@@ -1132,8 +1132,7 @@ var appModel = (function($, logger, util, undefined) {
         //
         updateUser: function(user) {
             var result,
-                username = user.username,
-                self = this;
+                username = user.username;
 
             logger.debug(module, "Update user " + username);
 
@@ -1152,7 +1151,29 @@ var appModel = (function($, logger, util, undefined) {
             });
             return result.promise();
         },
-        // xxx specific set password API
+
+        setPassword: function(username, password) {
+            var result;
+
+            logger.debug(module, "Set password for user " + username);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "PUT",
+                url: "data/users/" + username + "/password",
+                contentType: "application/json",
+                data: JSON.stringify({password: password}),
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Set password  failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR)); // xxx item errors
+            });
+            return result.promise();
+        },
+
+        // xxx end user change my password
 
         //
         // DELETE /data/users/<username>

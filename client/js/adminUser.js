@@ -35,13 +35,30 @@
             {id: "auRole", prop: "role"}
         ];
 
+    function validatePassword(pw$, pw2$) {
+        var pw1, pw2;
+
+        pw1 = pw$.val();
+        pw2 = pw2$.val();
+        pw$.val("");
+        pw2$.val("");
+        if (pw1.length <= 0) {
+            app.showMessage("Invalid Input", "Password is required");
+            return null;
+        }
+        if (pw1 !== pw2) {
+            app.showMessage("Invalid Input", "Password confirmation did not match");
+            return null;
+        }
+        return pw1;
+    }
+
     app.addPage({
         name: "adminUser",
         init: function() {
             logger.debug(module, "Init page");
 
             $("#auOK").click(function() {
-                var pw1, pw2;
 
                 util.readForm(user, formMap);
                 // xxx validation
@@ -57,19 +74,10 @@
                         });
                 } else {
                     // create user
-                    pw1 = $("#auPassword").val();
-                    pw2 = $("#auPasswordConfirm").val();
-                    $("#auPassword").val("");
-                    $("#auPasswordConfirm").val("");
-                    if (pw1.length <= 0) {
-                        app.showMessage("Invalid Input", "Password is required");
+                    user.password = validatePassword($("#auPassword"), $("#auPasswordConfirm"));
+                    if (!user.password) {
                         return;
                     }
-                    if (pw1 !== pw2) {
-                        app.showMessage("Invalid Input", "password confirmation did not match");
-                        return;
-                    }
-                    user.password = pw1;
                     model.createUser(user)
                         .done(function() {
                             $.mobile.changePage("#adminUsers");
@@ -79,6 +87,24 @@
                         });
                 }
             });
+
+            $("#auChangePW").click(function() {
+                var pw = validatePassword($("#auSetPassword"), $("#auSetPasswordConfirm"));
+                if (!pw) {
+                    $("#auChangePassword").popup("close");
+                    return;
+                }
+
+                model.setPassword(username, pw)
+                    .done(function() {
+                        app.showMessage("Success", "Password changed");
+                        $("#auChangePassword").popup("close");
+                    })
+                    .fail(function(status, message) {
+                        app.showErrorMessage(status, "Failed to update user", message);
+                        $("#auChangePassword").popup("close");
+                    });
+            });
         },
         prepare: function(ui) {
             app.clearMessage(this.name);
@@ -87,11 +113,12 @@
                 username = ui.args[0];
             }
 
+            $("#auPassword").val("");
+            $("#auPasswordConfirm").val("");
             if (username !== "") {
                 // update user
                 $(".ui-field-contain.pw").hide();
-                $("#auPassword").val("");
-                $("#auPasswordConfirm").val("");
+                $("#auChangePWpopup").parent().show();
                 $("#auUsername").prop("readonly", true);
                 $("#auOK").text("OK");
                 $("#auTitle").text("Edit User");
@@ -104,9 +131,8 @@
                     role: "Reader"
                 };
                 util.writeForm(user, formMap);
-                $("#auPassword").val("");
-                $("#auPasswordConfirm").val("");
                 $(".ui-field-contain.pw").show();
+                $("#auChangePWpopup").parent().hide();
                 $("#auUsername").prop("readonly", false);
                 $("#auOK").text("Create");
                 $("#auTitle").text("Create User");

@@ -21,6 +21,19 @@ Currently it only handles redpoint format comps.
 
 Source: [https://github.com/jsnyders/ClimbingComp](https://github.com/jsnyders/ClimbingComp)
 
+## Update 23-Oct
+ClimbingComp is read for testing. We plan to use it a the 14-Nov-15 Boston Rock Gym ABS comp.
+ 
+Notable improvements since last release:
+* Made number of routes configurable (1 to 6)
+* Made number of digits to use for bib number configurable (3 or 4)
+* Implemented proper tie breaking rules 
+* Updated with new USA Climbing regions
+* Region, category and other configuration comes from the database
+* Events have a workflow, added UI to move event from open to active to preliminary results to closed
+* Changed default order of climber import columns to match latest USA Climbing spreadsheet
+* Added UI to change password
+
 ## Features
 
 * Its a web app that works on tablets, laptops, or desktops
@@ -171,11 +184,8 @@ and password and the URL to ClimbingComp. Then they can connect to it and see th
 or tablet browser. This is completly optional. You don't need to create a guest user.
 
 To create users sign in to ClimbingComp as an admin user. Select Mannager Users. Press Create User.
-Enter a username. First Name and Last Name are optional. Select the appropriate Role. Enter and confirm the 
+Enter a Username. First Name and Last Name are optional. Select the appropriate Role. Enter and confirm the 
 password. To edit a user press their name. To delete a user press the X under the Actions column.
-
-TODO provide a way to change the password
-
 
 ### Populating the global list of climbers
 xxx what, why, optional
