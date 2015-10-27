@@ -160,6 +160,21 @@ var appModel = (function($, logger, util, undefined) {
             return result.promise();
         },
 
+        // general authenticated get
+        authenticatedGet: function(url) {
+            var result = $.Deferred();
+
+            logger.debug(module, "Fetch categories");
+            $.ajax({
+                url: url
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
         // =====================================
         // Climbers
         // =====================================

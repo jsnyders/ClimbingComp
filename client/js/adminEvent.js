@@ -154,6 +154,8 @@
         }
         $("#aeScoreCard").html(html);
 
+        $("#aeExport,#aePrint").toggle(routes.length);
+
         // split routes into columns
         for (i = 0; i < routes.length; i++) {
             route = routes[i];
@@ -173,6 +175,7 @@
             $table = $("#aeRouteCol-" + i);
             util.renderTable($table, colSpec, columnsRoutes[i]);
         }
+
     }
 
     function fetchRoutes() {
@@ -223,7 +226,7 @@
             logger.debug(module, "Init page");
 
             $("#aeTabs").on("tabsactivate", function(e, ui) {
-                var importColumns;
+                var importColumns, href;
 
                 if (ui.newPanel[0].id === "aeRoutesTab") {
                     console.log("xxx clicked on routes tab");
@@ -237,9 +240,15 @@
                     importColumns +=  ", points, row , column";
                     $("#aeImportColumns").text(importColumns);
 
+                    // xxx may need to do this if route settings changed such as has location etc.
                     if (routes === null) {
                         fetchRoutes();
                     }
+
+                    href = "data/events/" + event.eventId + "/routes?round=" + event.currentRound;
+                    $("#aeExport").attr("href", href + "&fmt=csv");
+                    $("#aePrint").attr("href", href + "&fmt=pdf");
+
                 }
             });
 
@@ -318,9 +327,6 @@
             $("#aeNewRoutes").click(function() {
                 newRoutes();
             });
-            $("#aeExport").click(function() {
-                alert("Not yet supported. todo");
-            });
 
             $("#aeManageClimbers").click(function() {
                 $.mobile.changePage("#adminClimbers?" + eventId);
@@ -343,6 +349,18 @@
                 save(true);
             });
 
+            $("#aeExport").click(function(event) {
+                model.authenticatedGet(this.href).done(function(data) {
+                    console.log("xxx export data: ", data);
+                });
+                event.preventDefault();
+            });
+            $("#aePrint").click(function(event) {
+                model.authenticatedGet(this.href).done(function(data) {
+                    // xxx
+                });
+                event.preventDefault();
+            });
         },
         prepare: function(ui) {
             if (!optionsInitialized) {
@@ -393,6 +411,7 @@
                 eventId = ui.args[0];
             }
 
+            routes = null;
             if (eventId !== "new") {
                 loadEvent(true);
             } else {

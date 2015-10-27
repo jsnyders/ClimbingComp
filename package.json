@@ -16,6 +16,7 @@
     "license": "AGPL-3.0",
     "dependencies": {
         "restify": "~2.8",
+        "cookie": "~0.2",
         "bunyan": "~1.1",
         "mysql": "~2.1",
         "csv": "~0.3",

@@ -81,7 +81,7 @@
                 return;
             }
 
-            href = "data/events/" + model.currentEvent.eventId + "/results?round=" + model.currentEvent.currentRound;
+            href = "data/events/" + event.eventId + "/results?round=" + model.currentEvent.currentRound;
             $("#resExport").attr("href", href + "&fmt=csv");
             $("#resPrint").attr("href", href + "&fmt=pdf");
 

@@ -22,7 +22,7 @@ Currently it only handles redpoint format comps.
 Source: [https://github.com/jsnyders/ClimbingComp](https://github.com/jsnyders/ClimbingComp)
 
 ## Update 23-Oct
-ClimbingComp is read for testing. We plan to use it a the 14-Nov-15 Boston Rock Gym ABS comp.
+ClimbingComp is read for testing. We plan to use it at the 14-Nov-15 Boston Rock Gym ABS comp.
  
 Notable improvements since last release:
 * Made number of routes configurable (1 to 6)
