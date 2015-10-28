@@ -351,8 +351,7 @@
             $("#aicUpload").click(function() {
                 // xxx set something so that results page know it came from this action
                 if ($("#aicFile").val() === "") {
-                    // xxx better messaging for validation errors
-                    alert("Choose a file first.");
+                    app.showMessage("Invalid input", "Choose a file first.");
                     return;
                 }
                 $.mobile.changePage("#adminImportClimbersResults?" + eventId);

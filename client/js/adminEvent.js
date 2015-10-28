@@ -2,7 +2,7 @@
 /*
  Admin Event page
 
- Copyright (c) 2014, John Snyders
+ Copyright (c) 2014, 2015, John Snyders
 
  ClimbingComp is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
@@ -21,9 +21,8 @@
  * xxx todo
  * date format
  * bug: when first opened doesn't always show active tab
- * event climbers: list, add, edit, delete, upload, export?
- * route export
- * print scorecard
+ * *route export
+ * *print scorecard
  */
 
 (function(app, model, $, logger, util, undefined) {
@@ -51,7 +50,7 @@
             {id: "aeRoutesHaveColor", prop: "routesHaveColor"}
         ],
         scoreCardCol = [
-            {prop: "number", label: "Number"},
+            {prop: "number", label: "#"},
             {prop: "location", label: "Location", format: renderInput},
             {prop: "color", label: "Color", format: renderInput},
             {prop: "points", label: "Points", format: renderInputNumber}
@@ -149,12 +148,16 @@
         for (i = 0; i < event.scoreCardColumns; i++) {
             html += '<div class="ui-block-' + ltr[i] +
                 '"><table id="aeRouteCol-' + i +
-                '" class="ui-body-d ui-shadow table-stripe aeRouteTable"><caption class="visuallyhidden">Scorecard xxx </caption><thead></thead><tbody></tbody></table></div>';
+                '" class="ui-body-d ui-shadow table-stripe aeRouteTable"><thead></thead><tbody></tbody></table></div>';
             columnsRoutes.push([]);
         }
-        $("#aeScoreCard").html(html);
+        if ( routes.length ) {
+            $("#aeScoreCard").html(html);
+        } else {
+            $("#aeScoreCard").html("<p>Import or create routes</p>");
+        }
 
-        $("#aeExport,#aePrint").toggle(routes.length);
+        $("#aeExport,#aePrint")[routes.length ? "show" : "hide"]();
 
         // split routes into columns
         for (i = 0; i < routes.length; i++) {
@@ -194,9 +197,13 @@
 
     function newRoutes() {
         var i, c, ci,
-            count = $("#aeRouteCount").val(),
+            count = parseInt($("#aeRouteCount").val(), 10),
             colCount = Math.ceil(count / event.scoreCardColumns);
-        // xxx validate count
+
+        if ( count < 1 || count > 99 ) {
+            app.showMessage("Invalid input", "Number of routes must be between 1 and 99.");
+            return;
+        }
 
         routes = [];
         c = ci = 0;
@@ -310,8 +317,7 @@
             $("#aeUpload").click(function() {
                 app.clearMessage();
                 if ($("#aeFile").val() === "") {
-                    // xxx better messaging for validation errors
-                    alert("Choose a file first.");
+                    app.showMessage("Invalid input", "Choose a file first.");
                     return;
                 }
                 model.uploadEventRoutes(event.eventId, event.currentRound, event.routesHaveLocation, event.routesHaveColor,
@@ -349,18 +355,6 @@
                 save(true);
             });
 
-            $("#aeExport").click(function(event) {
-                model.authenticatedGet(this.href).done(function(data) {
-                    console.log("xxx export data: ", data);
-                });
-                event.preventDefault();
-            });
-            $("#aePrint").click(function(event) {
-                model.authenticatedGet(this.href).done(function(data) {
-                    // xxx
-                });
-                event.preventDefault();
-            });
         },
         prepare: function(ui) {
             if (!optionsInitialized) {
@@ -371,7 +365,24 @@
                             valuesOnly: true
                         });
                     });
-                // xxx need to fetch series, sanctioning etc.
+                model.fetchSeries()
+                    .done(function (list) {
+                        util.renderOptions($("#aeSeries"), list, {
+                            valuesOnly: true
+                        });
+                    });
+                model.fetchSanctioning()
+                    .done(function (list) {
+                        util.renderOptions($("#aeSanctioning"), list, {
+                            valuesOnly: true
+                        });
+                    });
+                model.fetchFormat()
+                    .done(function (list) {
+                        util.renderOptions($("#aeFormat"), list, {
+                            valuesOnly: true
+                        });
+                    });
             }
 
             app.clearMessage(this.name);
@@ -382,7 +393,9 @@
                 eventId = ui.args[0];
             }
 
+            // always start off on the Event tab
             $("#aeChangeState").hide();
+            $("#aeTabs").tabs("option", "active", 0);
             if (eventId !== "new") {
                 // update event
                 $("#aeOK").text("OK");

@@ -21,6 +21,8 @@ var appModel = (function($, logger, util, undefined) {
         gAccessToken = token;
         gUsername = username;
         gRole = role;
+        // xxx THINK is there still a need for this access token now that a cookie is used?
+        // does it prevent CSRF? can session storage be trusted?
         util.setSessionProperty("accessToken", gAccessToken);
         util.setSessionProperty("authUsername", gUsername);
         util.setSessionProperty("authRole", gRole);
@@ -157,21 +159,6 @@ var appModel = (function($, logger, util, undefined) {
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             clearAuthInfo();
-            return result.promise();
-        },
-
-        // general authenticated get
-        authenticatedGet: function(url) {
-            var result = $.Deferred();
-
-            logger.debug(module, "Fetch categories");
-            $.ajax({
-                url: url
-            }).done(function(data) {
-                result.resolve(data);
-            }).fail(function(jqXHR) {
-                result.reject(getStatus(jqXHR), getMessage(jqXHR));
-            });
             return result.promise();
         },
 
@@ -507,6 +494,75 @@ var appModel = (function($, logger, util, undefined) {
                 result.resolve(list);
             }).fail(function(jqXHR) {
                 logger.error(module, "Fetch regions failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        fetchSeries: function() {
+            var result = $.Deferred(),
+                self = this;
+
+            logger.debug(module, "Fetch Series");
+            $.ajax({
+                url: "/data/nvp/SERIES",
+                dataType: "json"
+            }).done(function(data) {
+                var i,
+                    list = [];
+                // in this case we know the label and the value are the same
+                for (i = 0; i < data.items.length; i++) {
+                    list.push(data.items[i].value);
+                }
+                result.resolve(list);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch series failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        fetchSanctioning: function() {
+            var result = $.Deferred(),
+                self = this;
+
+            logger.debug(module, "Fetch Sanctioning");
+            $.ajax({
+                url: "/data/nvp/SANCTIONING",
+                dataType: "json"
+            }).done(function(data) {
+                var i,
+                    list = [];
+                // in this case we know the label and the value are the same
+                for (i = 0; i < data.items.length; i++) {
+                    list.push(data.items[i].value);
+                }
+                result.resolve(list);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch sanctioning failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        fetchFormat: function() {
+            var result = $.Deferred(),
+                self = this;
+
+            logger.debug(module, "Fetch Format");
+            $.ajax({
+                url: "/data/nvp/FORMAT",
+                dataType: "json"
+            }).done(function(data) {
+                var i,
+                    list = [];
+                // in this case we know the label and the value are the same
+                for (i = 0; i < data.items.length; i++) {
+                    list.push(data.items[i].value);
+                }
+                result.resolve(list);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Fetch format failed: " + getMessage(jqXHR));
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();

@@ -37,6 +37,8 @@ var app = {};
     var curEventId = "",
         pagesMap = {};
 
+    // xxx consider switching to a popup message area or having one in addition to these
+
     app.showMessage = function(title, message) {
         $.mobile.activePage.find(".messageArea").find(".messageContent").html(message)
             .end().find(".messageHeader").text(title)
