@@ -238,7 +238,7 @@ require("./lib/resources/climbers").addResources(server, dbPool);
 
 require("./lib/resources/eventClimbers").addResources(server, dbPool);
 
-require("./lib/resources/eventRoutes").addResources(server, dbPool);
+require("./lib/resources/eventRoutes").addResources(server, dbPool, clientRoot);
 
 require("./lib/resources/results").addResources(server, dbPool);
 
