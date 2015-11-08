@@ -42,7 +42,7 @@ CREATE TABLE config (
 
 -- the schema version
 INSERT INTO config VALUES('VersionMajor',0,NULL);
-INSERT INTO config VALUES('VersionMinor',1,NULL);
+INSERT INTO config VALUES('VersionMinor',3,NULL);
 -- default session timeout
 INSERT INTO config VALUES('SessionIdleTime',2 * 60 * 60,NULL); -- 2 hr
 INSERT INTO config VALUES('SessionMaxTime',8 * 60 * 60,NULL); -- 8 hr
@@ -155,6 +155,10 @@ CREATE TABLE event (
   round_3_format VARCHAR(100),
   round_3_num_advance INTEGER, -- how many people in each category advance to the next competition
   score_card_columns INTEGER DEFAULT 2,
+  sc_location_label VARCHAR(100),
+  sc_img_1 VARCHAR(1000),
+  sc_img_2 VARCHAR(1000),
+  sc_instructions VARCHAR(1000),
   notes VARCHAR(1000),
   updated_by VARCHAR(100),
   updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -231,6 +235,7 @@ CREATE TABLE event_climber (
   team VARCHAR(100), -- team at time of event
   coach VARCHAR(100), -- coach at time of event
   version INTEGER DEFAULT 1,
+  flags VARCHAR(10), -- todo N = no show P = label/card printed
   start_order INTEGER, -- for onsight event types this is the initial running order of the climber unique within gender+category
   route_1_score DECIMAL(7,2),
   -- xxx for each route redpoint needs attempts/falls, onsight needs top (1/0) and possibly ranking points

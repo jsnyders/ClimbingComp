@@ -33,7 +33,7 @@ var db = require('mysql');
 var htmlFormatter = require("./lib/htmlFormatter");
 var conv = require("./lib/conv");
 
-var version = "0.2.0";
+var version = "0.3.0";
 
 //
 // Command line parsing

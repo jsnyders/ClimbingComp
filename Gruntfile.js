@@ -36,7 +36,7 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: "bower_components/jquery-mobile",
                         src: [
-                            "images/**",
+                            "images/**"
                         ],
                         dest:"client/css/lib/"
                     }
@@ -78,6 +78,16 @@ module.exports = function(grunt) {
                 },
                 src: ['lib/*.js', 'main.js']
             }
+        },
+        mochaTest: {
+            all: {
+                options: {
+                    reporter: 'spec',
+                    quiet: false,
+                    clearRequireCache: true
+                },
+                src: ['test/**/*.js']
+            }
         }
     });
 
@@ -91,6 +101,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
+    grunt.loadNpmTasks('grunt-mocha-test');
     //
     // Define tasks
     //

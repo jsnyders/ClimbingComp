@@ -70,7 +70,7 @@ sudo mysql -u root -h localhost
 You will need to know the username and password of a database user than has the permission to create new databases and users.
 
 ### Install Node.js
-Download and install node.js from [http://nodejs.org/download/](http://nodejs.org/download/)
+Download and install node.js from [http://nodejs.org/en/download/](http://nodejs.org/en/download/)
 Add the node bin folder to the PATH and set NODE_PATH.
 Test that node is working with:
 
@@ -80,7 +80,7 @@ node
 > process.exit();
 ```
 
-Currently developing and testing with node version v0.12.4. Need to verify working on newer versions of node.
+Currently developing and testing with Node version 4.2.2 LTS.
 
 The node package manager (npm) should come bundled with node.js. Two other node tools are needed.
 Install grunt and bower globally:
@@ -89,6 +89,8 @@ Install grunt and bower globally:
 npm install -g grunt-cli
 npm install -g bower
 ```
+
+To compile database script template need stringtemplate-js. Currently this may need to be installed globally.
 
 To run the unit tests you need to install mocha
 

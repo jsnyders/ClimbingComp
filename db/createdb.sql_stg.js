@@ -1,6 +1,6 @@
 /*
  * Template group createdb.sql
- * Compiled on Tue Oct 27 2015 22:09:34 GMT-0400 (EDT)
+ * Compiled on Sat Nov 07 2015 23:00:00 GMT-0500 (EST)
  */
 var path = require("path");
 var base = path.dirname(module.filename);
@@ -81,7 +81,7 @@ r = function(w, rc) {
     w.write("\n");
     w.write("INSERT INTO config VALUES('VersionMajor',0,NULL);");
     w.write("\n");
-    w.write("INSERT INTO config VALUES('VersionMinor',1,NULL);");
+    w.write("INSERT INTO config VALUES('VersionMinor',3,NULL);");
     w.write("\n");
     w.write("-- default session timeout");
     w.write("\n");
@@ -361,6 +361,22 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
+    w.write("sc_location_label VARCHAR(100),");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("  ");
+    w.write("sc_img_1 VARCHAR(1000),");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("  ");
+    w.write("sc_img_2 VARCHAR(1000),");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("  ");
+    w.write("sc_instructions VARCHAR(1000),");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("  ");
     w.write("notes VARCHAR(1000),");
     w.popIndentation();
     w.write("\n");
@@ -373,7 +389,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 161, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 165, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -487,7 +503,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 195, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 199, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -567,7 +583,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 218, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 222, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -621,6 +637,10 @@ r = function(w, rc) {
     w.write("\n");
     w.pushIndentation("  ");
     w.write("version INTEGER DEFAULT 1,");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("  ");
+    w.write("flags VARCHAR(10), -- todo N = no show P = label/card printed");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("  ");
@@ -737,7 +757,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 263, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 268, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -796,7 +816,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 282, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 287, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -854,7 +874,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 302, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 307, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
 };

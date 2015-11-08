@@ -185,7 +185,7 @@ var util = {};
         }
         // xxx paging support
         $table.children("tbody").html(table);
-        if (options.total) {
+        if (options.total !== undefined) {
             $table.next(".tableSummary").remove();
             $table.after("<div class='tableSummary'>Total: " + util.escapeHTML(options.total) + "</div>");
         }
