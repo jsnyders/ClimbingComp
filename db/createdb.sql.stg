@@ -30,7 +30,7 @@ DROP DATABASE IF EXISTS $config.database$;
 CREATE DATABASE $config.database$ CHARACTER SET = utf8;
 DROP USER '$config.user$'@'$config.host$';
 CREATE USER '$config.user$'@'$config.host$' IDENTIFIED BY '$config.password$';
-GRANT ALL ON $config.database$.* TO $config.user$;
+GRANT ALL ON $config.database$.* TO '$config.user$'@'$config.host$';
 USE $config.database$;
 
 DROP TABLE IF EXISTS config;

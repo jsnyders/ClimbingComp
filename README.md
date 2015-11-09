@@ -90,7 +90,10 @@ npm install -g grunt-cli
 npm install -g bower
 ```
 
-To compile database script template need stringtemplate-js. Currently this may need to be installed globally.
+Bower seems to need a git client.
+
+Optional: To compile the database script template you need stringtemplate-js installed globally. Currently this only
+applies if you make changes to db/createdb.sql.stg
 
 To run the unit tests you need to install mocha
 

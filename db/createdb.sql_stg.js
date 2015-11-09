@@ -1,6 +1,6 @@
 /*
  * Template group createdb.sql
- * Compiled on Sat Nov 07 2015 23:00:00 GMT-0500 (EST)
+ * Compiled on Sun Nov 08 2015 21:02:57 GMT-0500 (EST)
  */
 var path = require("path");
 var base = path.dirname(module.filename);
@@ -47,9 +47,11 @@ r = function(w, rc) {
     w.write("\n");
     w.write("GRANT ALL ON ");
     st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "database", { file: gFile, line: 33, column: 21 }));
-    w.write(".* TO ");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "user", { file: gFile, line: 33, column: 44 }));
-    w.write(";");
+    w.write(".* TO '");
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "user", { file: gFile, line: 33, column: 45 }));
+    w.write("'@'");
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "host", { file: gFile, line: 33, column: 61 }));
+    w.write("';");
     w.write("\n");
     w.write("USE ");
     st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "database", { file: gFile, line: 34, column: 12 }));

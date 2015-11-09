@@ -127,6 +127,12 @@ function processDBScript(host, admin, adminPwd, options, file) {
 
             // generate script from createdb script template using options
             script = createDBGroup.render("createdb", {config: options});
+            // writing this script is for debugging purposes only
+            try {
+                fs.writeFileSync("setup.sql.txt", script, { mode: 0660, encoding: "utf-8", flag: "w"});
+            } catch (ex) {
+                console.log('Failed create setup.sql. Reason: ' + ex.message);
+            }
 
             // get confirmation before making any changes
             console.log("\nSetup is now ready to create the database on host " + host + " logging in as " + admin + ".");
