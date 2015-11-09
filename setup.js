@@ -25,6 +25,7 @@
  */
 
 var fs = require("fs");
+var os = require("os");
 var db = require("mysql");
 var prompt = require("prompt");
 var st = require("stringtemplate-js");
@@ -127,11 +128,16 @@ function processDBScript(host, admin, adminPwd, options, file) {
 
             // generate script from createdb script template using options
             script = createDBGroup.render("createdb", {config: options});
-            // writing this script is for debugging purposes only
+            // writing this script is for debugging purposes only todo make writing this a commandline option?
             try {
                 fs.writeFileSync("setup.sql.txt", script, { mode: 0660, encoding: "utf-8", flag: "w"});
             } catch (ex) {
                 console.log('Failed create setup.sql. Reason: ' + ex.message);
+            }
+            // on Windows the above template rendering will use \r\n line endings which confuses the processing of the script below
+            // todo consider if ST should have an option to configure the line ending?
+            if (os.EOL === "\r\n") {
+                script = script.replace(/\r\n/g, "\n");
             }
 
             // get confirmation before making any changes
