@@ -47,7 +47,11 @@
             {id: "aeNotes", prop: "notes"},
             {id: "aeColumns", prop: "scoreCardColumns"},
             {id: "aeRoutesHaveLocation", prop: "routesHaveLocation"},
-            {id: "aeRoutesHaveColor", prop: "routesHaveColor"}
+            {id: "aeRoutesHaveColor", prop: "routesHaveColor"},
+            {id: "aeSCLocationLabel", prop: "scoreCardLocationLabel"},
+            {id: "aeSCImg1", prop: "scoreCardImg1"},
+            {id: "aeSCImg2", prop: "scoreCardImg2"},
+            {id: "aeSCInstructions", prop: "scoreCardInstructions"}
         ],
         scoreCardCol = [
             {prop: "number", label: "#"},
@@ -261,7 +265,7 @@
 
             function save(done) {
                 util.readForm(event, formMap);
-                // xxx validation
+                // xxx validation location label required if has location is true
 
                 // xxx fixed at one round for now
                 event.rounds = [
@@ -355,6 +359,9 @@
                 save(true);
             });
 
+            $("#aeRoutesHaveLocation").change(function() {
+                $("#aeSCLocationLabel").closest(".ui-field-contain").toggle(this.checked);
+            });
         },
         prepare: function(ui) {
             if (!optionsInitialized) {

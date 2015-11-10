@@ -1,6 +1,6 @@
 /*
  * Template group createdb.sql
- * Compiled on Sun Nov 08 2015 21:02:57 GMT-0500 (EST)
+ * Compiled on Mon Nov 09 2015 23:39:37 GMT-0500 (EST)
  */
 var path = require("path");
 var base = path.dirname(module.filename);
@@ -419,7 +419,11 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("                    ");
-    w.write("bib_number_digits, record_falls_per_climb, score_card_columns) ");
+    w.write("bib_number_digits, record_falls_per_climb, score_card_columns,");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("                    ");
+    w.write("sc_location_label, sc_instructions) ");
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("    ");
@@ -427,7 +431,11 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.pushIndentation("            ");
-    w.write("1, 5, 'Redpoint', TRUE, TRUE, 3, FALSE, 2 );");
+    w.write("1, 5, 'Redpoint', TRUE, TRUE, 3, FALSE, 2,");
+    w.popIndentation();
+    w.write("\n");
+    w.pushIndentation("            ");
+    w.write("'Location', 'Mark with a slash each and every fall. When a route is topped get the judges initials (if applicable) or the initials of two witnesses.');");
     w.popIndentation();
     w.write("\n");
     w.write("\n");
@@ -505,7 +513,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 199, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 201, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -585,7 +593,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 222, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 224, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -759,7 +767,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 268, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 270, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -818,7 +826,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 287, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 289, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
     w.write("\n");
@@ -876,7 +884,7 @@ r = function(w, rc) {
     w.popIndentation();
     w.write("\n");
     w.write(") ENGINE=");
-    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 307, column: 17 }));
+    st.write(w, s, g, rc, st.prop(s, g, rc, s.config, "engine", { file: gFile, line: 309, column: 17 }));
     w.write(" DEFAULT CHARSET=utf8;");
     w.write("\n");
 };

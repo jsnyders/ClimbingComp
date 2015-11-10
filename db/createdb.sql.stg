@@ -172,9 +172,11 @@ CREATE TRIGGER event_update
 -- This is used to populate initial default for newly created events
 INSERT INTO event (state, location, event_date, region, series, sanctioning,
                     num_rounds, round_1_num_routes, round_1_format, routes_have_location, routes_have_color,
-                    bib_number_digits, record_falls_per_climb, score_card_columns) 
+                    bib_number_digits, record_falls_per_climb, score_card_columns,
+                    sc_location_label, sc_instructions) 
     VALUES ('Internal', 'DEFAULT', CURDATE(), '802-New England East', 'ABS', 'Local',
-            1, 5, 'Redpoint', TRUE, TRUE, 3, FALSE, 2 );
+            1, 5, 'Redpoint', TRUE, TRUE, 3, FALSE, 2,
+            'Location', 'Mark with a slash each and every fall. When a route is topped get the judges initials (if applicable) or the initials of two witnesses.');
 
 DROP TABLE IF EXISTS climber;
 CREATE TABLE climber (
