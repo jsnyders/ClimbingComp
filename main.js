@@ -224,10 +224,12 @@ server.on("request", function(req /*, res*/) {
 //
 // Redirect to the static webapp page
 //
-server.get("/", function(req,res,next) {
+server.get("/", function(req, res, next) {
+// xxx not sure why new redirect method isn't working. Tried a few different variations with no luck
+//    res.redirect("/ClimbingComp.html", next);
     res.header("Location", "/ClimbingComp.html");
-    res.send(303, "See Other");
-    return next();
+    res.send(303);
+    next(false);
 });
 
 require("./lib/resources/authSessions").addResources(server, dbPool);

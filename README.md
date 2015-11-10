@@ -21,7 +21,7 @@ Currently it only handles redpoint format comps.
 
 Source: [https://github.com/jsnyders/ClimbingComp](https://github.com/jsnyders/ClimbingComp)
 
-## Update 23-Oct
+## Update 8-Nov
 ClimbingComp is ready for testing. We plan to use it at the 14-Nov-15 Boston Rock Gym ABS comp.
  
 Notable improvements since last release:
@@ -33,6 +33,15 @@ Notable improvements since last release:
 * Events have a workflow, added UI to move event from open to active to preliminary results to closed
 * Changed default order of climber import columns to match latest USA Climbing spreadsheet
 * Added UI to change password
+* Export to PDF to print results
+
+Some tested configurations:
+* Ubuntu 15.04, MariaDB 10.0.22, Node 4.2.2
+* Windows 7, MySQL 5.7, Node 4.2.2
+* OS X, MariaDB 10.0, Node 4.2.1
+* Firefox on Android
+* Chrome
+* Firefox
 
 ## Features
 
