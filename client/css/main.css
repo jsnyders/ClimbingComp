@@ -431,7 +431,23 @@ table.scTable td {
     }
 }
 
+/*
+ * Timer display
+ */
+.largeDisplayContainer {
+    padding: 8px;
+    margin: 10px auto;
+}
 
+.largeDisplay {
+    display: inline-block;
+    width: 100%;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 200px;
+    text-align: center;
+    vertical-align: middle;
+}
 /*
  * Manage Climbers styles
  */

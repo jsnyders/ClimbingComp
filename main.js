@@ -185,7 +185,9 @@ if (config.keyFileName && config.certFileName) {
     // todo xxx consider running on both HTTP and HTTPS or running HTTP just to redirect to HTTPS or use HTTPS just for login resource
 }
 
-var server = restify.createServer(restifyOptions);
+var server = restify.createServer(restifyOptions),
+    WebSocketServer = require('ws').Server,
+    wss = new WebSocketServer({ server: server }); // xxx verify client
 
 log.debug("Server Acceptable: " + server.acceptable);
 
@@ -248,8 +250,28 @@ require("./lib/resources/users").addResources(server, dbPool);
 
 require("./lib/resources/nvpLists").addResources(server, dbPool);
 
+require("./lib/resources/timers").addResources(server, dbPool);
+
 var maxAge = 0; // xxx during development
 require("./lib/resources/static").addResources(server, clientRoot, maxAge);
+
+wss.on("connection", function(ws) {
+    var match,
+        timerConnectionManager = require("./lib/resources/timers").timerConnectionManager,
+        path = ws.upgradeReq.url;
+
+//    console.log("xxx ws: ", ws);
+    // you might use location.query.access_token to authenticate or share sessions
+    // or ws.upgradeReq.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
+
+    console.log("xxx ws connection received " + path);
+    match = /^\/timer\/(\d+)$/.exec(path); 
+    if (match) {
+        timerConnectionManager.add(ws, match[1]);
+    } else {
+        ws.close(1008, "bad url");
+    }
+});
 
 server.on("listening", function() {
     var i, address, ifs, ifName, ifa, port;

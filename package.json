@@ -17,6 +17,7 @@
     "license": "AGPL-3.0",
     "dependencies": {
         "restify": "~4.0",
+        "ws": "~0.8",
         "cookie": "~0.2",
         "bunyan": "~1.5",
         "mysql": "~2.9",

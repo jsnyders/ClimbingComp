@@ -85,6 +85,7 @@
                     <li><a id="hEvents" href="#adminEvents?test:arg2" data-transition="slide">Manage Climbing Events</a></li>
                     <li><a id="hClimbers" href="#adminClimbers?m" data-transition="slide">Manage Climbers</a></li>
                     <li><a id="hUsers" href="#adminUsers" data-transition="slide">Manage Users</a></li>
+                    <li><a id="hTimer" href="#adminTimer" data-transition="slide">Manage Timer</a></li>
                 </ul>
             </div>
 
@@ -777,6 +778,50 @@
     </div>
 
 
+    <div id="adminTimer" data-role="page">
+        <div data-role="header">
+            <a href="#home" data-transition="slide" data-direction="reverse" class="ui-btn ui-mini ui-icon-home ui-btn-icon-left ui-shadow ui-corner-all">Home</a>
+            <h1>Manage Timer</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <div class="messageArea ui-body ui-body-a ui-corner-all">
+                <h3 class="ui-bar ui-bar-a">
+                    <span class="messageHeader">Error</span>
+                    <button type="button" class="messageCloseButton ui-btn ui-btn-icon-notext ui-btn-right ui-btn-inline ui-corner-all ui-icon-delete"></button></h3>
+                <div class="messageContent"></div>
+            </div>
+            <div role="main" class="ui-content">
+                <button id="createTimer" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Create</button>
+                <button id="pauseTimer" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Pause</button>
+                <button id="resumeTimer" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Resume</button>
+                <button id="deleteTimer" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Delete</button>
+                <button id="connectTimer" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Connect</button>
+                <button id="disconnectTimer" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Disconnect</button>
+                <a id="displayTimer" href="#timerDisplay" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-shadow">Display Timer</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="timerDisplay" data-role="page">
+        <div data-role="header">
+            <a href="#adminTimer" data-transition="slide" data-direction="reverse" class="ui-btn ui-mini ui-icon-back ui-btn-icon-left ui-shadow ui-corner-all">Back</a>
+            <h1>Timer</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <div class="messageArea ui-body ui-body-a ui-corner-all">
+                <h3 class="ui-bar ui-bar-a">
+                    <span class="messageHeader">Error</span>
+                    <button type="button" class="messageCloseButton ui-btn ui-btn-icon-notext ui-btn-right ui-btn-inline ui-corner-all ui-icon-delete"></button></h3>
+                <div class="messageContent"></div>
+            </div>
+            <div role="main" class="ui-content">
+                <div class="largeDisplayContainer">
+                    <span id="timerTime" class="largeDisplay"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/lib/jquery.js"></script>
     <script src="js/lib/jquery.mobile-1.4.4.js"></script>
     <script src="js/lib/jquery.ui.datepicker.js"></script>
@@ -793,6 +838,7 @@
     <script src="js/adminEvent.js"></script>
     <script src="js/adminUsers.js"></script>
     <script src="js/adminUser.js"></script>
+    <script src="js/timerDisplay.js"></script>
 
 </body>
 </html>

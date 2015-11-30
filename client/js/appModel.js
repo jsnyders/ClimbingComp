@@ -1266,8 +1266,121 @@ var appModel = (function($, logger, util, undefined) {
                 result.reject(getStatus(jqXHR), getMessage(jqXHR));
             });
             return result.promise();
-        }
+        },
 
+        // =====================================
+        // Timers
+        // =====================================
+
+        createTimer: function(eventId, climbingDuration, transistionDuration) {
+            var result;
+
+            logger.debug(module, "Create timer " + eventId);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "POST",
+                url: "data/timers",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    eventId: eventId,
+                    climbingDuration: climbingDuration,
+                    transitionDuration: transistionDuration
+                }),
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Create timer failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        pauseTimer: function(eventId, now) {
+            var result;
+
+            logger.debug(module, "Pause timer " + eventId + ", now: " + now);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "PUT",
+                url: "data/timers/" + eventId,
+                contentType: "application/json",
+                data: JSON.stringify({
+                    state: now ? "pause-now" : "pause"
+                }),
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Pause timer failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        resumeTimer: function(eventId) {
+            var result;
+
+            logger.debug(module, "Resume timer " + eventId);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "PUT",
+                url: "data/timers/" + eventId,
+                contentType: "application/json",
+                data: JSON.stringify({
+                    state: "resume"
+                }),
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Resume timer failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        getTimer: function(eventId) {
+            var result;
+
+            logger.debug(module, "Get timer " + eventId);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "GET",
+                url: "data/timers/" + eventId,
+                contentType: "application/json",
+                dataType: "json"
+            }).done(function(data) {
+                result.resolve(data);
+            }).fail(function(jqXHR) {
+                logger.error(module, "Get timer failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        },
+
+        destroyTimer: function(eventId) {
+            var result;
+
+            logger.debug(module, "Destroy timer " + eventId);
+
+            result = $.Deferred();
+            $.ajax({
+                type: "DELETE",
+                url: "data/timers/" + eventId,
+                dataType: null
+            }).done(function(data) {
+                result.resolve();
+            }).fail(function(jqXHR) {
+                logger.error(module, "Delete timer failed: " + getMessage(jqXHR));
+                result.reject(getStatus(jqXHR), getMessage(jqXHR));
+            });
+            return result.promise();
+        }
     };
 
 })(jQuery, logger, util);
