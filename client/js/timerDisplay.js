@@ -19,10 +19,12 @@
 
 /*
  * xxx todo
- * consider if should display current cycle anywhere
+ * consider if should display current cycle anywhere perhaps on admin page
  * consider if there should be a separate option to turn audio on/off
  * popup to prompt for duration etc.
+ * confirm on delete, pause
  * make display fill the screen and be responsive
+ * hide footer on display timer page or make it update %complete?
  */
 
 (function(app, model, $, logger, util, undefined) {
