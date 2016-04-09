@@ -2,7 +2,7 @@
 /*
  Admin Climbers page
 
- Copyright (c) 2014, 2015, John Snyders
+ Copyright (c) 2014, 2016, John Snyders
 
  ClimbingComp is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
@@ -75,7 +75,10 @@
             {label:"Team", value: "team"},
             {label:"Coach", value: "coach"}
         ],
-        defaultMasterFields = [ "usacMemberId", "firstName", "lastName", "birthDate", "gender", "category", "team", "region" ];
+// this was what the USA climbing spreadsheet used in fall 2015
+//        defaultMasterFields = [ "usacMemberId", "firstName", "lastName", "birthDate", "gender", "category", "team", "region" ];
+// this is what the USA climbing spreadsheet is using in spring of 2016
+    defaultMasterFields = [ "usacMemberId", "firstName", "lastName", "gender", "category", "region", "team" ];
 
     // xxx get this from model layer, persist defaults
     var allEventFields = [
