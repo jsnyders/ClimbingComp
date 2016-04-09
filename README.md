@@ -3,7 +3,8 @@
 ClimbingComp is a rock climbing competition scoring app. It allows multiple people using tablets or laptops
 to quickly enter scorecard data so final results can be posted fast.
 
-It is in an early stage of development but has been used successfully at a few climbing competitions in 2014, 2015.
+It is in an early stage of development but has been used successfully at a number of climbing competitions
+in 2014, 2015, and 2016.
 
 The traditional way of scoring a climbing competition relies on using spreadsheet software. This creates a data
 entry bottleneck where only one person at a time can enter data. Even when the data entry is divided between
@@ -21,7 +22,15 @@ Currently it only handles redpoint format comps.
 
 Source: [https://github.com/jsnyders/ClimbingComp](https://github.com/jsnyders/ClimbingComp)
 
-## Update 8-Nov
+## Update 2-Apr 2016
+A few minor updates for use at the 9-Apr-16 Boston Rock Gym SCS comp.
+ 
+Notable improvements since last release:
+* Verified working with Node 4.4.2 (This LTS version of node has many security updates compared to 4.2.2)
+* Changed default order of climber import columns to match latest USA Climbing spreadsheet
+
+
+## Update 8-Nov 2015
 ClimbingComp is ready for testing. We plan to use it at the 14-Nov-15 Boston Rock Gym ABS comp.
  
 Notable improvements since last release:
@@ -36,7 +45,7 @@ Notable improvements since last release:
 * Export to PDF to print results
 
 Some tested configurations:
-* Ubuntu 15.04, MariaDB 10.0.22, Node 4.2.2
+* Ubuntu 15.04, MariaDB 10.0.23, Node 4.4.2
 * Windows 7, MySQL 5.7, Node 4.2.2
 * OS X, MariaDB 10.0, Node 4.2.1
 * Firefox on Android
@@ -89,7 +98,7 @@ node
 > process.exit();
 ```
 
-Currently developing and testing with Node version 4.2.2 LTS.
+Currently developing and testing with Node version 4.4.2 LTS.
 
 The node package manager (npm) should come bundled with node.js. Two other node tools are needed.
 Install grunt and bower globally:
